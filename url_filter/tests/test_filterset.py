@@ -27,6 +27,7 @@ def test_get_specs():
         other = Filter(source='stuff',
                        form_field=forms.CharField(),
                        default_lookup='contains')
+        thing = Filter(form_field=forms.IntegerField(min_value=0, max_value=15))
 
     class Foo(FilterSet):
         field = Filter(form_field=forms.CharField())
@@ -48,12 +49,24 @@ def test_get_specs():
         FilterSpec(['bar', 'stuff'], 'contains', 'mars', False),
     ])
     _test('field__in=earth,pluto&bar__other__icontains!=mars', [
-        FilterSpec(['field'], 'in', 'earth,pluto', False),
+        FilterSpec(['field'], 'in', ['earth', 'pluto'], False),
         FilterSpec(['bar', 'stuff'], 'icontains', 'mars', True),
     ])
     _test('fields__in=earth,pluto&bar__other__icontains!=mars', [
         FilterSpec(['bar', 'stuff'], 'icontains', 'mars', True),
     ])
     _test('field__in=earth,pluto&bar__ot!her__icontains!=mars', [
-        FilterSpec(['field'], 'in', 'earth,pluto', False),
+        FilterSpec(['field'], 'in', ['earth', 'pluto'], False),
     ])
+    _test('bar__thing=5', [
+        FilterSpec(['bar', 'thing'], 'exact', 5, False),
+    ])
+    _test('bar__thing__in=5,10,15', [
+        FilterSpec(['bar', 'thing'], 'in', [5, 10, 15], False),
+    ])
+    _test('bar__thing__range=5,10', [
+        FilterSpec(['bar', 'thing'], 'range', [5, 10], False),
+    ])
+    _test('bar__thing__range=5,10,15', [])
+    _test('bar__thing=100', [])
+    _test('bar__thing__in=100,5', [])

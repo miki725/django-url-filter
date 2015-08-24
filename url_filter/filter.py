@@ -1,10 +1,30 @@
 # -*- coding: utf-8 -*-
 from __future__ import print_function, unicode_literals
+from functools import partial
 
+from django import forms
 from django.core.exceptions import ValidationError
 from django.db.models.sql.constants import QUERY_TERMS
 
+from .fields import MultipleValuesField
 from .utils import FilterSpec
+
+
+MANY_LOOKUP_FIELD_OVERWRITES = {
+    'in': partial(MultipleValuesField, min_values=2),
+    'range': partial(MultipleValuesField, min_values=2, max_values=2),
+}
+
+LOOKUP_FIELD_OVERWRITES = {
+    'isnull': forms.BooleanField(),
+    'second': forms.IntegerField(min_value=0, max_value=59),
+    'minute': forms.IntegerField(min_value=0, max_value=59),
+    'hour': forms.IntegerField(min_value=0, max_value=23),
+    'week_day': forms.IntegerField(min_value=1, max_value=7),
+    'day': forms.IntegerField(min_value=1, max_value=31),
+    'month': forms.IntegerField(),
+    'year': forms.IntegerField(min_value=0, max_value=9999),
+}
 
 
 class Filter(object):
@@ -41,6 +61,18 @@ class Filter(object):
             return self
         return self.parent.root
 
+    def get_form_field(self, lookup):
+        if lookup in MANY_LOOKUP_FIELD_OVERWRITES:
+            return MANY_LOOKUP_FIELD_OVERWRITES[lookup](child=self.form_field)
+        elif lookup in LOOKUP_FIELD_OVERWRITES:
+            return LOOKUP_FIELD_OVERWRITES[lookup]
+        else:
+            return self.form_field
+
+    def clean_value(self, value, lookup):
+        form_field = self.get_form_field(lookup)
+        return form_field.clean(value)
+
     def get_spec(self, data):
         # lookup was explicitly provided
         if isinstance(data.data, dict):
@@ -64,5 +96,6 @@ class Filter(object):
             raise ValidationError('"{}" lookup is not supported'.format(lookup))
 
         is_negated = '!' in data.key
+        value = self.clean_value(value, lookup)
 
         return FilterSpec(self.components, lookup, value, is_negated)

@@ -107,7 +107,12 @@ class FilterSetBase(Filter):
             except SkipField:
                 pass
             except ValidationError as e:
-                errors[data.key].append(e.message)
+                if hasattr(e, 'error_list'):
+                    errors[data.key].extend(e.error_list)
+                elif hasattr(e, 'message'):
+                    errors[data.key].append(e.message)
+                else:
+                    errors[data.key].append(six.text_type(e))
 
         if errors and self.strict_mode == StrictMode.fail:
             raise ValidationError(dict(errors))

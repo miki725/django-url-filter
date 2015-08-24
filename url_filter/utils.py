@@ -12,12 +12,12 @@ class FilterSpec(object):
         self.is_negated = is_negated
 
     def __repr__(self):
-        return '<{} {} {}{} "{}">'.format(
+        return '<{} {} {}{} {}>'.format(
             self.__class__.__name__,
             '.'.join(self.components),
             'NOT ' if self.is_negated else '',
             self.lookup,
-            self.value,
+            repr(self.value),
         )
 
     def __eq__(self, other):
@@ -28,6 +28,8 @@ class FilterSpec(object):
 
 
 class ExpandedData(object):
+    __slots__ = ['key', 'data']
+
     def __init__(self, key, data):
         if isinstance(data, dict):
             data = {k: self.__class__(key, v) for k, v in data.items()}
