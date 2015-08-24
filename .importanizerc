@@ -1,0 +1,19 @@
+{
+    "groups": [
+        {
+            "type": "stdlib"
+        },
+        {
+            "type": "remainder"
+        },
+        {
+            "type": "packages",
+            "packages": [
+                "url_filter"
+            ]
+        },
+        {
+            "type": "local"
+        }
+    ]
+}

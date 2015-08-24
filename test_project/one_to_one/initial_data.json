@@ -1,0 +1,34 @@
+[
+{
+    "model": "one_to_one.place",
+    "fields": {
+        "name": "Demon Dogs",
+        "address": "944 W. Fullerton"
+    },
+    "pk": 1
+},
+{
+    "model": "one_to_one.place",
+    "fields": {
+        "name": "Ace Hardware",
+        "address": "1013 N. Ashland"
+    },
+    "pk": 2
+},
+{
+    "model": "one_to_one.restaurant",
+    "fields": {
+        "serves_hot_dogs": true,
+        "serves_pizza": false
+    },
+    "pk": 1
+},
+{
+    "model": "one_to_one.waiter",
+    "fields": {
+        "restaurant": 1,
+        "name": "Joe"
+    },
+    "pk": 1
+}
+]

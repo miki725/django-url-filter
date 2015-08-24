@@ -1,0 +1,53 @@
+[
+{
+    "pk": 1,
+    "fields": {
+        "title": "The Python Journal"
+    },
+    "model": "many_to_many.publication"
+},
+{
+    "pk": 2,
+    "fields": {
+        "title": "Science News"
+    },
+    "model": "many_to_many.publication"
+},
+{
+    "pk": 3,
+    "fields": {
+        "title": "Science Weekly"
+    },
+    "model": "many_to_many.publication"
+},
+{
+    "pk": 4,
+    "fields": {
+        "title": "Highlights for Children"
+    },
+    "model": "many_to_many.publication"
+},
+{
+    "pk": 1,
+    "fields": {
+        "headline": "Django lets you build Web apps easily",
+        "publications": [
+            1
+        ]
+    },
+    "model": "many_to_many.article"
+},
+{
+    "pk": 2,
+    "fields": {
+        "headline": "NASA uses Python",
+        "publications": [
+            4,
+            2,
+            3,
+            1
+        ]
+    },
+    "model": "many_to_many.article"
+}
+]
