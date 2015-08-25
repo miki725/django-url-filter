@@ -9,7 +9,8 @@
         {
             "type": "packages",
             "packages": [
-                "url_filter"
+                "url_filter",
+                "test_project"
             ]
         },
         {

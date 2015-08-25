@@ -94,35 +94,51 @@ class TestFilterSet(object):
             restaurant = RestaurantFilterSet()
             name = Filter(form_field=forms.CharField(max_length=50))
 
-        def _test(fs, data, qs, expected):
+        def _test(fs, data, qs, expected, count):
             _fs = fs(
                 data=QueryDict(data),
                 queryset=qs,
             )
 
-            assert set(_fs.filter()) == set(expected)
+            filtered = _fs.filter()
+            assert filtered.count() == count
+            assert set(filtered) == set(expected)
 
         _test(
             RestaurantFilterSet,
             'place__name__startswith=Demon',
             Restaurant.objects.all(),
-            Restaurant.objects.filter(place__name__startswith='Demon')
+            Restaurant.objects.filter(place__name__startswith='Demon'),
+            1
         )
         _test(
             RestaurantFilterSet,
             'place__address__contains!=Ashland',
             Restaurant.objects.all(),
-            Restaurant.objects.exclude(place__address__contains='Ashland')
+            Restaurant.objects.exclude(place__address__contains='Ashland'),
+            1
         )
         _test(
             WaiterFilterSet,
             'restaurant__place__pk=1',
             Waiter.objects.all(),
-            Waiter.objects.filter(restaurant__place=1)
+            Waiter.objects.filter(restaurant__place=1),
+            2
         )
         _test(
             WaiterFilterSet,
             'restaurant__place__name__startswith=Demon',
             Waiter.objects.all(),
-            Waiter.objects.filter(restaurant__place__name__startswith="Demon")
+            Waiter.objects.filter(restaurant__place__name__startswith="Demon"),
+            2
+        )
+        _test(
+            WaiterFilterSet,
+            ('restaurant__place__name__startswith=Demon'
+             '&name__icontains!=jon'),
+            Waiter.objects.all(),
+            (Waiter.objects
+             .filter(restaurant__place__name__startswith="Demon")
+             .exclude(name__icontains='jon')),
+            1
         )
