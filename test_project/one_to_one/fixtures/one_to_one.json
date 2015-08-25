@@ -30,5 +30,13 @@
         "name": "Joe"
     },
     "pk": 1
+},
+{
+    "model": "one_to_one.waiter",
+    "fields": {
+        "restaurant": 1,
+        "name": "Jonny"
+    },
+    "pk": 2
 }
 ]

@@ -11,6 +11,7 @@ from django.core.validators import RegexValidator
 from django.db.models.constants import LOOKUP_SEP
 from django.http import QueryDict
 
+from .backends.django import DjangoFilterBackend
 from .exceptions import SkipField
 from .filter import Filter
 from .utils import ExpandedData
@@ -60,6 +61,8 @@ class FilterSetMeta(type):
 
 
 class FilterSetBase(Filter):
+    filter_backend = DjangoFilterBackend
+
     def __init__(self, *args, **kwargs):
         super(FilterSetBase, self).__init__(*args, **kwargs)
 
@@ -85,6 +88,13 @@ class FilterSetBase(Filter):
     def validate_key(self, key):
         filter_key_validator(key)
 
+    def get_filter_backend(self, specs):
+        return self.filter_backend(
+            specs=specs,
+            queryset=self.queryset,
+            context=self.context,
+        )
+
     def filter(self):
         assert self.queryset is not None, (
             'queryset was not passed for filtering.'
@@ -93,7 +103,10 @@ class FilterSetBase(Filter):
             'data should be an instance of QueryDict'
         )
 
-        return self.get_specs()
+        specs = self.get_specs()
+        filter_backend = self.get_filter_backend(specs)
+
+        return filter_backend.filter()
 
     def get_specs(self):
         expanded_data = self._expand_data()
@@ -120,6 +133,9 @@ class FilterSetBase(Filter):
         return specs
 
     def get_spec(self, data):
+        if not isinstance(data.data, dict):
+            raise SkipField
+
         name, value = data.name, data.value
 
         if name not in self.filters:
