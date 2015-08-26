@@ -61,7 +61,7 @@ class FilterSetMeta(type):
 
 
 class FilterSetBase(Filter):
-    filter_backend = DjangoFilterBackend
+    filter_backend_class = DjangoFilterBackend
 
     def __init__(self, *args, **kwargs):
         super(FilterSetBase, self).__init__(*args, **kwargs)
@@ -85,12 +85,18 @@ class FilterSetBase(Filter):
 
         return filters
 
+    @cached_property
+    def default_filter(self):
+        return next(iter(filter(
+            lambda i: getattr(i, 'is_default', False),
+            self.filters.values()
+        )), None)
+
     def validate_key(self, key):
         filter_key_validator(key)
 
-    def get_filter_backend(self, specs):
-        return self.filter_backend(
-            specs=specs,
+    def get_filter_backend(self):
+        return self.filter_backend_class(
             queryset=self.queryset,
             context=self.context,
         )
@@ -103,10 +109,11 @@ class FilterSetBase(Filter):
             'data should be an instance of QueryDict'
         )
 
+        self.filter_backend = self.get_filter_backend()
         specs = self.get_specs()
-        filter_backend = self.get_filter_backend(specs)
+        self.filter_backend.bind(specs)
 
-        return filter_backend.filter()
+        return self.filter_backend.filter()
 
     def get_specs(self):
         expanded_data = self._expand_data()
@@ -133,10 +140,13 @@ class FilterSetBase(Filter):
         return specs
 
     def get_spec(self, data):
-        if not isinstance(data.data, dict):
-            raise SkipField
-
-        name, value = data.name, data.value
+        if isinstance(data.data, dict):
+            name, value = data.name, data.value
+        else:
+            if self.default_filter is None:
+                raise SkipField
+            name = self.default_filter.source
+            value = ExpandedData(data.key, data.data)
 
         if name not in self.filters:
             raise SkipField

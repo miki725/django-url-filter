@@ -24,6 +24,14 @@
     "pk": 1
 },
 {
+    "model": "one_to_one.restaurant",
+    "fields": {
+        "serves_hot_dogs": true,
+        "serves_pizza": false
+    },
+    "pk": 2
+},
+{
     "model": "one_to_one.waiter",
     "fields": {
         "restaurant": 1,
@@ -38,5 +46,13 @@
         "name": "Jonny"
     },
     "pk": 2
+},
+{
+    "model": "one_to_one.waiter",
+    "fields": {
+        "restaurant": 2,
+        "name": "Steve"
+    },
+    "pk": 3
 }
 ]

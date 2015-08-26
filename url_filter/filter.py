@@ -36,10 +36,11 @@ class Filter(object):
         self.name = None
         self.init(*args, **kwargs)
 
-    def init(self, form_field, lookups=None, default_lookup=None):
+    def init(self, form_field, lookups=None, default_lookup=None, is_default=False):
         self.form_field = form_field
         self.lookups = lookups or list(QUERY_TERMS)
         self.default_lookup = default_lookup or self.default_lookup
+        self.is_default = is_default
 
     @property
     def source(self):

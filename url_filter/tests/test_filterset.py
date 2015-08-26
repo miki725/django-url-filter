@@ -79,18 +79,18 @@ class TestFilterSet(object):
         call_command('loaddata', 'one_to_one.json')
 
         class PlaceFilterSet(FilterSet):
-            pk = Filter(form_field=forms.IntegerField(min_value=0))
+            pk = Filter(form_field=forms.IntegerField(min_value=0), is_default=True)
             name = Filter(form_field=forms.CharField(max_length=50))
             address = Filter(form_field=forms.CharField(max_length=80))
 
         class RestaurantFilterSet(FilterSet):
-            pk = Filter(form_field=forms.IntegerField(min_value=0))
+            pk = Filter(form_field=forms.IntegerField(min_value=0), is_default=True)
             place = PlaceFilterSet()
             serves_hot_dogs = Filter(form_field=forms.BooleanField(required=False))
             serves_pizza = Filter(form_field=forms.BooleanField(required=False))
 
         class WaiterFilterSet(FilterSet):
-            pk = Filter(form_field=forms.IntegerField(min_value=0))
+            pk = Filter(form_field=forms.IntegerField(min_value=0), is_default=True)
             restaurant = RestaurantFilterSet()
             name = Filter(form_field=forms.CharField(max_length=50))
 
@@ -121,6 +121,13 @@ class TestFilterSet(object):
         _test(
             WaiterFilterSet,
             'restaurant__place__pk=1',
+            Waiter.objects.all(),
+            Waiter.objects.filter(restaurant__place=1),
+            2
+        )
+        _test(
+            WaiterFilterSet,
+            'restaurant__place=1',
             Waiter.objects.all(),
             Waiter.objects.filter(restaurant__place=1),
             2

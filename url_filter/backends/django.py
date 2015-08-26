@@ -5,10 +5,12 @@ from django.db.models.constants import LOOKUP_SEP
 
 
 class DjangoFilterBackend(object):
-    def __init__(self, specs, queryset, context=None):
-        self.specs = specs
+    def __init__(self, queryset, context=None):
         self.queryset = queryset
         self.context = context or {}
+
+    def bind(self, specs):
+        self.specs = specs
 
     @property
     def includes(self):
