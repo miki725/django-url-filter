@@ -14,7 +14,7 @@ from django.http import QueryDict
 from ..backends.django import DjangoFilterBackend
 from ..exceptions import SkipField
 from ..filter import Filter
-from ..utils import ExpandedData
+from ..utils import LookupConfig
 
 
 __all__ = ['FilterSet']
@@ -128,11 +128,11 @@ class FilterSetBase(Filter):
         return self.filter_backend.filter()
 
     def get_specs(self):
-        expanded_data = self._expand_data()
+        configs = self._generate_lookup_configs()
         specs = []
         errors = defaultdict(list)
 
-        for data in expanded_data:
+        for data in configs:
             try:
                 self.validate_key(data.key)
                 specs.append(self.get_spec(data))
@@ -151,24 +151,24 @@ class FilterSetBase(Filter):
 
         return specs
 
-    def get_spec(self, data):
-        if isinstance(data.data, dict):
-            name, value = data.name, data.value
+    def get_spec(self, config):
+        if isinstance(config.data, dict):
+            name, value = config.name, config.value
         else:
             if self.default_filter is None:
                 raise SkipField
             name = self.default_filter.source
-            value = ExpandedData(data.key, data.data)
+            value = LookupConfig(config.key, config.data)
 
         if name not in self.filters:
             raise SkipField
 
         return self.filters[name].get_spec(value)
 
-    def _expand_data(self):
+    def _generate_lookup_configs(self):
         for key, values in self.data.lists():
             for value in values:
-                yield ExpandedData(key, six.moves.reduce(
+                yield LookupConfig(key, six.moves.reduce(
                     lambda a, b: {b: a},
                     (key.replace('!', '').split(LOOKUP_SEP) + [value])[::-1]
                 ))

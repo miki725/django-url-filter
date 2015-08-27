@@ -74,10 +74,10 @@ class Filter(object):
         form_field = self.get_form_field(lookup)
         return form_field.clean(value)
 
-    def get_spec(self, data):
+    def get_spec(self, config):
         # lookup was explicitly provided
-        if isinstance(data.data, dict):
-            if not data.is_key_value():
+        if isinstance(config.data, dict):
+            if not config.is_key_value():
                 raise ValidationError(
                     'Invalid filtering data provided. '
                     'Data is more complex then expected. '
@@ -85,18 +85,18 @@ class Filter(object):
                     'after the final lookup (e.g. field__in__equal=value).'
                 )
 
-            lookup = data.name
-            value = data.value.data
+            lookup = config.name
+            value = config.value.data
 
         # use default lookup
         else:
             lookup = self.default_lookup
-            value = data.data
+            value = config.data
 
         if lookup not in self.lookups:
             raise ValidationError('"{}" lookup is not supported'.format(lookup))
 
-        is_negated = '!' in data.key
+        is_negated = '!' in config.key
         value = self.clean_value(value, lookup)
 
         return FilterSpec(self.components, lookup, value, is_negated)

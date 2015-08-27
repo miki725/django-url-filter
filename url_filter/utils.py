@@ -28,7 +28,7 @@ class FilterSpec(object):
         return hash(repr(self))
 
 
-class ExpandedData(object):
+class LookupConfig(object):
     __slots__ = ['key', 'data']
 
     def __init__(self, key, data):

@@ -95,13 +95,18 @@ class ModelFilterSet(FilterSet):
         )
 
     def build_filterset_from_field(self, field):
+        m = field.related_model
+
         class Meta(object):
-            model = field.related_model
+            model = m
 
         filterset = type(
-            str('{}FilterSet'.format(field.related_model.__name__)),
+            str('{}FilterSet'.format(m.__name__)),
             (ModelFilterSet,),
-            {'Meta': Meta}
+            {
+                'Meta': Meta,
+                '__module__': self.__module__,
+            }
         )
 
         return filterset()
