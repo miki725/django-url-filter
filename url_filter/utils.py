@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import print_function, unicode_literals
+import inspect
 
 
 class FilterSpec(object):
@@ -59,3 +60,43 @@ class ExpandedData(object):
             self.key,
             self.as_dict(),
         )
+
+
+class SubClassDict(dict):
+    def get(self, k, d=None):
+        """
+        If no value is found by using Python's default implementation,
+        try to find the value where the key is a base class of the
+        provided search class.
+
+        This is useful for finding field overwrites by class
+        for custom Django model fields (illustrated below).
+
+        Example
+        -------
+
+        ::
+
+            >>> from django import forms
+            >>> class ImgField(forms.ImageField):
+            ...     pass
+            >>> overwrites = SubClassDict({
+            ...     forms.CharField: 'foo',
+            ...     forms.FileField: 'bar',
+            ... })
+            >>> print(overwrites.get(forms.CharField))
+            foo
+            >>> print(overwrites.get(ImgField))
+            bar
+        """
+        value = super(SubClassDict, self).get(k, d)
+
+        # try to match by value
+        if value is d and inspect.isclass(k):
+            for klass, v in self.items():
+                if not inspect.isclass(klass):
+                    continue
+                if issubclass(k, klass):
+                    return v
+
+        return value

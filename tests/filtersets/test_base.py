@@ -3,12 +3,11 @@ from __future__ import print_function, unicode_literals
 
 import pytest
 from django import forms
-from django.core.management import call_command
 from django.http import QueryDict
 
 from test_project.one_to_one.models import Restaurant, Waiter
 from url_filter.filter import Filter
-from url_filter.filterset import FilterSet
+from url_filter.filtersets import FilterSet
 from url_filter.utils import FilterSpec
 
 
@@ -75,9 +74,7 @@ class TestFilterSet(object):
         _test('bar__thing=100', [])
         _test('bar__thing__in=100,5', [])
 
-    def test_filter_one_to_one(self, db):
-        call_command('loaddata', 'one_to_one.json')
-
+    def test_filter_one_to_one(self, one_to_one):
         class PlaceFilterSet(FilterSet):
             pk = Filter(form_field=forms.IntegerField(min_value=0), is_default=True)
             name = Filter(form_field=forms.CharField(max_length=50))

@@ -11,10 +11,13 @@ from django.core.validators import RegexValidator
 from django.db.models.constants import LOOKUP_SEP
 from django.http import QueryDict
 
-from .backends.django import DjangoFilterBackend
-from .exceptions import SkipField
-from .filter import Filter
-from .utils import ExpandedData
+from ..backends.django import DjangoFilterBackend
+from ..exceptions import SkipField
+from ..filter import Filter
+from ..utils import ExpandedData
+
+
+__all__ = ['FilterSet']
 
 
 class StrictMode(object):
@@ -38,6 +41,11 @@ class FilterKeyValidator(RegexValidator):
 filter_key_validator = FilterKeyValidator()
 
 
+class FilterSetOptions(object):
+    def __init__(self, options=None):
+        pass
+
+
 class FilterSetMeta(type):
     def __new__(cls, name, bases, attrs):
         try:
@@ -56,12 +64,16 @@ class FilterSetMeta(type):
             filters.update({k: v for k, v in base.items() if isinstance(v, Filter)})
 
         new_class._declared_filters = filters
+        new_class.Meta = new_class.filter_options_class(
+            getattr(new_class, 'Meta', None)
+        )
 
         return new_class
 
 
 class FilterSetBase(Filter):
     filter_backend_class = DjangoFilterBackend
+    filter_options_class = FilterSetOptions
 
     def __init__(self, *args, **kwargs):
         super(FilterSetBase, self).__init__(*args, **kwargs)
