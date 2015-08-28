@@ -6,7 +6,6 @@ flake8
 importanize
 ipython
 mock
-pdbpp
 pytest
 pytest-cov
 pytest-django
