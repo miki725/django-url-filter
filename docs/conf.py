@@ -14,6 +14,7 @@ import os
 import shlex  # noqa
 import sys
 
+import django
 import sphinx_rtd_theme
 
 
@@ -23,6 +24,9 @@ os.environ['DJANGO_SETTINGS_MODULE'] = 'test_project.settings'
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 sys.path.insert(0, os.path.dirname(os.path.abspath('.')))
+
+
+getattr(django, 'setup', bool)()
 
 # -- General configuration ------------------------------------------------
 
