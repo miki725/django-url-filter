@@ -24,7 +24,9 @@ class TestModelFilterSet(object):
 
         filters = PlaceFilterSet().get_filters()
 
-        assert set(filters.keys()) == {'id', 'name', 'address'}
+        assert set(filters.keys()) == {
+            'id', 'name', 'address', 'restaurant',
+        }
 
         assert isinstance(filters['id'], Filter)
         assert isinstance(filters['id'].form_field, forms.IntegerField)
@@ -32,6 +34,7 @@ class TestModelFilterSet(object):
         assert isinstance(filters['name'].form_field, forms.CharField)
         assert isinstance(filters['address'], Filter)
         assert isinstance(filters['address'].form_field, forms.CharField)
+        assert isinstance(filters['restaurant'], ModelFilterSet)
 
     def test_get_filters_with_relations(self):
         class RestaurantFilterSet(ModelFilterSet):
@@ -41,9 +44,7 @@ class TestModelFilterSet(object):
         filters = RestaurantFilterSet().get_filters()
 
         assert set(filters.keys()) == {
-            'place',
-            'serves_hot_dogs',
-            'serves_pizza',
+            'place', 'waiter', 'serves_hot_dogs', 'serves_pizza',
         }
 
         assert isinstance(filters['serves_hot_dogs'], Filter)
@@ -51,3 +52,4 @@ class TestModelFilterSet(object):
         assert isinstance(filters['serves_pizza'], Filter)
         assert isinstance(filters['serves_pizza'].form_field, forms.BooleanField)
         assert isinstance(filters['place'], ModelFilterSet)
+        assert isinstance(filters['waiter'], ModelFilterSet)
