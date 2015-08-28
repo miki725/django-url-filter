@@ -1,3 +1,4 @@
 cached-property
 Django
+enum34
 six
