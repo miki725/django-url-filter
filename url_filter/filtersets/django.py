@@ -6,13 +6,13 @@ from django import forms
 from django.db import models
 from django.db.models.fields.related import ForeignObjectRel, RelatedField
 
-from ..exceptions import SkipField
-from ..filter import Filter
+from ..exceptions import SkipFilter
+from ..filters import Filter
 from ..utils import SubClassDict
 from .base import FilterSet
 
 
-__all__ = ['ModelFilterSet']
+__all__ = ['ModelFilterSet', 'ModelFilterSetOptions']
 
 
 MODEL_FIELD_OVERWRITES = SubClassDict({
@@ -22,6 +22,23 @@ MODEL_FIELD_OVERWRITES = SubClassDict({
 
 
 class ModelFilterSetOptions(object):
+    """
+    Custom options for ``FilterSet``s used for Django models.
+
+    Attributes
+    ----------
+    model : Model
+        Django model class from which ``FilterSet`` will
+        extract necessary filters.
+    fields : None, list, optional
+        Specific model fields for which filters
+        should be created for.
+        By default it is ``None`` in which case for all
+        fields filters will be created for.
+    exclude : list, optional
+        Specific model fields for which filters
+        should not be created for.
+    """
     def __init__(self, options=None):
         self.model = getattr(options, 'model', None)
         self.fields = getattr(options, 'fields', None)
@@ -29,9 +46,20 @@ class ModelFilterSetOptions(object):
 
 
 class ModelFilterSet(FilterSet):
+    """
+    ``FilterSet`` for Django models.
+
+    The filterset can be configured via ``Meta`` class attribute,
+    very much like Django's ``ModelForm`` is configured.
+
+    """
     filter_options_class = ModelFilterSetOptions
 
     def get_filters(self):
+        """
+        Get all filters defined in this filterset including
+        filters corresponding to Django model fields.
+        """
         filters = super(ModelFilterSet, self).get_filters()
 
         assert self.Meta.model, (
@@ -59,7 +87,7 @@ class ModelFilterSet(FilterSet):
                 else:
                     continue
 
-            except SkipField:
+            except SkipFilter:
                 continue
 
             else:
@@ -69,12 +97,27 @@ class ModelFilterSet(FilterSet):
         return filters
 
     def get_model_field_names(self):
+        """
+        Get a list of all model fields.
+
+        This is used when ``Meta.fields`` is ``None``
+        in which case this method returns all model fields.
+        """
         return list(map(
             operator.attrgetter('name'),
             self.Meta.model._meta.get_fields()
         ))
 
     def get_form_field_for_field(self, field):
+        """
+        Get form field for the given Djagno model field.
+
+        By default ``Field.formfield()`` is used to get the form
+        field unless an overwrite is present for the field.
+        Overwrites are useful for non-standard fields like
+        ``FileField`` since in that case ``CharField``
+        should be used.
+        """
         overwrite = MODEL_FIELD_OVERWRITES.get(field.__class__)
         if overwrite is not None:
             if callable(overwrite):
@@ -85,16 +128,23 @@ class ModelFilterSet(FilterSet):
         field = field.formfield()
 
         if field is None:
-            raise SkipField
+            raise SkipFilter
 
         return field
 
     def build_filter_from_field(self, field):
+        """
+        Build ``Filter`` for a standard Django model field.
+        """
         return Filter(
             form_field=self.get_form_field_for_field(field),
         )
 
     def build_filterset_from_field(self, field):
+        """
+        Build a ``FilterSet`` for a Django relation model field
+        such as ``ForeignKey``.
+        """
         m = field.related_model
 
         class Meta(object):

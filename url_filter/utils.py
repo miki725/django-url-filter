@@ -4,8 +4,38 @@ import inspect
 
 
 class FilterSpec(object):
-    __slots__ = ['components', 'lookup', 'value', 'is_negated']
+    """
+    Class for describing filter specification.
 
+    The main job of the ``FilterSet`` is to parse
+    the submitted lookups into a list of filter specs.
+    A list of these specs is then used by the filter backend
+    to actually filter given queryset.
+
+    The reason why filtering is decoupled from the ``FilterSet``
+    is because this allows to implement filter backends
+    not related to Django.
+
+    Attributes
+    ----------
+    components : list
+        A list of strings which are names of the keys/attributes
+        to be used in filtering of the queryset.
+        For example lookup config with key
+        ``user__profile__email`` will be components of
+        ``['user', 'profile', 'email'].
+    lookup : str
+        Name of the lookup how final key/attribute from
+        ``components`` should be compared.
+        For example lookup config with key
+        ``user__profile__email__contains`` will have a lookup
+        ``contains``.
+    value
+        Value of the filter.
+    is_negated : bool, optional
+        Whether this filter should be negated.
+        By default its ``False``.
+    """
     def __init__(self, components, lookup, value, is_negated=False):
         self.components = components
         self.lookup = lookup
@@ -29,8 +59,54 @@ class FilterSpec(object):
 
 
 class LookupConfig(object):
-    __slots__ = ['key', 'data']
+    """
+    Lookup configuration which is used by ``FilterSet``
+    to create a ``FilterSpec``.
 
+    The main purpose of this config is to allow the use
+    if recursion in ``FilterSet``. Each lookup key
+    (the keys in the querystring) is parsed into
+    a nested one-key dictionary which lookup config stores.
+
+    For example the querystring::
+
+        ?user__profile__email__endswith=gmail.com
+
+    is parsed into the following config::
+
+        {
+            'user': {
+                'profile': {
+                    'email': {
+                        'endswith': 'gmail.com'
+                    }
+                }
+            }
+        }
+
+    Attributes
+    ----------
+    key : str
+        Full lookup key from the querystring.
+        For example ``user__profile__email__endswith``
+    data : dict, str
+        Either:
+
+        * nested dictionary where the key is the next key within
+          the lookup chain and value is another ``LookupConfig``
+        * the filtering value as provided in the querystring value
+
+    Parameters
+    ----------
+    key : str
+        Full lookup key from the querystring.
+    data : dict, str
+        A regular vanilla Python dictionary.
+        This class automatically converts nested
+        dictionaries to instances of LookupConfig.
+        Alternatively a filtering value as provided
+        in the querystring.
+    """
     def __init__(self, key, data):
         if isinstance(data, dict):
             data = {k: self.__class__(key, v) for k, v in data.items()}
@@ -43,13 +119,25 @@ class LookupConfig(object):
 
     @property
     def name(self):
+        """
+        If the ``data`` is nested ``LookupConfig``,
+        this gets its first lookup key.
+        """
         return next(iter(self.data.keys()))
 
     @property
     def value(self):
+        """
+        If the ``data`` is nested ``LookupConfig``,
+        this gets its first lookup value which could either
+        be another ``LookupConfig`` or actual filtering value.
+        """
         return next(iter(self.data.values()))
 
     def as_dict(self):
+        """
+        Converts the nested ``LookupConfig``s to a regular ``dict``.
+        """
         if isinstance(self.data, dict):
             return {k: v.as_dict() for k, v in self.data.items()}
         return self.data
@@ -63,31 +151,32 @@ class LookupConfig(object):
 
 
 class SubClassDict(dict):
+    """
+    Special-purpose ``dict`` with special getter for looking up
+    values by finding matching subclasses.
+
+    This is better illustrated in an example::
+
+        >>> class Klass(object): pass
+        >>> class Foo(object): pass
+        >>> class Bar(Foo): pass
+        >>> mapping = SubClassDict({
+        ...     Foo: 'foo',
+        ...     Klass: 'klass',
+        ... })
+        >>> print(mapping.get(Klass))
+        klass
+        >>> print(mapping.get(Foo))
+        foo
+        >>> print(mapping.get(Bar))
+        foo
+    """
+
     def get(self, k, d=None):
         """
         If no value is found by using Python's default implementation,
         try to find the value where the key is a base class of the
         provided search class.
-
-        This is useful for finding field overwrites by class
-        for custom Django model fields (illustrated below).
-
-        Example
-        -------
-
-        ::
-
-            >>> from django import forms
-            >>> class ImgField(forms.ImageField):
-            ...     pass
-            >>> overwrites = SubClassDict({
-            ...     forms.CharField: 'foo',
-            ...     forms.FileField: 'bar',
-            ... })
-            >>> print(overwrites.get(forms.CharField))
-            foo
-            >>> print(overwrites.get(ImgField))
-            bar
         """
         value = super(SubClassDict, self).get(k, d)
 

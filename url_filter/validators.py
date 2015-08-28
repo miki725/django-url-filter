@@ -11,6 +11,9 @@ from django.utils.translation import ungettext_lazy
 
 @deconstructible
 class MinLengthValidator(_MinLengthValidator):
+    """
+    Customer Django min length validator with better-suited error message
+    """
     compare = lambda self, a, b: a < b
     clean = lambda self, x: len(x)
     code = 'min_length'
@@ -23,6 +26,9 @@ class MinLengthValidator(_MinLengthValidator):
 
 @deconstructible
 class MaxLengthValidator(_MaxLengthValidator):
+    """
+    Customer Django max length validator with better-suited error message
+    """
     compare = lambda self, a, b: a > b
     clean = lambda self, x: len(x)
     code = 'max_length'

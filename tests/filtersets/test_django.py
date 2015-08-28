@@ -4,8 +4,8 @@ from __future__ import print_function, unicode_literals
 import pytest
 from django import forms
 
-from test_project.one_to_one.models import Place, Restaurant, Waiter
-from url_filter.filter import Filter
+from test_project.one_to_one.models import Place, Restaurant
+from url_filter.filters import Filter
 from url_filter.filtersets import ModelFilterSet
 
 

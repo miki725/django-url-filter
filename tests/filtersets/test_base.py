@@ -6,7 +6,7 @@ from django import forms
 from django.http import QueryDict
 
 from test_project.one_to_one.models import Restaurant, Waiter
-from url_filter.filter import Filter
+from url_filter.filters import Filter
 from url_filter.filtersets import FilterSet
 from url_filter.utils import FilterSpec
 
