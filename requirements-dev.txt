@@ -1,0 +1,17 @@
+-r requirements.txt
+coverage
+django-extensions
+djangorestframework
+flake8
+importanize
+ipython
+mock
+pdbpp
+pytest
+pytest-cov
+pytest-django
+Sphinx
+sphinx-autobuild
+sphinx-rtd-theme
+watchdog
+Werkzeug
