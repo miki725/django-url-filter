@@ -125,12 +125,12 @@ class ModelFilterSet(FilterSet):
             else:
                 return overwrite
 
-        field = field.formfield()
+        form_field = field.formfield()
 
-        if field is None:
+        if form_field is None:
             raise SkipFilter
 
-        return field
+        return form_field
 
     def build_filter_from_field(self, field):
         """
@@ -138,6 +138,7 @@ class ModelFilterSet(FilterSet):
         """
         return Filter(
             form_field=self.get_form_field_for_field(field),
+            is_default=field.primary_key,
         )
 
     def build_filterset_from_field(self, field):
