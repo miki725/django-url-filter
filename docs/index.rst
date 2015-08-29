@@ -8,7 +8,10 @@ Contents
 .. toctree::
    :maxdepth: 2
 
+   usage
    api/modules
+
+.. include:: ../README.rst
 
 Indices and tables
 ==================

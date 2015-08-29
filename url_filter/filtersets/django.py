@@ -17,7 +17,7 @@ __all__ = ['ModelFilterSet', 'ModelFilterSetOptions']
 
 MODEL_FIELD_OVERWRITES = SubClassDict({
     models.AutoField: forms.IntegerField(min_value=0),
-    models.FileField: lambda m, f: forms.CharField(max_length=m.max_length),
+    models.FileField: lambda m: forms.CharField(max_length=m.max_length),
 })
 
 
