@@ -19,7 +19,7 @@ class Publication(models.Model):
 @six.python_2_unicode_compatible
 class Article(models.Model):
     headline = models.CharField(max_length=100)
-    publications = models.ManyToManyField(Publication)
+    publications = models.ManyToManyField(Publication, related_name='articles')
 
     def __str__(self):
         return self.headline

@@ -154,37 +154,29 @@ class ModelFilterSet(FilterSet):
         Build a ``FilterSet`` for a Django relation model field
         such as ``ForeignKey``.
         """
-        m = field.related_model
-
-        class Meta(object):
-            model = m
-
-        filterset = type(
-            str('{}FilterSet'.format(m.__name__)),
-            (ModelFilterSet,),
-            {
-                'Meta': Meta,
-                '__module__': self.__module__,
-            }
-        )
-
-        return filterset()
+        return self._build_filterset(field, {
+            'exclude': [field.rel.name],
+        })
 
     def build_filterset_from_reverse_field(self, field):
         """
         Build a ``FilterSet`` for a Django reverse relation model field.
         """
-        m = field.related_model
+        return self._build_filterset(field, {
+            'exclude': [field.field.name],
+        })
 
-        class Meta(object):
-            model = m
-            allow_related = False
+    def _build_filterset(self, field, meta):
+        m = field.related_model
+        meta.update({'model': m})
+
+        meta = type(str('Meta'), (object,), meta)
 
         filterset = type(
             str('{}FilterSet'.format(m.__name__)),
             (ModelFilterSet,),
             {
-                'Meta': Meta,
+                'Meta': meta,
                 '__module__': self.__module__,
             }
         )
