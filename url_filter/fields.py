@@ -29,12 +29,12 @@ class MultipleValuesField(forms.CharField):
         multiple values.
         By default ``,`` is used.
     """
-    def __init__(self, child=forms.CharField,
+    def __init__(self, child=None,
                  min_values=2, max_values=None,
                  many_validators=None,
                  delimiter=',',
                  *args, **kwargs):
-        self.child = child
+        self.child = child or forms.CharField()
         self.delimiter = delimiter
 
         super(MultipleValuesField, self).__init__(*args, **kwargs)
