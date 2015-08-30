@@ -68,6 +68,13 @@ class Filter(object):
         In that case the default filter within profile ``FilterSet``
         will be used. At most, one default filter should be provided
         in the ``FilterSet``.
+
+    Attributes
+    ----------
+    parent : FilterSet
+        Parent ``FilterSet`` to which this filter is bound to
+    name : str
+        Name of the field as it is defined in parent ``FilterSet``
     """
 
     def __init__(self, source=None, *args, **kwargs):

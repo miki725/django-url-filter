@@ -9,6 +9,7 @@ Contents
    :maxdepth: 2
 
    usage
+   big_picture
    api/modules
 
 .. include:: ../README.rst
