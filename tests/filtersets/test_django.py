@@ -4,7 +4,8 @@ from __future__ import print_function, unicode_literals
 import pytest
 from django import forms
 
-from test_project.many_to_many.models import Article, Publication
+from test_project.many_to_many.models import Article as M2MArticle, Publication
+from test_project.many_to_one.models import Article as M2OArticle, Reporter
 from test_project.one_to_one.models import Place, Restaurant
 from url_filter.filters import Filter
 from url_filter.filtersets import ModelFilterSet
@@ -107,7 +108,7 @@ class TestModelFilterSet(object):
     def test_get_filters_with_many_to_many_relations(self):
         class ArticleFilterSet(ModelFilterSet):
             class Meta(object):
-                model = Article
+                model = M2MArticle
 
         filters = ArticleFilterSet().get_filters()
 
@@ -123,3 +124,25 @@ class TestModelFilterSet(object):
         assert isinstance(filters['headline'], Filter)
         assert isinstance(filters['headline'].form_field, forms.CharField)
         assert isinstance(filters['publications'], ModelFilterSet)
+
+    def test_get_filters_with_many_to_one_relations(self):
+        class ArticleFilterSet(ModelFilterSet):
+            class Meta(object):
+                model = M2OArticle
+
+        filters = ArticleFilterSet().get_filters()
+
+        assert set(filters.keys()) == {
+            'id', 'headline', 'pub_date', 'reporter',
+        }
+        assert set(filters['reporter'].filters.keys()) == {
+            'id', 'email', 'first_name', 'last_name',
+        }
+
+        assert isinstance(filters['id'], Filter)
+        assert isinstance(filters['id'].form_field, forms.IntegerField)
+        assert isinstance(filters['headline'], Filter)
+        assert isinstance(filters['headline'].form_field, forms.CharField)
+        assert isinstance(filters['pub_date'], Filter)
+        assert isinstance(filters['pub_date'].form_field, forms.DateField)
+        assert isinstance(filters['reporter'], ModelFilterSet)
