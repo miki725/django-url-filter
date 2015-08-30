@@ -11,7 +11,7 @@ from .utils import FilterSpec
 
 
 MANY_LOOKUP_FIELD_OVERWRITES = {
-    'in': partial(MultipleValuesField, min_values=2),
+    'in': partial(MultipleValuesField, min_values=1),
     'range': partial(MultipleValuesField, min_values=2, max_values=2),
 }
 
