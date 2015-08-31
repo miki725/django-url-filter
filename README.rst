@@ -2,6 +2,13 @@
 Django URL Filter
 =================
 
+.. image:: https://badge.fury.io/py/django-url-filter.svg
+    :target: http://badge.fury.io/py/django-url-filter
+.. image:: https://travis-ci.org/miki725/django-url-filter.svg?branch=master
+    :target: https://travis-ci.org/miki725/django-url-filter
+.. image:: https://coveralls.io/repos/miki725/django-url-filter/badge.svg?branch=master&service=github
+    :target: https://coveralls.io/github/miki725/django-url-filter?branch=master
+
 Django URL Filter provides a safe way to filter data via human-friendly URLs.
 
 Overview
