@@ -4,7 +4,6 @@ python:
   - "3.4"
   - "2.7"
   - "pypy"
-  - "pypy3"
 
 env:
   - "$DJANGO='django<1.9'"
