@@ -1,4 +1,4 @@
 cached-property
-Django
+Django>=1.8
 enum34
 six
