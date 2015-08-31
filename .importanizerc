@@ -1,4 +1,7 @@
 {
+    "exclude": [
+        "*/.tox/*"
+    ],
     "groups": [
         {
             "type": "stdlib"
