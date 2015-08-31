@@ -281,12 +281,9 @@ class FilterSet(six.with_metaclass(FilterSetMeta, Filter)):
             except SkipFilter:
                 pass
             except ValidationError as e:
-                if hasattr(e, 'error_list'):
-                    errors[data.key].extend(e.error_list)
-                elif hasattr(e, 'message'):
-                    errors[data.key].append(e.message)
-                else:
-                    errors[data.key].append(six.text_type(e))
+                errors[data.key].extend(
+                    getattr(e, 'error_list', [getattr(e, 'message', '')])
+                )
 
         if errors and self.strict_mode == StrictMode.fail:
             raise ValidationError(dict(errors))

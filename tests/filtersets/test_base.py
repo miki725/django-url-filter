@@ -6,12 +6,78 @@ from django import forms
 from django.http import QueryDict
 
 from test_project.one_to_one.models import Restaurant, Waiter
+from url_filter.backends.django import DjangoFilterBackend
 from url_filter.filters import Filter
-from url_filter.filtersets import FilterSet
+from url_filter.filtersets.base import FilterSet, StrictMode
 from url_filter.utils import FilterSpec
 
 
 class TestFilterSet(object):
+    def test_init(self):
+        fs = FilterSet(
+            data='some data',
+            queryset='queryset',
+            context={'context': 'here'},
+            strict_mode=StrictMode.fail,
+        )
+
+        assert fs.data == 'some data'
+        assert fs.queryset == 'queryset'
+        assert fs.context == {'context': 'here'}
+        assert fs.strict_mode == StrictMode.fail
+
+    def test_get_filters(self):
+        class TestFilterSet(FilterSet):
+            foo = Filter(form_field=forms.CharField())
+
+        filters = TestFilterSet().get_filters()
+
+        assert isinstance(filters, dict)
+        assert list(filters.keys()) == ['foo']
+        assert isinstance(filters['foo'], Filter)
+        assert filters['foo'].parent is None
+
+    def test_filters(self):
+        class TestFilterSet(FilterSet):
+            foo = Filter(form_field=forms.CharField())
+
+        fs = TestFilterSet()
+        filters = fs.filters
+
+        assert isinstance(filters, dict)
+        assert list(filters.keys()) == ['foo']
+        assert isinstance(filters['foo'], Filter)
+        assert filters['foo'].parent is fs
+        assert filters['foo'].name is 'foo'
+
+    def test_default_filter_no_default(self):
+        class TestFilterSet(FilterSet):
+            foo = Filter(form_field=forms.CharField())
+
+        assert TestFilterSet().default_filter is None
+
+    def test_default_filter(self):
+        class TestFilterSet(FilterSet):
+            foo = Filter(form_field=forms.CharField(), is_default=True)
+            bar = Filter(form_field=forms.CharField())
+
+        default = TestFilterSet().default_filter
+
+        assert isinstance(default, Filter)
+        assert default.name == 'foo'
+
+    def test_validate_key(self):
+        assert FilterSet().validate_key('foo') is None
+        assert FilterSet().validate_key('foo__bar') is None
+        assert FilterSet().validate_key('foo__bar!') is None
+
+        with pytest.raises(forms.ValidationError):
+            FilterSet().validate_key('f!oo')
+
+    def test_get_filter_backend(self):
+        backend = FilterSet().get_filter_backend()
+
+        assert isinstance(backend, DjangoFilterBackend)
 
     def test_filter_no_queryset(self):
         fs = FilterSet()
@@ -34,11 +100,11 @@ class TestFilterSet(object):
             field = Filter(form_field=forms.CharField())
             bar = BarFilterSet()
 
-        def _test(data, expected):
+        def _test(data, expected, **kwargs):
             fs = FooFilterSet(
                 data=QueryDict(data),
                 queryset=[],
-                strict_mode='drop',
+                **kwargs
             )
 
             assert set(fs.get_specs()) == set(expected)
@@ -70,9 +136,13 @@ class TestFilterSet(object):
         _test('bar__thing__range=5,10', [
             FilterSpec(['bar', 'thing'], 'range', [5, 10], False),
         ])
+        _test('bar=5', [])
         _test('bar__thing__range=5,10,15', [])
         _test('bar__thing=100', [])
         _test('bar__thing__in=100,5', [])
+
+        with pytest.raises(forms.ValidationError):
+            _test('bar__thing__in=100,5', [], strict_mode=StrictMode.fail)
 
     def test_filter_one_to_one(self, one_to_one):
         class PlaceFilterSet(FilterSet):
