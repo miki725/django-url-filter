@@ -34,11 +34,11 @@ class DjangoFilterBackend(BaseFilterBackend):
                 'model': model,
                 'fields': filter_fields,
             })
-            meta = type(str('Meta'), (object,), filter_class_meta_kwargs)
+            meta = type(str('Meta'), (object,), meta_kwargs)
 
             return type(
                 str('{}FilterSet'.format(model.__name__)),
-                filter_class_default,
+                (filter_class_default,),
                 {'Meta': meta}
             )
 
@@ -52,7 +52,6 @@ class DjangoFilterBackend(BaseFilterBackend):
         filter_class = self.get_filter_class(view, queryset)
 
         if filter_class:
-
             _filter = filter_class(
                 data=request.query_params,
                 queryset=queryset,
