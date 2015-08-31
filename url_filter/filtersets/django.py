@@ -90,10 +90,8 @@ class ModelFilterSet(FilterSet):
                     if not self.Meta.allow_related_reverse:
                         raise SkipFilter
                     _filter = self.build_filterset_from_reverse_field(field)
-                elif isinstance(field, models.Field):
-                    _filter = self.build_filter_from_field(field)
                 else:
-                    continue
+                    _filter = self.build_filter_from_field(field)
 
             except SkipFilter:
                 continue

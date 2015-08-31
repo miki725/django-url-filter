@@ -3,10 +3,12 @@ from __future__ import print_function, unicode_literals
 
 import pytest
 from django import forms
+from django.db import models
 
 from test_project.many_to_many.models import Article as M2MArticle, Publication
-from test_project.many_to_one.models import Article as M2OArticle, Reporter
+from test_project.many_to_one.models import Article as M2OArticle
 from test_project.one_to_one.models import Place, Restaurant
+from url_filter.exceptions import SkipFilter
 from url_filter.filters import Filter
 from url_filter.filtersets import ModelFilterSet
 
@@ -19,7 +21,7 @@ class TestModelFilterSet(object):
         with pytest.raises(AssertionError):
             PlaceFilterSet().get_filters()
 
-    def test_get_filters_no_relations(self):
+    def test_get_filters_no_relations_place(self):
         class PlaceFilterSet(ModelFilterSet):
             class Meta(object):
                 model = Place
@@ -38,6 +40,24 @@ class TestModelFilterSet(object):
         assert isinstance(filters['name'].form_field, forms.CharField)
         assert isinstance(filters['address'], Filter)
         assert isinstance(filters['address'].form_field, forms.CharField)
+
+    def test_get_filters_no_relations_restaurant(self):
+        class RestaurantFilterSet(ModelFilterSet):
+            class Meta(object):
+                model = Restaurant
+                allow_related = False
+                allow_related_reverse = False
+
+        filters = RestaurantFilterSet().get_filters()
+
+        assert set(filters.keys()) == {
+            'serves_pizza', 'serves_hot_dogs',
+        }
+
+        assert isinstance(filters['serves_pizza'], Filter)
+        assert isinstance(filters['serves_pizza'].form_field, forms.BooleanField)
+        assert isinstance(filters['serves_hot_dogs'], Filter)
+        assert isinstance(filters['serves_hot_dogs'].form_field, forms.BooleanField)
 
     def test_get_filters_with_only_reverse_relations(self):
         class PlaceFilterSet(ModelFilterSet):
@@ -146,3 +166,17 @@ class TestModelFilterSet(object):
         assert isinstance(filters['pub_date'], Filter)
         assert isinstance(filters['pub_date'].form_field, forms.DateField)
         assert isinstance(filters['reporter'], ModelFilterSet)
+
+    def test_get_form_field_for_field(self):
+        fs = ModelFilterSet()
+
+        assert isinstance(fs.get_form_field_for_field(models.CharField()), forms.CharField)
+        assert isinstance(fs.get_form_field_for_field(models.AutoField()), forms.IntegerField)
+        assert isinstance(fs.get_form_field_for_field(models.FileField()), forms.CharField)
+
+        class TestField(models.Field):
+            def formfield(self, **kwargs):
+                return
+
+        with pytest.raises(SkipFilter):
+            fs.get_form_field_for_field(TestField())
