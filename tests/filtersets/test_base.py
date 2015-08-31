@@ -48,7 +48,7 @@ class TestFilterSet(object):
         assert list(filters.keys()) == ['foo']
         assert isinstance(filters['foo'], Filter)
         assert filters['foo'].parent is fs
-        assert filters['foo'].name is 'foo'
+        assert filters['foo'].name == 'foo'
 
     def test_default_filter_no_default(self):
         class TestFilterSet(FilterSet):

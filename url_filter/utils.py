@@ -146,7 +146,7 @@ class LookupConfig(object):
         return '<{} {}=>{}>'.format(
             self.__class__.__name__,
             self.key,
-            self.as_dict(),
+            repr(self.as_dict()),
         )
 
 

@@ -7,10 +7,10 @@ from url_filter.utils import FilterSpec, LookupConfig, SubClassDict
 class TestFilterSpec(object):
     def test_repr(self):
         assert repr(FilterSpec(['a', 'b'], 'exact', 'value', False)) == (
-            "<FilterSpec a.b exact 'value'>"
+            '<FilterSpec a.b exact {}>'.format(repr('value'))
         )
         assert repr(FilterSpec(['a', 'b'], 'exact', 'value', True)) == (
-            "<FilterSpec a.b NOT exact 'value'>"
+            '<FilterSpec a.b NOT exact {}>'.format(repr('value'))
         )
 
     def test_equality(self):
@@ -32,7 +32,7 @@ class TestLookupConfig(object):
         config = LookupConfig('foo', data)
 
         assert repr(config) == (
-            "<LookupConfig foo=>{'key': 'value'}>"
+            '<LookupConfig foo=>{}>'.format(repr({'key': 'value'}))
         )
 
     def test_properties(self):
