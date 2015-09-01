@@ -4,7 +4,7 @@ Usage
 Vanilla
 -------
 
-In its simplest form, Django URL Filter usage resolves around ``FilterSet``s.
+In its simplest form, Django URL Filter usage resolves around ``FilterSet``.
 They can be used manually::
 
     from django import forms
@@ -15,7 +15,7 @@ They can be used manually::
         lives_in_country = Filter(form_field=forms.CharField())
 
     class UserFilterSet(FilterSet):
-        username = Filter(form_field=forms.CharField())
+        username = Filter(form_field=forms.CharField(), lookups=['exact'])
         email = Filter(form_field=forms.CharField())
         joined = Filter(form_field=forms.DateField())
         profile = ProfileFilterSet()
@@ -35,6 +35,8 @@ Notable things to mention from above:
 * ``form_field`` is used to validate the filter value.
   Each lookup however can overwrite validation. For example ``year``
   lookup will use ``IntegerField`` rather then ``DateField``.
+* ``Filter`` can restrict allowed lookups for that field by
+  using ``lookup`` parameter
 
 Django
 ------

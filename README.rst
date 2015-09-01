@@ -34,6 +34,13 @@ For example::
 
     example.com/listview/?id__in=1,2,3&created__year=2013
 
+Requirements
+------------
+
+* Python 2.7, 3.x, pypy or pypy3
+* Django 1.8+ (there are plans to support older Django versions)
+* Django REST Framework 2 or 3 (only if you want to use DRF integration)
+
 Installing
 ----------
 
@@ -50,7 +57,7 @@ with Django REST Framework but it can be used without DRF (see below).
 ::
 
   class UserViewSet(ModelViewSet):
-      queryset = Waiter.objects.all()
+      queryset = User.objects.all()
       serializer_class = UserSerializer
       filter_backends = [DjangoFilterBackend]
       filter_fields = ['username', 'email']
@@ -65,6 +72,36 @@ to filter querysets::
   query = QueryDict('email__contains=gmail&joined__gt=2015-01-01')
   fs = UserFilterSet(data=query, queryset=User.objects.all())
   filtered_users = fs.filter()
+
+Above will automatically allow the use of all of the Django URL Filter features.
+Some possibilities::
+
+    # get user with id 5
+    example.com/users/?id=5
+
+    # get user with id either 5, 10 or 15
+    example.com/users/?id__in=5,10,15
+
+    # get user with id between 5 and 10
+    example.com/users/?id__range=5,10
+
+    # get user with username "foo"
+    example.com/users/?username=foo
+
+    # get user with username containing case insensitive "foo"
+    example.com/users/?username__icontains=foo
+
+    # get user where username does NOT contain "foo"
+    example.com/users/?username__icontains!=foo
+
+    # get user who joined in 2015 as per user profile
+    example.com/users/?profile__joined__year=2015
+
+    # get user who joined in between 2010 and 2015 as per user profile
+    example.com/users/?profile__joined__range=2010-01-01,2015-12-31
+
+    # get user who joined in after 2010 as per user profile
+    example.com/users/?profile__joined__gt=2010-01-01
 
 Features
 --------
