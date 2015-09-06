@@ -3,7 +3,7 @@
 from __future__ import print_function
 import os
 
-from setuptools import setup
+from setuptools import find_packages, setup
 
 from url_filter import __author__, __version__
 
@@ -35,7 +35,7 @@ setup(
     long_description='\n\n'.join([readme, history, authors, licence]),
     url='https://github.com/miki725/django-url-filter',
     license='MIT',
-    packages=['url_filter'],
+    packages=find_packages(exclude=['test_project*', 'tests*']),
     install_requires=requirements,
     test_suite='tests',
     tests_require=test_requirements,
