@@ -2,9 +2,9 @@
 from __future__ import absolute_import, print_function, unicode_literals
 from functools import partial
 
+from cached_property import cached_property
 from django import forms
 from django.core.exceptions import ValidationError
-from django.db.models.sql.constants import QUERY_TERMS
 
 from .fields import MultipleValuesField
 from .utils import FilterSpec
@@ -85,9 +85,17 @@ class Filter(object):
 
     def _init(self, form_field, lookups=None, default_lookup='exact', is_default=False):
         self.form_field = form_field
-        self.lookups = lookups or list(QUERY_TERMS)
+        self._lookups = lookups
         self.default_lookup = default_lookup or self.default_lookup
         self.is_default = is_default
+
+    @cached_property
+    def lookups(self):
+        if self._lookups:
+            return self._lookups
+        if hasattr(self.root, 'filter_backend'):
+            return self.root.filter_backend.supported_lookups
+        return set()
 
     @property
     def source(self):

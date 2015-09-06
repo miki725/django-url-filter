@@ -22,15 +22,6 @@ class TestDjangoFilterBackend(object):
 
         assert filter_class is PlaceFilterSet
 
-    def test_get_filter_class_supplied_model_mismatch(self):
-        class View(object):
-            filter_class = PlaceFilterSet
-
-        with pytest.raises(AssertionError):
-            DjangoFilterBackend().get_filter_class(
-                View(), Restaurant.objects.all()
-            )
-
     def test_get_filter_class_by_filter_fields(self):
         class View(object):
             filter_fields = ['name']
@@ -71,3 +62,19 @@ class TestDjangoFilterBackend(object):
         )
 
         assert filtered == mock_filter.return_value
+
+    @mock.patch.object(FilterSet, 'filter')
+    def test_filter_queryset_supplied_model_mismatch(self, mock_filter, db, rf):
+        class View(object):
+            filter_class = PlaceFilterSet
+            filter_fields = ['name']
+
+        request = rf.get('/')
+        request.query_params = QueryDict()
+
+        with pytest.raises(AssertionError):
+            DjangoFilterBackend().filter_queryset(
+                request=request,
+                queryset=Restaurant.objects.all(),
+                view=View()
+            )

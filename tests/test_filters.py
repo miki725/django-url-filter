@@ -1,12 +1,17 @@
 # -*- coding: utf-8 -*-
 from __future__ import print_function, unicode_literals
+from functools import partial
 
 import pytest
 from django import forms
 
+from url_filter.backends.django import DjangoFilterBackend
 from url_filter.fields import MultipleValuesField
-from url_filter.filters import Filter
+from url_filter.filters import Filter as _Filter
 from url_filter.utils import FilterSpec, LookupConfig
+
+
+Filter = partial(_Filter, lookups=DjangoFilterBackend.supported_lookups)
 
 
 class TestFilter(object):
