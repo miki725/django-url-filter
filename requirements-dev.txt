@@ -1,6 +1,4 @@
 -r requirements.txt
-Sphinx
-Werkzeug
 coverage
 django-extensions
 djangorestframework
@@ -10,7 +8,10 @@ mock
 pytest
 pytest-cov
 pytest-django
+sphinx
 sphinx-autobuild
 sphinx-rtd-theme
+sqlalchemy
 tox
 watchdog
+werkzeug
