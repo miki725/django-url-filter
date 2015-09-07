@@ -1,7 +1,10 @@
 # Bare ``settings.py`` for running tests for url_filter
+from sqlalchemy import create_engine
+
 
 DEBUG = True
 
+SQA_ENGINE = create_engine('sqlite:///url_filter.sqlite', echo=True)
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
@@ -25,7 +28,9 @@ INSTALLED_APPS = (
 STATIC_URL = '/static/'
 SECRET_KEY = 'foo'
 
-MIDDLEWARE_CLASSES = []
+MIDDLEWARE_CLASSES = [
+    'test_project.middleware.SQASessionMiddleware',
+]
 
 ROOT_URLCONF = 'test_project.urls'
 
