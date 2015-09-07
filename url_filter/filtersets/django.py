@@ -55,7 +55,6 @@ class ModelFilterSet(FilterSet):
 
     The filterset can be configured via ``Meta`` class attribute,
     very much like Django's ``ModelForm`` is configured.
-
     """
     filter_options_class = ModelFilterSetOptions
 
@@ -116,7 +115,7 @@ class ModelFilterSet(FilterSet):
 
     def get_form_field_for_field(self, field):
         """
-        Get form field for the given Djagno model field.
+        Get form field for the given Django model field.
 
         By default ``Field.formfield()`` is used to get the form
         field unless an overwrite is present for the field.

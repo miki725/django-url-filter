@@ -4,8 +4,11 @@ from __future__ import print_function, unicode_literals
 from rest_framework.serializers import ModelSerializer
 from rest_framework.viewsets import ModelViewSet
 
+from url_filter.backends.sqlalchemy import SQLAlchemyFilterBackend
 from url_filter.filtersets import ModelFilterSet
+from url_filter.filtersets.sqlalchemy import SQLAlchemyModelFilterSet
 
+from . import alchemy
 from .models import Place, Restaurant, Waiter
 
 
@@ -60,6 +63,13 @@ class PlaceFilterSet(ModelFilterSet):
         model = Place
 
 
+class SQAPlaceFilterSet(SQLAlchemyModelFilterSet):
+    filter_backend_class = SQLAlchemyFilterBackend
+
+    class Meta(object):
+        model = alchemy.Place
+
+
 class RestaurantFilterSet(ModelFilterSet):
     class Meta(object):
         model = Restaurant
@@ -74,6 +84,14 @@ class PlaceViewSet(ModelViewSet):
     queryset = Place.objects.all()
     serializer_class = PlaceNestedSerializer
     filter_class = PlaceFilterSet
+
+
+class SQAPlaceViewSet(ModelViewSet):
+    serializer_class = PlaceNestedSerializer
+    filter_class = SQAPlaceFilterSet
+
+    def get_queryset(self):
+        return self.request.sqa_session.query(alchemy.Place)
 
 
 class RestaurantViewSet(ModelViewSet):

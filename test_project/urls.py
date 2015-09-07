@@ -10,6 +10,7 @@ from test_project.one_to_one import api as o2o_api
 
 router = DefaultRouter()
 
+router.register('one-to-one/places/sqa', o2o_api.SQAPlaceViewSet, 'one-to-one-sqa:place')
 router.register('one-to-one/places', o2o_api.PlaceViewSet, 'one-to-one:place')
 router.register('one-to-one/restaurants', o2o_api.RestaurantViewSet, 'one-to-one:restaurant')
 router.register('one-to-one/waiters', o2o_api.WaiterViewSet, 'one-to-one:waiter')
