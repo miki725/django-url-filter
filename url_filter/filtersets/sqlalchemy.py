@@ -4,7 +4,7 @@ import inspect
 
 from django import forms
 from sqlalchemy.orm import class_mapper
-from sqlalchemy.orm.properties import ColumnProperty
+from sqlalchemy.orm.properties import ColumnProperty, RelationshipProperty
 from sqlalchemy.types import (
     BIGINT,
     CHAR,
@@ -90,6 +90,8 @@ class SQLAlchemyModelFilterSet(FilterSet):
             try:
                 if isinstance(field, ColumnProperty):
                     _filter = self.build_filter_from_field(field)
+                elif isinstance(field, RelationshipProperty):
+                    _filter = self.build_filterset_from_related_field(field)
                 else:
                     _filter = None
 
@@ -111,6 +113,9 @@ class SQLAlchemyModelFilterSet(FilterSet):
 
     def _get_column_for_field(self, field):
         return field.columns[0]
+
+    def _get_related_model_for_field(self, field):
+        return field._dependency_processor.mapper.class_
 
     def get_model_field_names(self):
         """
@@ -149,3 +154,23 @@ class SQLAlchemyModelFilterSet(FilterSet):
             form_field=self.get_form_field_for_field(field),
             is_default=column.primary_key,
         )
+
+    def build_filterset_from_related_field(self, field):
+        m = self._get_related_model_for_field(field)
+        meta = {
+            'model': m,
+            'exclude': [field.back_populates]
+        }
+
+        meta = type(str('Meta'), (object,), meta)
+
+        filterset = type(
+            str('{}FilterSet'.format(m.__name__)),
+            (SQLAlchemyModelFilterSet,),
+            {
+                'Meta': meta,
+                '__module__': self.__module__,
+            }
+        )
+
+        return filterset()
