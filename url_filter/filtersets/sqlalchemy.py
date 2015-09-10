@@ -19,6 +19,7 @@ from sqlalchemy.types import (
     Boolean,
     DateTime,
     Float,
+    Integer,
     Numeric,
     String,
 )
@@ -38,6 +39,7 @@ _STRING = lambda field, column: forms.CharField(max_length=column.type.length)
 SQLALCHEMY_FIELD_MAPPING = SubClassDict({
     BIGINT: forms.IntegerField,
     BigInteger: forms.IntegerField,
+    Integer: forms.IntegerField,
     Boolean: forms.BooleanField,
     CHAR: _STRING,
     CLOB: _STRING,
