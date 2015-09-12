@@ -86,7 +86,7 @@ class Filter(object):
 
     def _init(self, form_field, lookups=None, default_lookup='exact', is_default=False):
         self.form_field = form_field
-        self._lookups = lookups
+        self._given_lookups = lookups
         self.default_lookup = default_lookup or self.default_lookup
         self.is_default = is_default
 
@@ -100,7 +100,7 @@ class Filter(object):
             ')'
             ''.format(name=self.__class__.__name__,
                       form_field=self.form_field.__class__.__name__,
-                      lookups=self._lookups or 'ALL',
+                      lookups=self._given_lookups or 'ALL',
                       default_lookup=self.default_lookup,
                       is_default=self.is_default)
         )
@@ -112,8 +112,8 @@ class Filter(object):
 
     @cached_property
     def lookups(self):
-        if self._lookups:
-            return self._lookups
+        if self._given_lookups:
+            return set(self._given_lookups)
         if hasattr(self.root, 'filter_backend'):
             return self.root.filter_backend.supported_lookups
         return set()

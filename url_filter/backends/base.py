@@ -12,6 +12,7 @@ class BaseFilterBackend(six.with_metaclass(abc.ABCMeta, object)):
     def __init__(self, queryset, context=None):
         self.queryset = queryset
         self.context = context or {}
+        self.specs = []
 
     @cached_property
     def model(self):
@@ -22,8 +23,16 @@ class BaseFilterBackend(six.with_metaclass(abc.ABCMeta, object)):
 
     @abc.abstractmethod
     def get_model(self):
-        pass
+        """
+        Get the queryset model.
+
+        .. note:: **MUST** be implemented by subclasses
+        """
 
     @abc.abstractmethod
     def filter(self):
-        pass
+        """
+        Main method for filtering queryset.
+
+        .. note:: **MUST** be implemented by subclasses
+        """

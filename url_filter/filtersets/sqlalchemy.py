@@ -93,12 +93,14 @@ class SQLAlchemyModelFilterSet(FilterSet):
             field = fields[name]
 
             try:
+                _filter = None
+
                 if isinstance(field, ColumnProperty):
                     _filter = self.build_filter_from_field(field)
                 elif isinstance(field, RelationshipProperty):
+                    if not self.Meta.allow_related:
+                        raise SkipFilter
                     _filter = self.build_filterset_from_related_field(field)
-                else:
-                    _filter = None
 
             except SkipFilter:
                 continue

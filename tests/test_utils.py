@@ -71,11 +71,14 @@ class TestSubClassDict(object):
             pass
 
         mapping = SubClassDict({
+            'a': 'b',
+            'z': 'b',
             Foo: 'foo',
             Klass: 'klass',
             'key': 'value',
         })
 
+        assert mapping.get('a') == 'b'
         assert mapping.get('key') == 'value'
         assert mapping.get(Klass) == 'klass'
         assert mapping.get(Foo) == 'foo'
