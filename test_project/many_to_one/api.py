@@ -42,7 +42,7 @@ class ReporterFilterSet(ModelFilterSet):
         model = Reporter
 
 
-class SQAReporterFilterSet(SQLAlchemyModelFilterSet):
+class SQLAlchemyReporterFilterSet(SQLAlchemyModelFilterSet):
     filter_backend_class = SQLAlchemyFilterBackend
 
     class Meta(object):
@@ -54,7 +54,7 @@ class ArticleFilterSet(ModelFilterSet):
         model = Article
 
 
-class SQAArticleFilterSet(SQLAlchemyModelFilterSet):
+class SQLAlchemyArticleFilterSet(SQLAlchemyModelFilterSet):
     filter_backend_class = SQLAlchemyFilterBackend
 
     class Meta(object):
@@ -67,12 +67,12 @@ class ReporterViewSet(ReadOnlyModelViewSet):
     filter_class = ReporterFilterSet
 
 
-class SQAReporterViewSet(ReadOnlyModelViewSet):
+class SQLAlchemyReporterViewSet(ReadOnlyModelViewSet):
     serializer_class = ReporterNestedSerializer
-    filter_class = SQAReporterFilterSet
+    filter_class = SQLAlchemyReporterFilterSet
 
     def get_queryset(self):
-        return self.request.sqa_session.query(alchemy.Reporter)
+        return self.request.alchemy_session.query(alchemy.Reporter)
 
 
 class ArticleViewSet(ReadOnlyModelViewSet):
@@ -81,9 +81,9 @@ class ArticleViewSet(ReadOnlyModelViewSet):
     filter_class = ArticleFilterSet
 
 
-class SQAArticleViewSet(ReadOnlyModelViewSet):
+class SQLAlchemyArticleViewSet(ReadOnlyModelViewSet):
     serializer_class = ArticleNestedSerializer
-    filter_class = SQAArticleFilterSet
+    filter_class = SQLAlchemyArticleFilterSet
 
     def get_queryset(self):
-        return self.request.sqa_session.query(alchemy.Article)
+        return self.request.alchemy_session.query(alchemy.Article)

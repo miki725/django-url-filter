@@ -5,13 +5,13 @@ from django.conf import settings
 from sqlalchemy.orm import sessionmaker
 
 
-Session = sessionmaker(bind=settings.SQA_ENGINE)
+Session = sessionmaker(bind=settings.SQLALCHEMY_ENGINE)
 
 
-class SQASessionMiddleware(object):
+class SQLAlchemySessionMiddleware(object):
     def process_request(self, request):
-        request.sqa_session = Session()
+        request.alchemy_session = Session()
 
     def process_response(self, request, response):
-        request.sqa_session.close()
+        request.alchemy_session.close()
         return response

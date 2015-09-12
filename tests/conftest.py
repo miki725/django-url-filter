@@ -24,8 +24,7 @@ def many_to_many(db):
 
 @pytest.fixture
 def alchemy_db(request):
-    Session = sessionmaker(bind=settings.SQA_ENGINE)
-    session = Session()
+    session = sessionmaker(bind=settings.SQLALCHEMY_ENGINE)()
 
     def fin():
         session.close()

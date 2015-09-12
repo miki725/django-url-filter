@@ -4,7 +4,7 @@ from sqlalchemy import create_engine
 
 DEBUG = True
 
-SQA_ENGINE = create_engine('sqlite:///url_filter.sqlite', echo=True)
+SQLALCHEMY_ENGINE = create_engine('sqlite:///url_filter.sqlite', echo=True)
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
@@ -29,7 +29,7 @@ STATIC_URL = '/static/'
 SECRET_KEY = 'foo'
 
 MIDDLEWARE_CLASSES = [
-    'test_project.middleware.SQASessionMiddleware',
+    'test_project.middleware.SQLAlchemySessionMiddleware',
 ]
 
 ROOT_URLCONF = 'test_project.urls'

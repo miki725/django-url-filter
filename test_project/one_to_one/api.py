@@ -63,7 +63,7 @@ class PlaceFilterSet(ModelFilterSet):
         model = Place
 
 
-class SQAPlaceFilterSet(SQLAlchemyModelFilterSet):
+class SQLAlchemyPlaceFilterSet(SQLAlchemyModelFilterSet):
     filter_backend_class = SQLAlchemyFilterBackend
 
     class Meta(object):
@@ -75,7 +75,7 @@ class RestaurantFilterSet(ModelFilterSet):
         model = Restaurant
 
 
-class SQARestaurantFilterSet(SQLAlchemyModelFilterSet):
+class SQLAlchemyRestaurantFilterSet(SQLAlchemyModelFilterSet):
     filter_backend_class = SQLAlchemyFilterBackend
 
     class Meta(object):
@@ -87,7 +87,7 @@ class WaiterFilterSet(ModelFilterSet):
         model = Waiter
 
 
-class SQAWaiterFilterSet(SQLAlchemyModelFilterSet):
+class SQLAlchemyWaiterFilterSet(SQLAlchemyModelFilterSet):
     filter_backend_class = SQLAlchemyFilterBackend
 
     class Meta(object):
@@ -100,12 +100,12 @@ class PlaceViewSet(ReadOnlyModelViewSet):
     filter_class = PlaceFilterSet
 
 
-class SQAPlaceViewSet(ReadOnlyModelViewSet):
+class SQLAlchemyPlaceViewSet(ReadOnlyModelViewSet):
     serializer_class = PlaceNestedSerializer
-    filter_class = SQAPlaceFilterSet
+    filter_class = SQLAlchemyPlaceFilterSet
 
     def get_queryset(self):
-        return self.request.sqa_session.query(alchemy.Place)
+        return self.request.alchemy_session.query(alchemy.Place)
 
 
 class RestaurantViewSet(ReadOnlyModelViewSet):
@@ -114,12 +114,12 @@ class RestaurantViewSet(ReadOnlyModelViewSet):
     filter_class = RestaurantFilterSet
 
 
-class SQARestaurantViewSet(ReadOnlyModelViewSet):
+class SQLAlchemyRestaurantViewSet(ReadOnlyModelViewSet):
     serializer_class = RestaurantNestedSerializer
-    filter_class = SQARestaurantFilterSet
+    filter_class = SQLAlchemyRestaurantFilterSet
 
     def get_queryset(self):
-        return self.request.sqa_session.query(alchemy.Restaurant)
+        return self.request.alchemy_session.query(alchemy.Restaurant)
 
 
 class WaiterViewSet(ReadOnlyModelViewSet):
@@ -128,9 +128,9 @@ class WaiterViewSet(ReadOnlyModelViewSet):
     filter_class = WaiterFilterSet
 
 
-class SQAWaiterViewSet(ReadOnlyModelViewSet):
+class SQLAlchemyWaiterViewSet(ReadOnlyModelViewSet):
     serializer_class = WaiterNestedSerializer
-    filter_class = SQAWaiterFilterSet
+    filter_class = SQLAlchemyWaiterFilterSet
 
     def get_queryset(self):
-        return self.request.sqa_session.query(alchemy.Waiter)
+        return self.request.alchemy_session.query(alchemy.Waiter)

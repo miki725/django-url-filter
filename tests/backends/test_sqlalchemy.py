@@ -12,7 +12,7 @@ from url_filter.backends.sqlalchemy import SQLAlchemyFilterBackend
 from url_filter.utils import FilterSpec
 
 
-def assert_sqa_expressions_equal(exp1, exp2):
+def assert_alchemy_expressions_equal(exp1, exp2):
     assert six.text_type(exp1) == six.text_type(exp2)
 
     if isinstance(exp1.right, Grouping):
@@ -89,7 +89,7 @@ class TestSQLAlchemyFilterBackend(object):
         )
 
         assert to_join == [Place.restaurant, Restaurant.waiter_set]
-        assert_sqa_expressions_equal(clause, expected)
+        assert_alchemy_expressions_equal(clause, expected)
 
     def test_build_clause_contains(self, alchemy_db):
         self._test_build_clause(
