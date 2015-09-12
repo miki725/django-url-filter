@@ -25,7 +25,7 @@ class Restaurant(Base):
     serves_pizza = Column(Boolean)
 
     place = relationship(
-        'Place',
+        Place,
         backref=backref('restaurant', uselist=False),
         uselist=False,
         primaryjoin='Restaurant.place_id == Place.id',
@@ -44,7 +44,7 @@ class Waiter(Base):
     name = Column(String(50))
 
     restaurant = relationship(
-        'Restaurant',
+        Restaurant,
         backref=backref('waiter_set', uselist=True),
         uselist=False,
         primaryjoin='Waiter.restaurant_id == Restaurant.place_id',

@@ -2,10 +2,13 @@
 from __future__ import print_function, unicode_literals
 
 from rest_framework.serializers import ModelSerializer
-from rest_framework.viewsets import ModelViewSet
+from rest_framework.viewsets import ReadOnlyModelViewSet
 
+from url_filter.backends.sqlalchemy import SQLAlchemyFilterBackend
 from url_filter.filtersets import ModelFilterSet
+from url_filter.filtersets.sqlalchemy import SQLAlchemyModelFilterSet
 
+from . import alchemy
 from .models import Article, Reporter
 
 
@@ -39,18 +42,48 @@ class ReporterFilterSet(ModelFilterSet):
         model = Reporter
 
 
+class SQAReporterFilterSet(SQLAlchemyModelFilterSet):
+    filter_backend_class = SQLAlchemyFilterBackend
+
+    class Meta(object):
+        model = alchemy.Reporter
+
+
 class ArticleFilterSet(ModelFilterSet):
     class Meta(object):
         model = Article
 
 
-class ReporterViewSet(ModelViewSet):
+class SQAArticleFilterSet(SQLAlchemyModelFilterSet):
+    filter_backend_class = SQLAlchemyFilterBackend
+
+    class Meta(object):
+        model = alchemy.Article
+
+
+class ReporterViewSet(ReadOnlyModelViewSet):
     queryset = Reporter.objects.all()
     serializer_class = ReporterNestedSerializer
     filter_class = ReporterFilterSet
 
 
-class ArticleViewSet(ModelViewSet):
+class SQAReporterViewSet(ReadOnlyModelViewSet):
+    serializer_class = ReporterNestedSerializer
+    filter_class = SQAReporterFilterSet
+
+    def get_queryset(self):
+        return self.request.sqa_session.query(alchemy.Reporter)
+
+
+class ArticleViewSet(ReadOnlyModelViewSet):
     queryset = Article.objects.all()
     serializer_class = ArticleNestedSerializer
     filter_class = ArticleFilterSet
+
+
+class SQAArticleViewSet(ReadOnlyModelViewSet):
+    serializer_class = ArticleNestedSerializer
+    filter_class = SQAArticleFilterSet
+
+    def get_queryset(self):
+        return self.request.sqa_session.query(alchemy.Article)
