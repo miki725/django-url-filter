@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, print_function, unicode_literals
+import itertools
 
 from sqlalchemy import func
+from sqlalchemy.orm import class_mapper
 from sqlalchemy.sql.expression import not_
 
 from .base import BaseFilterBackend
@@ -46,24 +48,38 @@ class SQLAlchemyFilterBackend(BaseFilterBackend):
         return self.queryset._primary_entity.entities[0]
 
     def filter(self):
-        conditions = [self.build_clause(spec) for spec in self.specs]
-        return self.queryset.filter(*conditions)
+        clauses = [self.build_clause(spec) for spec in self.specs]
+        conditions, joins = zip(*clauses)
+        joins = list(itertools.chain(*joins))
+
+        qs = self.queryset
+        if joins:
+            qs = qs.join(*joins)
+
+        return qs.filter(*conditions)
 
     def build_clause(self, spec):
-        assert len(spec.components) == 1, (
-            '{} does not currently support filtering on '
-            'related models.'
-            ''.format(self.__class__.__name__)
-        )
+        to_join = []
+
+        model = self.model
+        for component in spec.components:
+            _field = getattr(model, component)
+            field = self._get_properties_for_model(model)[component]
+            try:
+                model = self._get_related_model_for_field(field)
+            except AttributeError:
+                break
+            else:
+                to_join.append(_field)
 
         builder = getattr(self, '_build_clause_{}'.format(spec.lookup))
-        column = getattr(self.model, spec.components[0])
+        column = self._get_attribute_for_field(field)
         clause = builder(spec, column)
 
         if spec.is_negated:
             clause = not_(clause)
 
-        return clause
+        return clause, to_join
 
     def _build_clause_contains(self, spec, column):
         return column.contains(spec.value)
@@ -112,3 +128,23 @@ class SQLAlchemyFilterBackend(BaseFilterBackend):
 
     def _build_clause_startswith(self, spec, column):
         return column.startswith(spec.value)
+
+    @classmethod
+    def _get_properties_for_model(cls, model):
+        mapper = class_mapper(model)
+        return {
+            i.key: i
+            for i in mapper.iterate_properties
+        }
+
+    @classmethod
+    def _get_column_for_field(cls, field):
+        return field.columns[0]
+
+    @classmethod
+    def _get_attribute_for_field(cls, field):
+        return field.class_attribute
+
+    @classmethod
+    def _get_related_model_for_field(self, field):
+        return field._dependency_processor.mapper.class_

@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, print_function, unicode_literals
 import inspect
+from functools import partial
 
 from django import forms
-from sqlalchemy.orm import class_mapper
 from sqlalchemy.orm.properties import ColumnProperty, RelationshipProperty
 from sqlalchemy.types import (
     BIGINT,
@@ -24,6 +24,7 @@ from sqlalchemy.types import (
     String,
 )
 
+from ..backends.sqlalchemy import SQLAlchemyFilterBackend
 from ..exceptions import SkipFilter
 from ..filters import Filter
 from ..utils import SubClassDict
@@ -40,7 +41,7 @@ SQLALCHEMY_FIELD_MAPPING = SubClassDict({
     BIGINT: forms.IntegerField,
     BigInteger: forms.IntegerField,
     Integer: forms.IntegerField,
-    Boolean: forms.BooleanField,
+    Boolean: partial(forms.BooleanField, required=False),
     CHAR: _STRING,
     CLOB: _STRING,
     DATE: forms.DateTimeField,
@@ -81,7 +82,7 @@ class SQLAlchemyModelFilterSet(FilterSet):
         if self.Meta.fields is None:
             self.Meta.fields = self.get_model_field_names()
 
-        fields = self._get_properties_for_model()
+        fields = SQLAlchemyFilterBackend._get_properties_for_model(self.Meta.model)
 
         for name in self.Meta.fields:
             if name in self.Meta.exclude:
@@ -106,19 +107,6 @@ class SQLAlchemyModelFilterSet(FilterSet):
 
         return filters
 
-    def _get_properties_for_model(self):
-        mapper = class_mapper(self.Meta.model)
-        return {
-            i.key: i
-            for i in mapper.iterate_properties
-        }
-
-    def _get_column_for_field(self, field):
-        return field.columns[0]
-
-    def _get_related_model_for_field(self, field):
-        return field._dependency_processor.mapper.class_
-
     def get_model_field_names(self):
         """
         Get a list of all model fields.
@@ -126,13 +114,13 @@ class SQLAlchemyModelFilterSet(FilterSet):
         This is used when ``Meta.fields`` is ``None``
         in which case this method returns all model fields.
         """
-        return list(self._get_properties_for_model().keys())
+        return list(SQLAlchemyFilterBackend._get_properties_for_model(self.Meta.model).keys())
 
     def get_form_field_for_field(self, field):
         """
         Get form field for the given SQLAlchemy model field.
         """
-        column = self._get_column_for_field(field)
+        column = SQLAlchemyFilterBackend._get_column_for_field(field)
 
         form_field = SQLALCHEMY_FIELD_MAPPING.get(
             column.type.__class__, None,
@@ -141,7 +129,7 @@ class SQLAlchemyModelFilterSet(FilterSet):
         if form_field is None:
             raise SkipFilter
 
-        if inspect.isclass(form_field):
+        if inspect.isclass(form_field) or isinstance(form_field, partial):
             return form_field()
         else:
             return form_field(field, column)
@@ -150,7 +138,7 @@ class SQLAlchemyModelFilterSet(FilterSet):
         """
         Build ``Filter`` for a standard SQLAlchemy model field.
         """
-        column = self._get_column_for_field(field)
+        column = SQLAlchemyFilterBackend._get_column_for_field(field)
 
         return Filter(
             form_field=self.get_form_field_for_field(field),
@@ -158,7 +146,7 @@ class SQLAlchemyModelFilterSet(FilterSet):
         )
 
     def build_filterset_from_related_field(self, field):
-        m = self._get_related_model_for_field(field)
+        m = SQLAlchemyFilterBackend._get_related_model_for_field(field)
         meta = {
             'model': m,
             'exclude': [field.back_populates]
