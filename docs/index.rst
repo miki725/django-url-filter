@@ -10,6 +10,7 @@ Contents
 
    usage
    big_picture
+   history
    api/modules
 
 .. include:: ../README.rst
