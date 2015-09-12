@@ -94,16 +94,16 @@ Filtering
 +++++++++
 
 Since filtering is decoupled from the ``FilterSet``, the filtering honors
-all full on a specified filter backend. The backend is very simple.
+all go to a specified filter backend. The backend is very simple.
 It takes a list of filter specifications and a data to filter and its
 job is to filter that data as specified in the specifications.
 
 .. note::
-  Currently we only support Django ORM filter backend but you can imagine
-  that any backend can be implemented. We plan to add support for SQLAlchemy
-  since, well, why not add it? Eventually filter backends can be added
-  for flat data-structures like filtering a vanilla Python lists or
-  filtering from exotic data-source like Mongo.
+  Currently we only support Django ORM and SQLAlchemy filter backends
+  but you can imagine that any backend can be implemented.
+  Eventually filter backends can be added for flat data-structures
+  like filtering a vanilla Python lists or even more exotic sources
+  like Mongo, Redis, etc.
 
 Steps
 -----
