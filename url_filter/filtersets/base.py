@@ -155,6 +155,18 @@ class FilterSet(six.with_metaclass(FilterSetMeta, Filter)):
         self.context = context or {}
         self.strict_mode = strict_mode
 
+    def repr(self, prefix=''):
+        header = '{name}()'.format(name=self.__class__.__name__)
+        lines = [header] + [
+            '{prefix}{key} = {value}'.format(
+                prefix=prefix + '  ',
+                key=k,
+                value=v.repr(prefix=prefix + '  '),
+            )
+            for k, v in sorted(self.filters.items())
+        ]
+        return '\n'.join(lines)
+
     def get_filters(self):
         """
         Get all filters defined in this filterset.
