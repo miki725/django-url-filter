@@ -16,14 +16,6 @@ class DjangoFilterBackend(BaseFilterBackend):
         filter_fields = getattr(view, 'filter_fields', None)
 
         if filter_class:
-            filter_model = getattr(filter_class.Meta, 'model', None)
-
-            if filter_model:
-                assert issubclass(queryset.model, filter_model), (
-                    'FilterSet model {} does not match queryset model {}'
-                    ''.format(filter_model, queryset.model)
-                )
-
             return filter_class
 
         if filter_fields:
@@ -57,6 +49,15 @@ class DjangoFilterBackend(BaseFilterBackend):
                 queryset=queryset,
                 context=self.get_filter_context(request, view),
             )
+
+            filter_model = getattr(_filter.Meta, 'model', None)
+            if filter_model:
+                model = _filter.filter_backend.model
+                assert issubclass(model, filter_model), (
+                    'FilterSet model {} does not match queryset model {}'
+                    ''.format(filter_model, model)
+                )
+
             return _filter.filter()
 
         return queryset

@@ -155,6 +155,18 @@ class FilterSet(six.with_metaclass(FilterSetMeta, Filter)):
         self.context = context or {}
         self.strict_mode = strict_mode
 
+    def repr(self, prefix=''):
+        header = '{name}()'.format(name=self.__class__.__name__)
+        lines = [header] + [
+            '{prefix}{key} = {value}'.format(
+                prefix=prefix + '  ',
+                key=k,
+                value=v.repr(prefix=prefix + '  '),
+            )
+            for k, v in sorted(self.filters.items())
+        ]
+        return '\n'.join(lines)
+
     def get_filters(self):
         """
         Get all filters defined in this filterset.
@@ -216,6 +228,22 @@ class FilterSet(six.with_metaclass(FilterSetMeta, Filter)):
             context=self.context,
         )
 
+    @cached_property
+    def filter_backend(self):
+        """
+        Property for getting instantiated filter backend.
+
+        Primarily useful when accessing filter_backend outside
+        of the filterset such as leaf filters or integration
+        layers since backend has useful information for both of
+        those examples.
+        """
+        assert self.data is not None, (
+            'Filter backend can only be used when data is provided '
+            'to filterset.'
+        )
+        return self.get_filter_backend()
+
     def filter(self):
         """
         Main method which should be used on root ``FilterSet``
@@ -247,7 +275,6 @@ class FilterSet(six.with_metaclass(FilterSetMeta, Filter)):
         )
 
         specs = self.get_specs()
-        self.filter_backend = self.get_filter_backend()
         self.filter_backend.bind(specs)
 
         return self.filter_backend.filter()

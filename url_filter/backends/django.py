@@ -3,14 +3,39 @@ from __future__ import absolute_import, print_function, unicode_literals
 
 from django.db.models.constants import LOOKUP_SEP
 
+from .base import BaseFilterBackend
 
-class DjangoFilterBackend(object):
-    def __init__(self, queryset, context=None):
-        self.queryset = queryset
-        self.context = context or {}
 
-    def bind(self, specs):
-        self.specs = specs
+class DjangoFilterBackend(BaseFilterBackend):
+    supported_lookups = {
+        'contains',
+        'day',
+        'endswith',
+        'exact',
+        'gt',
+        'gte',
+        'hour',
+        'icontains',
+        'iendswith',
+        'iexact',
+        'in',
+        'iregex',
+        'isnull',
+        'istartswith',
+        'lt',
+        'lte',
+        'minute',
+        'month',
+        'range',
+        'regex',
+        'second',
+        'startswith',
+        'week_day',
+        'year',
+    }
+
+    def get_model(self):
+        return self.queryset.model
 
     @property
     def includes(self):

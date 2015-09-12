@@ -1,12 +1,18 @@
 # -*- coding: utf-8 -*-
 from __future__ import print_function, unicode_literals
+from functools import partial
 
+import mock
 import pytest
 from django import forms
 
+from url_filter.backends.django import DjangoFilterBackend
 from url_filter.fields import MultipleValuesField
-from url_filter.filters import Filter
+from url_filter.filters import Filter as _Filter
 from url_filter.utils import FilterSpec, LookupConfig
+
+
+Filter = partial(_Filter, lookups=DjangoFilterBackend.supported_lookups)
 
 
 class TestFilter(object):
@@ -21,11 +27,36 @@ class TestFilter(object):
 
         assert f.source == 'foo'
         assert isinstance(f.form_field, forms.CharField)
-        assert f.lookups == ['foo', 'bar']
+        assert f.lookups == {'foo', 'bar'}
         assert f.default_lookup == 'foo'
         assert f.is_default is True
         assert f.parent is None
         assert f.name is None
+
+    def test_lookups(self):
+        assert Filter(form_field=None, lookups=['foo', 'bar']).lookups == {'foo', 'bar'}
+        assert Filter(form_field=None, lookups=None).lookups == set()
+
+        f = Filter(form_field=None, lookups=None)
+        f.parent = mock.Mock()
+        f.parent.root = f.parent
+        f.parent.filter_backend.supported_lookups = DjangoFilterBackend.supported_lookups
+
+        assert f.lookups == DjangoFilterBackend.supported_lookups
+
+    def test_repr(self):
+        f = Filter(
+            source='foo',
+            lookups=None,
+            form_field=forms.CharField(),
+            default_lookup='foo',
+            is_default=True,
+        )
+
+        assert repr(f) == (
+            'Filter(form_field=CharField, lookups=ALL, '
+            'default_lookup="foo", is_default=True)'
+        )
 
     def test_source(self):
         f = Filter(source=None, form_field=forms.CharField())

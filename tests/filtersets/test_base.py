@@ -26,6 +26,21 @@ class TestFilterSet(object):
         assert fs.context == {'context': 'here'}
         assert fs.strict_mode == StrictMode.fail
 
+    def test_repr(self):
+        class FooFilterSet(FilterSet):
+            foo = Filter(form_field=forms.CharField())
+
+        class BarFilterSet(FilterSet):
+            bar = Filter(form_field=forms.IntegerField())
+            foo = FooFilterSet()
+
+        assert repr(BarFilterSet()) == (
+            'BarFilterSet()\n'
+            '  bar = Filter(form_field=IntegerField, lookups=ALL, default_lookup="exact", is_default=False)\n'
+            '  foo = FooFilterSet()\n'
+            '    foo = Filter(form_field=CharField, lookups=ALL, default_lookup="exact", is_default=False)'
+        )
+
     def test_get_filters(self):
         class TestFilterSet(FilterSet):
             foo = Filter(form_field=forms.CharField())

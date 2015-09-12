@@ -2,9 +2,10 @@
 from __future__ import absolute_import, print_function, unicode_literals
 from functools import partial
 
+import six
+from cached_property import cached_property
 from django import forms
 from django.core.exceptions import ValidationError
-from django.db.models.sql.constants import QUERY_TERMS
 
 from .fields import MultipleValuesField
 from .utils import FilterSpec
@@ -85,9 +86,37 @@ class Filter(object):
 
     def _init(self, form_field, lookups=None, default_lookup='exact', is_default=False):
         self.form_field = form_field
-        self.lookups = lookups or list(QUERY_TERMS)
+        self._given_lookups = lookups
         self.default_lookup = default_lookup or self.default_lookup
         self.is_default = is_default
+
+    def repr(self, prefix=''):
+        return (
+            '{name}('
+            'form_field={form_field}, '
+            'lookups={lookups}, '
+            'default_lookup="{default_lookup}", '
+            'is_default={is_default}'
+            ')'
+            ''.format(name=self.__class__.__name__,
+                      form_field=self.form_field.__class__.__name__,
+                      lookups=self._given_lookups or 'ALL',
+                      default_lookup=self.default_lookup,
+                      is_default=self.is_default)
+        )
+
+    def __repr__(self):
+        data = self.repr()
+        data = data if six.PY3 else data.encode('utf-8')
+        return data
+
+    @cached_property
+    def lookups(self):
+        if self._given_lookups:
+            return set(self._given_lookups)
+        if hasattr(self.root, 'filter_backend'):
+            return self.root.filter_backend.supported_lookups
+        return set()
 
     @property
     def source(self):
