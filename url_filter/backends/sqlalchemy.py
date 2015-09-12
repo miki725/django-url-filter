@@ -48,6 +48,9 @@ class SQLAlchemyFilterBackend(BaseFilterBackend):
         return self.queryset._primary_entity.entities[0]
 
     def filter(self):
+        if not self.specs:
+            return self.queryset
+
         clauses = [self.build_clause(spec) for spec in self.specs]
         conditions, joins = zip(*clauses)
         joins = list(itertools.chain(*joins))
