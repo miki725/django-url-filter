@@ -11,6 +11,7 @@ from test_project.one_to_one import api as o2o_api
 router = DefaultRouter()
 
 router.register('one-to-one/places/alchemy', o2o_api.SQLAlchemyPlaceViewSet, 'one-to-one-alchemy:place')
+router.register('one-to-one/places/plain', o2o_api.PlainPlaceViewSet, 'one-to-one-plain:place')
 router.register('one-to-one/places', o2o_api.PlaceViewSet, 'one-to-one:place')
 router.register('one-to-one/restaurants/alchemy', o2o_api.SQLAlchemyRestaurantViewSet, 'one-to-one-alchemy:restaurant')
 router.register('one-to-one/restaurants', o2o_api.RestaurantViewSet, 'one-to-one:restaurant')

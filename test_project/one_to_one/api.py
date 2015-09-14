@@ -1,11 +1,15 @@
 # -*- coding: utf-8 -*-
 from __future__ import print_function, unicode_literals
 
+from django.http import Http404
+from rest_framework.response import Response
 from rest_framework.serializers import ModelSerializer
 from rest_framework.viewsets import ReadOnlyModelViewSet
 
+from url_filter.backends.plain import PlainFilterBackend
 from url_filter.backends.sqlalchemy import SQLAlchemyFilterBackend
 from url_filter.filtersets import ModelFilterSet
+from url_filter.filtersets.plain import PlainModelFilterSet
 from url_filter.filtersets.sqlalchemy import SQLAlchemyModelFilterSet
 
 from . import alchemy
@@ -63,6 +67,34 @@ class PlaceFilterSet(ModelFilterSet):
         model = Place
 
 
+class PlainPlaceFilterSet(PlainModelFilterSet):
+    filter_backend_class = PlainFilterBackend
+
+    class Meta(object):
+        model = {
+            "id": 1,
+            "restaurant": {
+                "place": 1,
+                "waiters": [
+                    {
+                        "id": 1,
+                        "name": "Joe",
+                        "restaurant": 1
+                    },
+                    {
+                        "id": 2,
+                        "name": "Jonny",
+                        "restaurant": 1
+                    }
+                ],
+                "serves_hot_dogs": True,
+                "serves_pizza": False
+            },
+            "name": "Demon Dogs",
+            "address": "944 W. Fullerton"
+        }
+
+
 class SQLAlchemyPlaceFilterSet(SQLAlchemyModelFilterSet):
     filter_backend_class = SQLAlchemyFilterBackend
 
@@ -98,6 +130,31 @@ class PlaceViewSet(ReadOnlyModelViewSet):
     queryset = Place.objects.all()
     serializer_class = PlaceNestedSerializer
     filter_class = PlaceFilterSet
+
+
+class PlainPlaceViewSet(ReadOnlyModelViewSet):
+    serializer_class = PlaceNestedSerializer
+    queryset = Place.objects.all()
+    filter_class = PlainPlaceFilterSet
+
+    def get_queryset(self):
+        qs = super(PlainPlaceViewSet, self).get_queryset()
+        data = self.get_serializer(instance=qs.all(), many=True).data
+        return data
+
+    def list(self, request):
+        queryset = self.filter_queryset(self.get_queryset())
+        return Response(queryset)
+
+    def retrieve(self, request, pk):
+        instance = next(
+            iter(filter(lambda i: i.get('id') == int(pk),
+                        self.get_queryset())),
+            None
+        )
+        if not instance:
+            raise Http404
+        return Response(instance)
 
 
 class SQLAlchemyPlaceViewSet(ReadOnlyModelViewSet):
