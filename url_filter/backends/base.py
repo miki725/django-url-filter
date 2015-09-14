@@ -8,6 +8,7 @@ from cached_property import cached_property
 
 class BaseFilterBackend(six.with_metaclass(abc.ABCMeta, object)):
     supported_lookups = set()
+    enforce_same_models = True
 
     def __init__(self, queryset, context=None):
         self.queryset = queryset

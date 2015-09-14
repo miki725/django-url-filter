@@ -2,10 +2,12 @@
 from __future__ import absolute_import, print_function, unicode_literals
 import re
 
+from ..utils import dictify
 from .base import BaseFilterBackend
 
 
 class PlainFilterBackend(BaseFilterBackend):
+    enforce_same_models = False
     supported_lookups = {
         'contains',
         'day',
@@ -63,11 +65,7 @@ class PlainFilterBackend(BaseFilterBackend):
             )
 
         if not isinstance(item, dict):
-            item = {
-                k: v
-                for k, v in vars(item).items()
-                if not k.startswith('_')
-            }
+            item = dictify(item)
 
         return self._filter_by_spec_and_value(
             item.get(components[0], {}),

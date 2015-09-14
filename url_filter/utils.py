@@ -182,10 +182,22 @@ class SubClassDict(dict):
 
         # try to match by value
         if value is d and inspect.isclass(k):
-            for klass, v in self.items():
-                if not inspect.isclass(klass):
-                    continue
-                if issubclass(k, klass):
-                    return v
+            for klasses, v in self.items():
+                if not isinstance(klasses, (list, tuple)):
+                    klasses = [klasses]
+                for klass in klasses:
+                    if inspect.isclass(klass) and issubclass(k, klass):
+                        return v
 
         return value
+
+
+def dictify(obj):
+    if isinstance(obj, dict):
+        return obj
+    else:
+        return {
+            k: v
+            for k, v in vars(obj).items()
+            if not k.startswith('_')
+        }
