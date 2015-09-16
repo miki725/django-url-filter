@@ -40,7 +40,7 @@ class PlainModelFilterSet(BaseModelFilterSet):
         primitive = DATA_TYPES_MAPPING.get(type(value))
 
         if primitive:
-            return self.build_filter_from_field(value)
+            return self._build_filter_from_field(value)
 
         elif isinstance(value, (list, tuple, set)) and value:
             value = list(value)[0]
@@ -48,12 +48,12 @@ class PlainModelFilterSet(BaseModelFilterSet):
                 raise SkipFilter
             if not self.Meta.allow_related:
                 raise SkipFilter
-            return self.build_filterset_from_related_field(name, value)
+            return self._build_filterset_from_related_field(name, value)
 
         elif isinstance(value, dict):
             if not self.Meta.allow_related:
                 raise SkipFilter
-            return self.build_filterset_from_related_field(name, value)
+            return self._build_filterset_from_related_field(name, value)
 
     def _get_model_field_names(self):
         return list(dictify(self.Meta.model).keys())
@@ -62,15 +62,8 @@ class PlainModelFilterSet(BaseModelFilterSet):
         return Filter(form_field=DATA_TYPES_MAPPING.get(type(field)))
 
     def _build_filterset_from_related_field(self, name, field):
-        meta = type(str('Meta'), (object,), {'model': field})
-
-        filterset = type(
-            str('{}FilterSet'.format(name.title())),
-            (PlainModelFilterSet,),
-            {
-                'Meta': meta,
-                '__module__': self.__module__,
-            }
+        return self._build_filterset(
+            name.title(),
+            {'model': field},
+            PlainModelFilterSet,
         )
-
-        return filterset()

@@ -475,6 +475,33 @@ class BaseModelFilterSet(FilterSet):
             of the loop so that it can be reused for all filters.
         """
 
+    def _build_filterset(self, name, meta_attrs, base):
+        """
+        Helper method for building filtersets.
+
+        Parameters
+        ----------
+        name : str
+            Name of the filterset to build. The returned class
+            will use the name as a prefix in the class name.
+        meta_attrs : dict
+            Attributes to use for the ``Meta``.
+        base : type
+            Class to use as a base class for the filterset.
+        """
+        meta = type(str('Meta'), (object,), meta_attrs)
+
+        filterset = type(
+            str('{}FilterSet'.format(name)),
+            (base,),
+            {
+                'Meta': meta,
+                '__module__': self.__module__,
+            }
+        )
+
+        return filterset()
+
     def _build_state(self):
         """
         Hook function to build state to be used while building all the filters.

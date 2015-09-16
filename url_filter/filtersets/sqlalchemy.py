@@ -120,20 +120,12 @@ class SQLAlchemyModelFilterSet(BaseModelFilterSet):
 
     def _build_filterset_from_related_field(self, field):
         m = SQLAlchemyFilterBackend._get_related_model_for_field(field)
-        meta = {
-            'model': m,
-            'exclude': [field.back_populates]
-        }
 
-        meta = type(str('Meta'), (object,), meta)
-
-        filterset = type(
-            str('{}FilterSet'.format(m.__name__)),
-            (SQLAlchemyModelFilterSet,),
+        return self._build_filterset(
+            m.__name__,
             {
-                'Meta': meta,
-                '__module__': self.__module__,
-            }
+                'model': m,
+                'exclude': [field.back_populates]
+            },
+            SQLAlchemyModelFilterSet,
         )
-
-        return filterset()
