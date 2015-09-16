@@ -29,8 +29,7 @@ from ..backends.sqlalchemy import SQLAlchemyFilterBackend
 from ..exceptions import SkipFilter
 from ..filters import Filter
 from ..utils import SubClassDict
-from .base import FilterSet
-from .django import ModelFilterSetOptions
+from .base import BaseModelFilterSet
 
 
 __all__ = ['SQLAlchemyModelFilterSet']
@@ -59,59 +58,29 @@ SQLALCHEMY_FIELD_MAPPING = SubClassDict({
 })
 
 
-class SQLAlchemyModelFilterSet(FilterSet):
+class SQLAlchemyModelFilterSet(BaseModelFilterSet):
     """
     ``FilterSet`` for SQLAlchemy models.
 
     The filterset can be configured via ``Meta`` class attribute,
     very much like Django's ``ModelForm`` is configured.
     """
-    filter_options_class = ModelFilterSetOptions
 
-    def get_filters(self):
-        """
-        Get all filters defined in this filterset including
-        filters corresponding to Django model fields.
-        """
-        filters = super(SQLAlchemyModelFilterSet, self).get_filters()
+    def _build_filter(self, name, fields):
+        field = fields[name]
 
-        assert self.Meta.model, (
-            '{}.Meta.model is missing. Please specify the model '
-            'in order to use ModelFilterSet.'
-            ''.format(self.__class__.__name__)
-        )
+        if isinstance(field, ColumnProperty):
+            return self._build_filter_from_field(field)
 
-        if self.Meta.fields is None:
-            self.Meta.fields = self.get_model_field_names()
+        elif isinstance(field, RelationshipProperty):
+            if not self.Meta.allow_related:
+                raise SkipFilter
+            return self._build_filterset_from_related_field(field)
 
-        fields = SQLAlchemyFilterBackend._get_properties_for_model(self.Meta.model)
+    def _build_state(self):
+        return SQLAlchemyFilterBackend._get_properties_for_model(self.Meta.model)
 
-        for name in self.Meta.fields:
-            if name in self.Meta.exclude:
-                continue
-
-            field = fields[name]
-
-            try:
-                _filter = None
-
-                if isinstance(field, ColumnProperty):
-                    _filter = self.build_filter_from_field(field)
-                elif isinstance(field, RelationshipProperty):
-                    if not self.Meta.allow_related:
-                        raise SkipFilter
-                    _filter = self.build_filterset_from_related_field(field)
-
-            except SkipFilter:
-                continue
-
-            else:
-                if _filter is not None:
-                    filters[name] = _filter
-
-        return filters
-
-    def get_model_field_names(self):
+    def _get_model_field_names(self):
         """
         Get a list of all model fields.
 
@@ -120,7 +89,7 @@ class SQLAlchemyModelFilterSet(FilterSet):
         """
         return list(SQLAlchemyFilterBackend._get_properties_for_model(self.Meta.model).keys())
 
-    def get_form_field_for_field(self, field):
+    def _get_form_field_for_field(self, field):
         """
         Get form field for the given SQLAlchemy model field.
         """
@@ -138,18 +107,18 @@ class SQLAlchemyModelFilterSet(FilterSet):
         else:
             return form_field(field, column)
 
-    def build_filter_from_field(self, field):
+    def _build_filter_from_field(self, field):
         """
         Build ``Filter`` for a standard SQLAlchemy model field.
         """
         column = SQLAlchemyFilterBackend._get_column_for_field(field)
 
         return Filter(
-            form_field=self.get_form_field_for_field(field),
+            form_field=self._get_form_field_for_field(field),
             is_default=column.primary_key,
         )
 
-    def build_filterset_from_related_field(self, field):
+    def _build_filterset_from_related_field(self, field):
         m = SQLAlchemyFilterBackend._get_related_model_for_field(field)
         meta = {
             'model': m,

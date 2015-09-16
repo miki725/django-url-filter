@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import print_function, unicode_literals
 
-from url_filter.utils import FilterSpec, LookupConfig, SubClassDict
+from url_filter.utils import FilterSpec, LookupConfig, SubClassDict, dictify
 
 
 class TestFilterSpec(object):
@@ -84,3 +84,19 @@ class TestSubClassDict(object):
         assert mapping.get(Foo) == 'foo'
         assert mapping.get(Bar) == 'foo'
         assert mapping.get('not-there') is None
+
+
+def test_dictify():
+    a = {'data': 'here'}
+    assert dictify(a) is a
+
+    class Foo(object):
+        def __init__(self):
+            self.a = 'a'
+            self.b = 'b'
+            self._c = 'c'
+
+    assert dictify(Foo()) == {
+        'a': 'a',
+        'b': 'b',
+    }

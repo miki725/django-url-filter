@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, print_function, unicode_literals
+import abc
 import enum
 import re
 from collections import defaultdict
@@ -18,7 +19,13 @@ from ..filters import Filter
 from ..utils import LookupConfig
 
 
-__all__ = ['FilterSet', 'FilterSetOptions', 'StrictMode']
+__all__ = [
+    'BaseModelFilterSet',
+    'FilterSet',
+    'FilterSetOptions',
+    'ModelFilterSetOptions',
+    'StrictMode',
+]
 
 
 class StrictMode(enum.Enum):
@@ -61,7 +68,7 @@ class FilterSetOptions(object):
         pass
 
 
-class FilterSetMeta(type):
+class FilterSetMeta(abc.ABCMeta):
     """
     Metaclass for creating ``FilterSet`` classes.
 
@@ -361,3 +368,117 @@ class FilterSet(six.with_metaclass(FilterSetMeta, Filter)):
                     lambda a, b: {b: a},
                     (key.replace('!', '').split(LOOKUP_SEP) + [value])[::-1]
                 ))
+
+
+class ModelFilterSetOptions(object):
+    """
+    Custom options for ``FilterSet``s used for model-generated filtersets.
+
+    Attributes
+    ----------
+    model : Model
+        Model class from which ``FilterSet`` will
+        extract necessary filters.
+    fields : None, list, optional
+        Specific model fields for which filters
+        should be created for.
+        By default it is ``None`` in which case for all
+        fields filters will be created for.
+    exclude : list, optional
+        Specific model fields for which filters
+        should not be created for.
+    allow_related : bool, optional
+        Whether related/nested fields should be allowed
+        when model fields are automatically determined
+        (e.g. when explicit ``fields`` is not provided).
+    """
+    def __init__(self, options=None):
+        self.model = getattr(options, 'model', None)
+        self.fields = getattr(options, 'fields', None)
+        self.exclude = getattr(options, 'exclude', [])
+        self.allow_related = getattr(options, 'allow_related', True)
+
+
+class BaseModelFilterSet(FilterSet):
+    """
+    Base ``FilterSet`` for model-generated filtersets.
+
+    The filterset can be configured via ``Meta`` class attribute,
+    very much like how Django's ``ModelForm`` is configured.
+    """
+    filter_options_class = ModelFilterSetOptions
+
+    def get_filters(self):
+        """
+        Get all filters defined in this filterset by introspecing
+        the given model in ``Meta.model``.
+        """
+        filters = super(BaseModelFilterSet, self).get_filters()
+
+        assert self.Meta.model, (
+            '{name}.Meta.model is missing. Please specify the model '
+            'in order to use {name}.'
+            ''.format(name=self.__class__.__name__)
+        )
+
+        if self.Meta.fields is None:
+            self.Meta.fields = self._get_model_field_names()
+
+        state = self._build_state()
+
+        for name in self.Meta.fields:
+            if name in self.Meta.exclude:
+                continue
+
+            try:
+                _filter = self._build_filter(name, state)
+
+            except SkipFilter:
+                continue
+
+            else:
+                if _filter is not None:
+                    filters[name] = _filter
+
+        return filters
+
+    @abc.abstractmethod
+    def _get_model_field_names(self):
+        """
+        Get a list of all model fields.
+
+        This is used when ``Meta.fields`` is ``None``
+        in which case this method returns all model fields.
+
+        .. note::
+            This method is an abstract method and must be implemented
+            in subclasses.
+        """
+
+    @abc.abstractmethod
+    def _build_filter(self, name, state):
+        """
+        Build a filter for the field within the model by its name.
+
+        .. note::
+            This method is an abstract method and must be implemented
+            in subclasses.
+
+        Parameters
+        ----------
+        name : str
+            Name of the field for which to build the filter within the ``Meta.model``
+        state
+            State of the model as returned by ``build_state``.
+            Since state is computed outside of the loop which builds
+            filters, state can be useful to store information outside
+            of the loop so that it can be reused for all filters.
+        """
+
+    def _build_state(self):
+        """
+        Hook function to build state to be used while building all the filters.
+        Useful to compute common data between all filters such as some
+        data about the data so that the computation can be avoided while
+        building inidividual filters.
+        """

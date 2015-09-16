@@ -170,13 +170,13 @@ class TestModelFilterSet(object):
     def test_get_form_field_for_field(self):
         fs = ModelFilterSet()
 
-        assert isinstance(fs.get_form_field_for_field(models.CharField()), forms.CharField)
-        assert isinstance(fs.get_form_field_for_field(models.AutoField()), forms.IntegerField)
-        assert isinstance(fs.get_form_field_for_field(models.FileField()), forms.CharField)
+        assert isinstance(fs._get_form_field_for_field(models.CharField()), forms.CharField)
+        assert isinstance(fs._get_form_field_for_field(models.AutoField()), forms.IntegerField)
+        assert isinstance(fs._get_form_field_for_field(models.FileField()), forms.CharField)
 
         class TestField(models.Field):
             def formfield(self, **kwargs):
                 return
 
         with pytest.raises(SkipFilter):
-            fs.get_form_field_for_field(TestField())
+            fs._get_form_field_for_field(TestField())

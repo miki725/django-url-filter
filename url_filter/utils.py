@@ -193,6 +193,13 @@ class SubClassDict(dict):
 
 
 def dictify(obj):
+    """
+    Convert any object to a dictionary.
+
+    If the given object is already an instance of a dict,
+    it is directly returned. If not, then all the public
+    attributes of the object are returned as a dict.
+    """
     if isinstance(obj, dict):
         return obj
     else:
