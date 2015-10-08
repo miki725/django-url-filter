@@ -55,7 +55,7 @@ class TestFilter(object):
 
         assert repr(f) == (
             'Filter(form_field=CharField, lookups=ALL, '
-            'default_lookup="foo", is_default=True)'
+            'default_lookup="foo", is_default=True, no_lookup=False)'
         )
 
     def test_source(self):

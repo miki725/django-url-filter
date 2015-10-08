@@ -7,6 +7,7 @@ from .base import BaseFilterBackend
 
 
 class DjangoFilterBackend(BaseFilterBackend):
+    name = 'django'
     supported_lookups = {
         'contains',
         'day',
@@ -41,14 +42,14 @@ class DjangoFilterBackend(BaseFilterBackend):
     def includes(self):
         return filter(
             lambda i: not i.is_negated,
-            self.specs
+            self.regular_specs
         )
 
     @property
     def excludes(self):
         return filter(
             lambda i: i.is_negated,
-            self.specs
+            self.regular_specs
         )
 
     def prepare_spec(self, spec):
@@ -58,15 +59,13 @@ class DjangoFilterBackend(BaseFilterBackend):
             spec.lookup,
         )
 
-    def filter(self):
+    def filter_by_specs(self, queryset):
         include = {self.prepare_spec(i): i.value for i in self.includes}
         exclude = {self.prepare_spec(i): i.value for i in self.excludes}
 
-        qs = self.queryset
-
         if include:
-            qs = qs.filter(**include)
+            queryset = queryset.filter(**include)
         if exclude:
-            qs = qs.exclude(**exclude)
+            queryset = queryset.exclude(**exclude)
 
-        return qs
+        return queryset

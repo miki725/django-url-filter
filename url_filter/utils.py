@@ -36,19 +36,31 @@ class FilterSpec(object):
         Whether this filter should be negated.
         By default its ``False``.
     """
-    def __init__(self, components, lookup, value, is_negated=False):
+    def __init__(self, components, lookup, value, is_negated=False, filter_callable=None):
         self.components = components
         self.lookup = lookup
         self.value = value
         self.is_negated = is_negated
+        self.filter_callable = filter_callable
+
+    @property
+    def is_callable(self):
+        return self.filter_callable is not None
 
     def __repr__(self):
-        return '<{} {} {}{} {}>'.format(
-            self.__class__.__name__,
-            '.'.join(self.components),
-            'NOT ' if self.is_negated else '',
-            self.lookup,
-            repr(self.value),
+        if self.is_callable:
+            callable_repr = ' via {}.{}'.format(self.filter_callable.__self__.__class__.__name__,
+                                                self.filter_callable.__name__)
+        else:
+            callable_repr = ''
+
+        return '<{name} {components} {negated}{lookup} {value!r}{callable}>'.format(
+            name=self.__class__.__name__,
+            components='.'.join(self.components),
+            negated='NOT ' if self.is_negated else '',
+            lookup=self.lookup,
+            value=self.value,
+            callable=callable_repr,
         )
 
     def __eq__(self, other):

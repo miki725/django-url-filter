@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 from __future__ import print_function, unicode_literals
+import operator
 
+from django import forms
 from django.http import Http404
 from rest_framework.response import Response
 from rest_framework.serializers import ModelSerializer
@@ -8,6 +10,7 @@ from rest_framework.viewsets import ReadOnlyModelViewSet
 
 from url_filter.backends.plain import PlainFilterBackend
 from url_filter.backends.sqlalchemy import SQLAlchemyFilterBackend
+from url_filter.filters import CallableFilter, form_field_for_filter
 from url_filter.filtersets import ModelFilterSet
 from url_filter.filtersets.plain import PlainModelFilterSet
 from url_filter.filtersets.sqlalchemy import SQLAlchemyModelFilterSet
@@ -62,13 +65,51 @@ class PlaceNestedSerializer(ModelSerializer):
         model = Place
 
 
+class PlaceWaiterCallableFilter(CallableFilter):
+    @form_field_for_filter(forms.CharField())
+    def filter_exact_for_django(self, queryset, spec):
+        f = queryset.filter if not spec.is_negated else queryset.exclude
+        return f(restaurant__waiter__name=spec.value)
+
+    @form_field_for_filter(forms.CharField())
+    def filter_exact_for_sqlalchemy(self, queryset, spec):
+        op = operator.eq if not spec.is_negated else operator.ne
+        return (
+            queryset
+            .join(alchemy.Place.restaurant)
+            .join(alchemy.Restaurant.waiter_set)
+            .filter(op(alchemy.Waiter.name, spec.value))
+        )
+
+    @form_field_for_filter(forms.CharField())
+    def filter_exact_for_plain(self, queryset, spec):
+        def identity(x):
+            return x
+
+        def negate(x):
+            return not x
+
+        op = identity if not spec.is_negated else negate
+        return filter(
+            lambda i: op(self.root.filter_backend._filter_by_spec_and_value(
+                item=i,
+                components=['restaurant', 'waiters', 'name'],
+                spec=spec,
+            )),
+            queryset
+        )
+
+
 class PlaceFilterSet(ModelFilterSet):
+    waiter = PlaceWaiterCallableFilter(no_lookup=True)
+
     class Meta(object):
         model = Place
 
 
 class PlainPlaceFilterSet(PlainModelFilterSet):
     filter_backend_class = PlainFilterBackend
+    waiter = PlaceWaiterCallableFilter(no_lookup=True)
 
     class Meta(object):
         model = {
@@ -97,6 +138,7 @@ class PlainPlaceFilterSet(PlainModelFilterSet):
 
 class SQLAlchemyPlaceFilterSet(SQLAlchemyModelFilterSet):
     filter_backend_class = SQLAlchemyFilterBackend
+    waiter = PlaceWaiterCallableFilter(no_lookup=True)
 
     class Meta(object):
         model = alchemy.Place

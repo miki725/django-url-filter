@@ -15,7 +15,7 @@ from django.http import QueryDict
 
 from ..backends.django import DjangoFilterBackend
 from ..exceptions import SkipFilter
-from ..filters import Filter
+from ..filters import BaseFilter
 from ..utils import LookupConfig
 
 
@@ -94,7 +94,7 @@ class FilterSetMeta(abc.ABCMeta):
 
         filters = {}
         for base in [vars(base) for base in bases] + [attrs]:
-            filters.update({k: v for k, v in base.items() if isinstance(v, Filter)})
+            filters.update({k: v for k, v in base.items() if isinstance(v, BaseFilter)})
 
         new_class._declared_filters = filters
         new_class.Meta = new_class.filter_options_class(
@@ -104,7 +104,7 @@ class FilterSetMeta(abc.ABCMeta):
         return new_class
 
 
-class FilterSet(six.with_metaclass(FilterSetMeta, Filter)):
+class FilterSet(six.with_metaclass(FilterSetMeta, BaseFilter)):
     """
     Main user-facing classes to use filtersets.
 
@@ -155,8 +155,10 @@ class FilterSet(six.with_metaclass(FilterSetMeta, Filter)):
     filter_backend_class = DjangoFilterBackend
     filter_options_class = FilterSetOptions
 
-    def _init(self, data=None, queryset=None, context=None,
-              strict_mode=StrictMode.drop):
+    def __init__(self, data=None, queryset=None, context=None,
+                 strict_mode=StrictMode.drop,
+                 *args, **kwargs):
+        super(FilterSet, self).__init__(*args, **kwargs)
         self.data = data
         self.queryset = queryset
         self.context = context or {}

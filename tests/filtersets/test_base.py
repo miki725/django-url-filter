@@ -36,9 +36,9 @@ class TestFilterSet(object):
 
         assert repr(BarFilterSet()) == (
             'BarFilterSet()\n'
-            '  bar = Filter(form_field=IntegerField, lookups=ALL, default_lookup="exact", is_default=False)\n'
+            '  bar = Filter(form_field=IntegerField, lookups=ALL, default_lookup="exact", is_default=False, no_lookup=False)\n'
             '  foo = FooFilterSet()\n'
-            '    foo = Filter(form_field=CharField, lookups=ALL, default_lookup="exact", is_default=False)'
+            '    foo = Filter(form_field=CharField, lookups=ALL, default_lookup="exact", is_default=False, no_lookup=False)'
         )
 
     def test_get_filters(self):

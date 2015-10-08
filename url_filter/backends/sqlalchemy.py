@@ -17,6 +17,7 @@ def lower(value):
 
 
 class SQLAlchemyFilterBackend(BaseFilterBackend):
+    name = 'sqlalchemy'
     supported_lookups = {
         'contains',
         'endswith',
@@ -47,19 +48,18 @@ class SQLAlchemyFilterBackend(BaseFilterBackend):
     def get_model(self):
         return self.queryset._primary_entity.entities[0]
 
-    def filter(self):
-        if not self.specs:
-            return self.queryset
+    def filter_by_specs(self, queryset):
+        if not self.regular_specs:
+            return queryset
 
-        clauses = [self.build_clause(spec) for spec in self.specs]
+        clauses = [self.build_clause(spec) for spec in self.regular_specs]
         conditions, joins = zip(*clauses)
         joins = list(itertools.chain(*joins))
 
-        qs = self.queryset
         if joins:
-            qs = qs.join(*joins)
+            queryset = queryset.join(*joins)
 
-        return qs.filter(*conditions)
+        return queryset.filter(*conditions)
 
     def build_clause(self, spec):
         to_join = []

@@ -7,6 +7,7 @@ from .base import BaseFilterBackend
 
 
 class PlainFilterBackend(BaseFilterBackend):
+    name = 'plain'
     enforce_same_models = False
     supported_lookups = {
         'contains',
@@ -38,14 +39,14 @@ class PlainFilterBackend(BaseFilterBackend):
     def get_model(self):
         return object
 
-    def filter(self):
-        if not self.specs:
-            return self.queryset
+    def filter_by_specs(self, queryset):
+        if not self.regular_specs:
+            return queryset
 
-        return filter(self.filter_callable, self.queryset)
+        return filter(self.filter_callable, queryset)
 
     def filter_callable(self, item):
-        return all(self.filter_by_spec(item, spec) for spec in self.specs)
+        return all(self.filter_by_spec(item, spec) for spec in self.regular_specs)
 
     def filter_by_spec(self, item, spec):
         filtered = self._filter_by_spec_and_value(item, spec.components, spec)
