@@ -26,7 +26,7 @@ class Restaurant(models.Model):
 
 @six.python_2_unicode_compatible
 class Waiter(models.Model):
-    restaurant = models.ForeignKey(Restaurant)
+    restaurant = models.ForeignKey(Restaurant, null=True)
     name = models.CharField(max_length=50)
 
     def __str__(self):

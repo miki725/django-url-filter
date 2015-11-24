@@ -236,5 +236,5 @@ class TestFilterSet(object):
             'restaurant__isnull=True',
             Waiter.objects.all(),
             Waiter.objects.filter(restaurant__isnull=True),
-            0
+            1
         )

@@ -54,5 +54,12 @@
         "name": "Steve"
     },
     "pk": 3
+},
+{
+    "model": "one_to_one.waiter",
+    "fields": {
+        "name": "Michal"
+    },
+    "pk": 4
 }
 ]
