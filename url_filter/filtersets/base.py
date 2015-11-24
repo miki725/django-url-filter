@@ -20,6 +20,10 @@ from ..utils import LookupConfig
 
 __all__ = ['FilterSet', 'FilterSetOptions', 'StrictMode']
 
+FK_FIELD_FILTERS = {
+    'isnull',
+}
+
 
 class StrictMode(enum.Enum):
     """
@@ -154,6 +158,7 @@ class FilterSet(six.with_metaclass(FilterSetMeta, Filter)):
         self.queryset = queryset
         self.context = context or {}
         self.strict_mode = strict_mode
+        self._given_lookups = None
 
     def repr(self, prefix=''):
         header = '{name}()'.format(name=self.__class__.__name__)
@@ -347,7 +352,10 @@ class FilterSet(six.with_metaclass(FilterSetMeta, Filter)):
             value = LookupConfig(config.key, config.data)
 
         if name not in self.filters:
-            raise SkipFilter
+            if name in FK_FIELD_FILTERS:
+                return super(FilterSet, self).get_spec(config)
+            else:
+                raise SkipFilter
 
         return self.filters[name].get_spec(value)
 
