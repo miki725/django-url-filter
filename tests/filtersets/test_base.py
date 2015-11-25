@@ -238,3 +238,10 @@ class TestFilterSet(object):
             Waiter.objects.filter(restaurant__isnull=True),
             1
         )
+        _test(
+            WaiterFilterSet,
+            'restaurant__isnull=False',
+            Waiter.objects.all(),
+            Waiter.objects.filter(restaurant__isnull=False),
+            3
+        )
