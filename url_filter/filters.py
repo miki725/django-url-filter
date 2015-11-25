@@ -17,7 +17,7 @@ MANY_LOOKUP_FIELD_OVERWRITES = {
 }
 
 LOOKUP_FIELD_OVERWRITES = {
-    'isnull': forms.BooleanField(),
+    'isnull': forms.BooleanField(required=False),
     'second': forms.IntegerField(min_value=0, max_value=59),
     'minute': forms.IntegerField(min_value=0, max_value=59),
     'hour': forms.IntegerField(min_value=0, max_value=23),

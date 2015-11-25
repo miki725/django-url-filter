@@ -231,3 +231,17 @@ class TestFilterSet(object):
              .exclude(name__icontains='jon')),
             1
         )
+        _test(
+            WaiterFilterSet,
+            'restaurant__isnull=True',
+            Waiter.objects.all(),
+            Waiter.objects.filter(restaurant__isnull=True),
+            1
+        )
+        _test(
+            WaiterFilterSet,
+            'restaurant__isnull=False',
+            Waiter.objects.all(),
+            Waiter.objects.filter(restaurant__isnull=False),
+            3
+        )
