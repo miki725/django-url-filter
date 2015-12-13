@@ -29,7 +29,9 @@ LOOKUP_FIELD_OVERWRITES = {
     'year': forms.IntegerField(min_value=0, max_value=9999),
 }
 
-LOOKUP_CALLABLE_FROM_METHOD_REGEX = re.compile(r'^filter_([\w\d]+)_for_[\w\d]+$')
+LOOKUP_CALLABLE_FROM_METHOD_REGEX = re.compile(
+    r'^filter_(?P<filter>[\w\d]+)_for_(?P<backend>[\w\d])+$'
+)
 
 
 class BaseFilter(six.with_metaclass(abc.ABCMeta, object)):
@@ -302,24 +304,19 @@ class CallableFilter(Filter):
         lookups = super(CallableFilter, self).lookups
 
         r = LOOKUP_CALLABLE_FROM_METHOD_REGEX
-        custom_lookups = {m.group(0) for m in (r.match(i) for i in dir(self)) if m}
+        custom_lookups = {m.groupdict()['filter'] for m in (r.match(i) for i in dir(self)) if m}
 
         return lookups | custom_lookups
 
     def _get_filter_method_for_lookup(self, lookup):
         name = 'filter_{}_for_{}'.format(lookup, self.root.filter_backend.name)
-        return getattr(self, name, None)
-
-    def _is_callable_filter(self, lookup):
-        return bool(self._get_filter_method_for_lookup(lookup))
+        return getattr(self, name)
 
     def get_form_field(self, lookup):
-        if self._is_callable_filter(lookup):
-            filter_method = self._get_filter_method_for_lookup(lookup)
-
-            form_field = getattr(filter_method, 'form_field', None)
-            if form_field is not None:
-                return form_field
+        try:
+            return self._get_filter_method_for_lookup(lookup).form_field
+        except AttributeError:
+            pass
 
         form_field = super(CallableFilter, self).get_form_field(lookup)
 
@@ -327,9 +324,9 @@ class CallableFilter(Filter):
             '{name} was not provided form_field parameter in initialization '
             '(e.g. {name}(form_field=CharField)) and form_field was not '
             'provided for the lookup. If the lookup is a custom filter callable '
-            'you should profile form_field by using @form_field_for_filter '
+            'you should provide form_field by using @form_field_for_filter '
             'decorator. If the lookup is a normal lookup, then please either '
-            'provide form_field paramer or overwrite get_form_field().'
+            'provide form_field parameter or overwrite get_form_field().'
             ''.format(name=self.__class__.__name__)
         )
 

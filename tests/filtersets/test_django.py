@@ -41,6 +41,47 @@ class TestModelFilterSet(object):
         assert isinstance(filters['address'], Filter)
         assert isinstance(filters['address'].form_field, forms.CharField)
 
+    def test_get_filters_no_relations_place_exclude_address(self):
+        class PlaceFilterSet(ModelFilterSet):
+            class Meta(object):
+                model = Place
+                exclude = ['address']
+                allow_related = False
+                allow_related_reverse = False
+
+        filters = PlaceFilterSet().get_filters()
+
+        assert set(filters.keys()) == {
+            'id', 'name',
+        }
+
+        assert isinstance(filters['id'], Filter)
+        assert isinstance(filters['id'].form_field, forms.IntegerField)
+        assert isinstance(filters['name'], Filter)
+        assert isinstance(filters['name'].form_field, forms.CharField)
+
+    def test_get_filters_no_relations_place_address_overwrite(self):
+        class PlaceFilterSet(ModelFilterSet):
+            address = Filter(forms.IntegerField())
+
+            class Meta(object):
+                model = Place
+                allow_related = False
+                allow_related_reverse = False
+
+        filters = PlaceFilterSet().get_filters()
+
+        assert set(filters.keys()) == {
+            'id', 'name', 'address',
+        }
+
+        assert isinstance(filters['id'], Filter)
+        assert isinstance(filters['id'].form_field, forms.IntegerField)
+        assert isinstance(filters['name'], Filter)
+        assert isinstance(filters['name'].form_field, forms.CharField)
+        assert isinstance(filters['address'], Filter)
+        assert isinstance(filters['address'].form_field, forms.IntegerField)
+
     def test_get_filters_no_relations_restaurant(self):
         class RestaurantFilterSet(ModelFilterSet):
             class Meta(object):

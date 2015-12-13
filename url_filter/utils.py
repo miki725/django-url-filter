@@ -35,6 +35,10 @@ class FilterSpec(object):
     is_negated : bool, optional
         Whether this filter should be negated.
         By default its ``False``.
+    filter_callable : func, optional
+        Callable which should be used for filtering this
+        filter spec. This is primaliry meant to be used
+        by ``CallableFilter``.
     """
     def __init__(self, components, lookup, value, is_negated=False, filter_callable=None):
         self.components = components
@@ -215,8 +219,15 @@ def dictify(obj):
     if isinstance(obj, dict):
         return obj
     else:
-        return {
-            k: v
-            for k, v in vars(obj).items()
-            if not k.startswith('_')
-        }
+        if hasattr(obj, '__slots__'):
+            return {
+                k: getattr(obj, k)
+                for k in obj.__slots__
+                if not k.startswith('_') and hasattr(obj, k)
+            }
+        else:
+            return {
+                k: v
+                for k, v in vars(obj).items()
+                if not k.startswith('_')
+            }

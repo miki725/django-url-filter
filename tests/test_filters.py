@@ -8,7 +8,11 @@ from django import forms
 
 from url_filter.backends.django import DjangoFilterBackend
 from url_filter.fields import MultipleValuesField
-from url_filter.filters import Filter as _Filter
+from url_filter.filters import (
+    CallableFilter,
+    Filter as _Filter,
+    form_field_for_filter,
+)
 from url_filter.utils import FilterSpec, LookupConfig
 
 
@@ -123,3 +127,89 @@ class TestFilter(object):
             assert f.get_spec(LookupConfig('key', {
                 'foo': 'value', 'happy': 'rainbows',
             }))
+        with pytest.raises(forms.ValidationError):
+            f.no_lookup = True
+            assert f.get_spec(LookupConfig('key', {'exact': 'value'}))
+
+
+def test_form_field_for_filter():
+    field = forms.CharField()
+
+    class Foo(object):
+        def foo(self):
+            """foo"""
+            return 5
+
+        bar = form_field_for_filter(field)(foo)
+
+    f = Foo()
+    assert f.bar.__doc__ == f.foo.__doc__
+    assert f.bar() == 5
+    assert f.bar.form_field is field
+
+
+class TestCallableFilter(object):
+    def test_init(self):
+        f = CallableFilter()
+
+        assert f.form_field is None
+
+    def test_lookups(self):
+        class Foo(CallableFilter):
+            def filter_foo_for_django(self):
+                pass
+
+        f = Foo()
+
+        assert f.lookups == {'foo'}
+
+    def test_get_form_field(self):
+        field = forms.CharField()
+
+        class Foo(CallableFilter):
+            @form_field_for_filter(field)
+            def filter_foo_for_django(self):
+                pass
+
+        f = Foo()
+        f.filter_backend = DjangoFilterBackend(queryset=[])
+
+        assert f.get_form_field('foo') is field
+
+    def test_get_form_field_default_form_field(self):
+        field = forms.CharField()
+
+        class Foo(CallableFilter):
+            def filter_foo_for_django(self):
+                pass
+
+        f = Foo(form_field=field, lookups=['exact'])
+        f.filter_backend = DjangoFilterBackend(queryset=[])
+
+        assert f.get_form_field('foo') is field
+
+    def test_get_form_field_no_form_field(self):
+        class Foo(CallableFilter):
+            def filter_foo_for_django(self):
+                pass
+
+        f = Foo()
+        f.filter_backend = DjangoFilterBackend(queryset=[])
+
+        with pytest.raises(AssertionError):
+            f.get_form_field('foo')
+
+    def test_get_spec(self):
+        class Foo(CallableFilter):
+            @form_field_for_filter(forms.CharField())
+            def filter_foo_for_django(self):
+                pass
+
+        p = Filter(source='parent', form_field=forms.CharField())
+        p.filter_backend = DjangoFilterBackend(queryset=[])
+        f = Foo(source='child', default_lookup='foo')
+        f.parent = p
+
+        assert f.get_spec(LookupConfig('key', 'value')) == FilterSpec(
+            ['child'], 'foo', 'value', False, f.filter_foo_for_django
+        )

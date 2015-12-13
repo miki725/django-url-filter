@@ -372,7 +372,7 @@ class FilterSet(six.with_metaclass(FilterSetMeta, BaseFilter)):
                 ))
 
 
-class ModelFilterSetOptions(object):
+class ModelFilterSetOptions(FilterSetOptions):
     """
     Custom options for ``FilterSet``s used for model-generated filtersets.
 
@@ -395,6 +395,7 @@ class ModelFilterSetOptions(object):
         (e.g. when explicit ``fields`` is not provided).
     """
     def __init__(self, options=None):
+        super(ModelFilterSetOptions, self).__init__(options)
         self.model = getattr(options, 'model', None)
         self.fields = getattr(options, 'fields', None)
         self.exclude = getattr(options, 'exclude', [])
@@ -429,7 +430,7 @@ class BaseModelFilterSet(FilterSet):
         state = self._build_state()
 
         for name in self.Meta.fields:
-            if name in self.Meta.exclude:
+            if name in self.Meta.exclude or name in filters:
                 continue
 
             try:

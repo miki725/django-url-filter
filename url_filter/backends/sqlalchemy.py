@@ -149,5 +149,5 @@ class SQLAlchemyFilterBackend(BaseFilterBackend):
         return field.class_attribute
 
     @classmethod
-    def _get_related_model_for_field(self, field):
+    def _get_related_model_for_field(cls, field):
         return field._dependency_processor.mapper.class_
