@@ -159,6 +159,36 @@ class TestFilterSet(object):
         with pytest.raises(forms.ValidationError):
             _test('bar__thing__in=100,5', [], strict_mode=StrictMode.fail)
 
+    def test_get_specs_using_default_filter(self):
+        class BarFilterSet(FilterSet):
+            id = Filter(form_field=forms.IntegerField(),
+                        is_default=True)
+            other = Filter(source='stuff',
+                           form_field=forms.CharField(),
+                           default_lookup='contains')
+            thing = Filter(form_field=forms.IntegerField(min_value=0, max_value=15))
+
+        class FooFilterSet(FilterSet):
+            field = Filter(form_field=forms.CharField())
+            bar = BarFilterSet()
+
+        def _test(data, expected, **kwargs):
+            fs = FooFilterSet(
+                data=QueryDict(data),
+                queryset=[],
+                **kwargs
+            )
+
+            assert set(fs.get_specs()) == set(expected)
+
+        _test('bar=5', [
+            FilterSpec(['bar', 'id'], 'exact', 5, False),
+        ])
+        _test('bar__isnull=True', [
+            FilterSpec(['bar', 'id'], 'isnull', True, False),
+        ])
+        _test('bar__gt=foo', [])
+
     def test_filter_one_to_one(self, one_to_one):
         class PlaceFilterSet(FilterSet):
             pk = Filter(form_field=forms.IntegerField(min_value=0), is_default=True)
