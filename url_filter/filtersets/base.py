@@ -154,18 +154,22 @@ class FilterSet(six.with_metaclass(FilterSetMeta, BaseFilter)):
     """
     filter_backend_class = DjangoFilterBackend
     filter_options_class = FilterSetOptions
+    default_strict_mode = StrictMode.drop
 
     def __init__(self, data=None, queryset=None, context=None,
-                 strict_mode=StrictMode.drop,
+                 strict_mode=None,
                  *args, **kwargs):
         super(FilterSet, self).__init__(*args, **kwargs)
         self.data = data
         self.queryset = queryset
         self.context = context or {}
-        self.strict_mode = strict_mode
+        self.strict_mode = strict_mode or self.default_strict_mode
 
     def repr(self, prefix=''):
-        header = '{name}()'.format(name=self.__class__.__name__)
+        header = '{name}({source})'.format(
+            name=self.__class__.__name__,
+            source='source="{}"'.format(self.source) if self.is_bound else '',
+        )
         lines = [header] + [
             '{prefix}{key} = {value}'.format(
                 prefix=prefix + '  ',

@@ -39,6 +39,7 @@ class BaseFilter(six.with_metaclass(abc.ABCMeta, object)):
         self._source = source
         self.parent = None
         self.name = None
+        self.is_bound = False
 
     def __repr__(self):
         data = self.repr()
@@ -89,6 +90,7 @@ class BaseFilter(six.with_metaclass(abc.ABCMeta, object)):
         """
         self.name = name
         self.parent = parent
+        self.is_bound = True
 
     @property
     def root(self):
@@ -164,6 +166,7 @@ class Filter(BaseFilter):
     def repr(self, prefix=''):
         return (
             '{name}('
+            '{source}'
             'form_field={form_field}, '
             'lookups={lookups}, '
             'default_lookup="{default_lookup}", '
@@ -171,6 +174,7 @@ class Filter(BaseFilter):
             'no_lookup={no_lookup}'
             ')'
             ''.format(name=self.__class__.__name__,
+                      source='source="{}", '.format(self.source) if self.is_bound else '',
                       form_field=self.form_field.__class__.__name__,
                       lookups=self._given_lookups or 'ALL',
                       default_lookup=self.default_lookup,
