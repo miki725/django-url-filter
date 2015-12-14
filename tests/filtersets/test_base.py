@@ -168,6 +168,7 @@ class TestFilterSet(object):
         class RestaurantFilterSet(FilterSet):
             pk = Filter(form_field=forms.IntegerField(min_value=0), is_default=True)
             place = PlaceFilterSet()
+            place_id = Filter(form_field=forms.IntegerField(min_value=0))
             serves_hot_dogs = Filter(form_field=forms.BooleanField(required=False))
             serves_pizza = Filter(form_field=forms.BooleanField(required=False))
 
@@ -199,6 +200,20 @@ class TestFilterSet(object):
             Restaurant.objects.all(),
             Restaurant.objects.exclude(place__address__contains='Ashland'),
             1
+        )
+        _test(
+            RestaurantFilterSet,
+            'place_id__isnull=True',
+            Restaurant.objects.all(),
+            Restaurant.objects.filter(place_id__isnull=True),
+            0
+        )
+        _test(
+            RestaurantFilterSet,
+            'place_id__isnull=False',
+            Restaurant.objects.all(),
+            Restaurant.objects.filter(place_id__isnull=False),
+            2
         )
         _test(
             WaiterFilterSet,
