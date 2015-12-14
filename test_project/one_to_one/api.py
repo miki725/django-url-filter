@@ -10,8 +10,8 @@ from rest_framework.viewsets import ReadOnlyModelViewSet
 
 from url_filter.backends.plain import PlainFilterBackend
 from url_filter.backends.sqlalchemy import SQLAlchemyFilterBackend
-from url_filter.filters import CallableFilter, form_field_for_filter
-from url_filter.filtersets import ModelFilterSet
+from url_filter.filters import CallableFilter, Filter, form_field_for_filter
+from url_filter.filtersets import ModelFilterSet, StrictMode
 from url_filter.filtersets.plain import PlainModelFilterSet
 from url_filter.filtersets.sqlalchemy import SQLAlchemyModelFilterSet
 
@@ -101,6 +101,7 @@ class PlaceWaiterCallableFilter(CallableFilter):
 
 
 class PlaceFilterSet(ModelFilterSet):
+    default_strict_mode = StrictMode.fail
     waiter = PlaceWaiterCallableFilter(no_lookup=True)
 
     class Meta(object):
@@ -108,6 +109,7 @@ class PlaceFilterSet(ModelFilterSet):
 
 
 class PlainPlaceFilterSet(PlainModelFilterSet):
+    default_strict_mode = StrictMode.fail
     filter_backend_class = PlainFilterBackend
     waiter = PlaceWaiterCallableFilter(no_lookup=True)
 
@@ -137,6 +139,7 @@ class PlainPlaceFilterSet(PlainModelFilterSet):
 
 
 class SQLAlchemyPlaceFilterSet(SQLAlchemyModelFilterSet):
+    default_strict_mode = StrictMode.fail
     filter_backend_class = SQLAlchemyFilterBackend
     waiter = PlaceWaiterCallableFilter(no_lookup=True)
 
@@ -145,11 +148,15 @@ class SQLAlchemyPlaceFilterSet(SQLAlchemyModelFilterSet):
 
 
 class RestaurantFilterSet(ModelFilterSet):
+    default_strict_mode = StrictMode.fail
+    place_id = Filter(forms.IntegerField(min_value=0))
+
     class Meta(object):
         model = Restaurant
 
 
 class SQLAlchemyRestaurantFilterSet(SQLAlchemyModelFilterSet):
+    default_strict_mode = StrictMode.fail
     filter_backend_class = SQLAlchemyFilterBackend
 
     class Meta(object):
@@ -157,11 +164,15 @@ class SQLAlchemyRestaurantFilterSet(SQLAlchemyModelFilterSet):
 
 
 class WaiterFilterSet(ModelFilterSet):
+    default_strict_mode = StrictMode.fail
+
     class Meta(object):
         model = Waiter
 
 
 class SQLAlchemyWaiterFilterSet(SQLAlchemyModelFilterSet):
+    default_strict_mode = StrictMode.fail
+
     filter_backend_class = SQLAlchemyFilterBackend
 
     class Meta(object):
