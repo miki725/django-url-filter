@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import print_function, unicode_literals
 
-from url_filter.utils import FilterSpec, LookupConfig, SubClassDict
+from url_filter.utils import FilterSpec, LookupConfig, SubClassDict, dictify
 
 
 class TestFilterSpec(object):
@@ -11,6 +11,16 @@ class TestFilterSpec(object):
         )
         assert repr(FilterSpec(['a', 'b'], 'exact', 'value', True)) == (
             '<FilterSpec a.b NOT exact {}>'.format(repr('value'))
+        )
+
+        class Foo(object):
+            def foo(self):
+                pass
+
+        f = Foo()
+
+        assert repr(FilterSpec(['a', 'b'], 'exact', 'value', False, filter_callable=f.foo)) == (
+            '<FilterSpec a.b exact {} via Foo.foo>'.format(repr('value'))
         )
 
     def test_equality(self):
@@ -84,3 +94,32 @@ class TestSubClassDict(object):
         assert mapping.get(Foo) == 'foo'
         assert mapping.get(Bar) == 'foo'
         assert mapping.get('not-there') is None
+
+
+def test_dictify():
+    a = {'data': 'here'}
+    assert dictify(a) is a
+
+    class Foo(object):
+        def __init__(self):
+            self.a = 'a'
+            self.b = 'b'
+            self._c = 'c'
+
+    assert dictify(Foo()) == {
+        'a': 'a',
+        'b': 'b',
+    }
+
+    class Bar(object):
+        __slots__ = ['a', 'b', '_c']
+
+        def __init__(self):
+            self.a = 'a'
+            self.b = 'b'
+            self._c = 'c'
+
+    assert dictify(Bar()) == {
+        'a': 'a',
+        'b': 'b',
+    }

@@ -22,6 +22,8 @@ INSTALLED_APPS = (
     'django_extensions',
     'rest_framework',
 
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
     'django.contrib.staticfiles',
 )
 
@@ -37,5 +39,5 @@ ROOT_URLCONF = 'test_project.urls'
 REST_FRAMEWORK = {
     'DEFAULT_FILTER_BACKENDS': [
         'url_filter.integrations.drf.DjangoFilterBackend',
-    ]
+    ],
 }

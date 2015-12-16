@@ -174,13 +174,13 @@ class TestSQLAlchemyModelFilterSet(object):
         fs = SQLAlchemyModelFilterSet()
 
         assert isinstance(
-            fs.get_form_field_for_field(ColumnProperty(Column('name', String(50)))),
+            fs._get_form_field_for_field(ColumnProperty(Column('name', String(50)))),
             forms.CharField
         )
         assert isinstance(
-            fs.get_form_field_for_field(ColumnProperty(Column('name', Integer))),
+            fs._get_form_field_for_field(ColumnProperty(Column('name', Integer))),
             forms.IntegerField
         )
 
         with pytest.raises(SkipFilter):
-            fs.get_form_field_for_field(ColumnProperty(Column('name', TypeEngine)))
+            fs._get_form_field_for_field(ColumnProperty(Column('name', TypeEngine)))

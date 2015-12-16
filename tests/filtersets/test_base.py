@@ -36,9 +36,9 @@ class TestFilterSet(object):
 
         assert repr(BarFilterSet()) == (
             'BarFilterSet()\n'
-            '  bar = Filter(form_field=IntegerField, lookups=ALL, default_lookup="exact", is_default=False)\n'
-            '  foo = FooFilterSet()\n'
-            '    foo = Filter(form_field=CharField, lookups=ALL, default_lookup="exact", is_default=False)'
+            '  bar = Filter(source="bar", form_field=IntegerField, lookups=ALL, default_lookup="exact", is_default=False, no_lookup=False)\n'
+            '  foo = FooFilterSet(source="foo")\n'
+            '    foo = Filter(source="foo", form_field=CharField, lookups=ALL, default_lookup="exact", is_default=False, no_lookup=False)'
         )
 
     def test_get_filters(self):
@@ -159,6 +159,36 @@ class TestFilterSet(object):
         with pytest.raises(forms.ValidationError):
             _test('bar__thing__in=100,5', [], strict_mode=StrictMode.fail)
 
+    def test_get_specs_using_default_filter(self):
+        class BarFilterSet(FilterSet):
+            id = Filter(form_field=forms.IntegerField(),
+                        is_default=True)
+            other = Filter(source='stuff',
+                           form_field=forms.CharField(),
+                           default_lookup='contains')
+            thing = Filter(form_field=forms.IntegerField(min_value=0, max_value=15))
+
+        class FooFilterSet(FilterSet):
+            field = Filter(form_field=forms.CharField())
+            bar = BarFilterSet()
+
+        def _test(data, expected, **kwargs):
+            fs = FooFilterSet(
+                data=QueryDict(data),
+                queryset=[],
+                **kwargs
+            )
+
+            assert set(fs.get_specs()) == set(expected)
+
+        _test('bar=5', [
+            FilterSpec(['bar', 'id'], 'exact', 5, False),
+        ])
+        _test('bar__isnull=True', [
+            FilterSpec(['bar', 'id'], 'isnull', True, False),
+        ])
+        _test('bar__gt=foo', [])
+
     def test_filter_one_to_one(self, one_to_one):
         class PlaceFilterSet(FilterSet):
             pk = Filter(form_field=forms.IntegerField(min_value=0), is_default=True)
@@ -168,6 +198,7 @@ class TestFilterSet(object):
         class RestaurantFilterSet(FilterSet):
             pk = Filter(form_field=forms.IntegerField(min_value=0), is_default=True)
             place = PlaceFilterSet()
+            place_id = Filter(form_field=forms.IntegerField(min_value=0))
             serves_hot_dogs = Filter(form_field=forms.BooleanField(required=False))
             serves_pizza = Filter(form_field=forms.BooleanField(required=False))
 
@@ -199,6 +230,20 @@ class TestFilterSet(object):
             Restaurant.objects.all(),
             Restaurant.objects.exclude(place__address__contains='Ashland'),
             1
+        )
+        _test(
+            RestaurantFilterSet,
+            'place_id__isnull=True',
+            Restaurant.objects.all(),
+            Restaurant.objects.filter(place_id__isnull=True),
+            0
+        )
+        _test(
+            RestaurantFilterSet,
+            'place_id__isnull=False',
+            Restaurant.objects.all(),
+            Restaurant.objects.filter(place_id__isnull=False),
+            2
         )
         _test(
             WaiterFilterSet,

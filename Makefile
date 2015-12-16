@@ -45,7 +45,7 @@ lint:
 	flake8 .
 
 test:
-	py.test -sv --cov=url_filter --cov-report=term-missing tests/
+	py.test -sv --cov=url_filter --cov-report=term-missing --doctest-modules tests/ url_filter/
 
 test-all:
 	tox

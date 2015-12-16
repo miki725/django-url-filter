@@ -23,7 +23,7 @@ class MultipleValuesField(forms.CharField):
         By default no maximum is enforced.
     max_validators : list, optional
         Additional validators which should be used to validate
-        all values once wplit by the delimiter.
+        all values once split by the delimiter.
     delimiter : str, optional
         The delimiter by which the value will be split into
         multiple values.

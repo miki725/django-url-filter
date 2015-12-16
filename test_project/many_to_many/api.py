@@ -5,7 +5,7 @@ from rest_framework.serializers import ModelSerializer
 from rest_framework.viewsets import ReadOnlyModelViewSet
 
 from url_filter.backends.sqlalchemy import SQLAlchemyFilterBackend
-from url_filter.filtersets import ModelFilterSet
+from url_filter.filtersets import ModelFilterSet, StrictMode
 from url_filter.filtersets.sqlalchemy import SQLAlchemyModelFilterSet
 
 from . import alchemy
@@ -38,11 +38,14 @@ class ArticleNestedSerializer(ModelSerializer):
 
 
 class PublicationFilterSet(ModelFilterSet):
+    default_strict_mode = StrictMode.fail
+
     class Meta(object):
         model = Publication
 
 
 class SQLAlchemyPublicationFilterSet(SQLAlchemyModelFilterSet):
+    default_strict_mode = StrictMode.fail
     filter_backend_class = SQLAlchemyFilterBackend
 
     class Meta(object):
@@ -50,11 +53,14 @@ class SQLAlchemyPublicationFilterSet(SQLAlchemyModelFilterSet):
 
 
 class ArticleFilterSet(ModelFilterSet):
+    default_strict_mode = StrictMode.fail
+
     class Meta(object):
         model = Article
 
 
 class SQLAlchemyArticleFilterSet(SQLAlchemyModelFilterSet):
+    default_strict_mode = StrictMode.fail
     filter_backend_class = SQLAlchemyFilterBackend
 
     class Meta(object):

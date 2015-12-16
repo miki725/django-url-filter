@@ -9,10 +9,10 @@ from django.db.models.fields.related import ForeignObjectRel, RelatedField
 from ..exceptions import SkipFilter
 from ..filters import Filter
 from ..utils import SubClassDict
-from .base import FilterSet
+from .base import BaseModelFilterSet, ModelFilterSetOptions
 
 
-__all__ = ['ModelFilterSet', 'ModelFilterSetOptions']
+__all__ = ['ModelFilterSet', 'DjangoModelFilterSetOptions']
 
 
 MODEL_FIELD_OVERWRITES = SubClassDict({
@@ -21,87 +21,31 @@ MODEL_FIELD_OVERWRITES = SubClassDict({
 })
 
 
-class ModelFilterSetOptions(object):
+class DjangoModelFilterSetOptions(ModelFilterSetOptions):
     """
     Custom options for ``FilterSet``s used for Django models.
 
     Attributes
     ----------
-    model : Model
-        Django model class from which ``FilterSet`` will
-        extract necessary filters.
-    fields : None, list, optional
-        Specific model fields for which filters
-        should be created for.
-        By default it is ``None`` in which case for all
-        fields filters will be created for.
-    exclude : list, optional
-        Specific model fields for which filters
-        should not be created for.
-    allow_related : bool, optional
     allow_related_reverse : bool, optional
+        Flag specifying whether reverse relationships should
+        be allowed while creating filter sets for children models.
     """
     def __init__(self, options=None):
-        self.model = getattr(options, 'model', None)
-        self.fields = getattr(options, 'fields', None)
-        self.exclude = getattr(options, 'exclude', [])
-        self.allow_related = getattr(options, 'allow_related', True)
+        super(DjangoModelFilterSetOptions, self).__init__(options)
         self.allow_related_reverse = getattr(options, 'allow_related_reverse', True)
 
 
-class ModelFilterSet(FilterSet):
+class ModelFilterSet(BaseModelFilterSet):
     """
-    ``FilterSet`` for Django models.
+    :class:`.FilterSet` for Django models.
 
     The filterset can be configured via ``Meta`` class attribute,
     very much like Django's ``ModelForm`` is configured.
     """
-    filter_options_class = ModelFilterSetOptions
+    filter_options_class = DjangoModelFilterSetOptions
 
-    def get_filters(self):
-        """
-        Get all filters defined in this filterset including
-        filters corresponding to Django model fields.
-        """
-        filters = super(ModelFilterSet, self).get_filters()
-
-        assert self.Meta.model, (
-            '{}.Meta.model is missing. Please specify the model '
-            'in order to use ModelFilterSet.'
-            ''.format(self.__class__.__name__)
-        )
-
-        if self.Meta.fields is None:
-            self.Meta.fields = self.get_model_field_names()
-
-        for name in self.Meta.fields:
-            if name in self.Meta.exclude:
-                continue
-
-            field = self.Meta.model._meta.get_field(name)
-
-            try:
-                if isinstance(field, RelatedField):
-                    if not self.Meta.allow_related:
-                        raise SkipFilter
-                    _filter = self.build_filterset_from_related_field(field)
-                elif isinstance(field, ForeignObjectRel):
-                    if not self.Meta.allow_related_reverse:
-                        raise SkipFilter
-                    _filter = self.build_filterset_from_reverse_field(field)
-                else:
-                    _filter = self.build_filter_from_field(field)
-
-            except SkipFilter:
-                continue
-
-            else:
-                if _filter is not None:
-                    filters[name] = _filter
-
-        return filters
-
-    def get_model_field_names(self):
+    def _get_model_field_names(self):
         """
         Get a list of all model fields.
 
@@ -113,7 +57,7 @@ class ModelFilterSet(FilterSet):
             self.Meta.model._meta.get_fields()
         ))
 
-    def get_form_field_for_field(self, field):
+    def _get_form_field_for_field(self, field):
         """
         Get form field for the given Django model field.
 
@@ -137,45 +81,55 @@ class ModelFilterSet(FilterSet):
 
         return form_field
 
-    def build_filter_from_field(self, field):
+    def _build_filter(self, name, state):
+        field = self.Meta.model._meta.get_field(name)
+
+        if isinstance(field, RelatedField):
+            if not self.Meta.allow_related:
+                raise SkipFilter
+            return self._build_filterset_from_related_field(field)
+
+        elif isinstance(field, ForeignObjectRel):
+            if not self.Meta.allow_related_reverse:
+                raise SkipFilter
+            return self._build_filterset_from_reverse_field(field)
+
+        else:
+            return self._build_filter_from_field(field)
+
+    def _build_filter_from_field(self, field):
         """
-        Build ``Filter`` for a standard Django model field.
+        Build :class:`.Filter` for a standard Django model field.
         """
         return Filter(
-            form_field=self.get_form_field_for_field(field),
+            form_field=self._get_form_field_for_field(field),
             is_default=field.primary_key,
         )
 
-    def build_filterset_from_related_field(self, field):
+    def _build_filterset_from_related_field(self, field):
         """
-        Build a ``FilterSet`` for a Django relation model field
+        Build a :class:`.FilterSet` for a Django relation model field
         such as ``ForeignKey``.
         """
-        return self._build_filterset(field, {
+        return self._build_django_filterset(field, {
             'exclude': [field.rel.name],
         })
 
-    def build_filterset_from_reverse_field(self, field):
+    def _build_filterset_from_reverse_field(self, field):
         """
-        Build a ``FilterSet`` for a Django reverse relation model field.
+        Build a :class:`.FilterSet` for a Django reverse relation model field.
         """
-        return self._build_filterset(field, {
+        return self._build_django_filterset(field, {
             'exclude': [field.field.name],
         })
 
-    def _build_filterset(self, field, meta):
+    def _build_django_filterset(self, field, meta_attrs):
         m = field.related_model
-        meta.update({'model': m})
+        attrs = {'model': m}
+        attrs.update(meta_attrs)
 
-        meta = type(str('Meta'), (object,), meta)
-
-        filterset = type(
-            str('{}FilterSet'.format(m.__name__)),
-            (ModelFilterSet,),
-            {
-                'Meta': meta,
-                '__module__': self.__module__,
-            }
+        return self._build_filterset(
+            m.__name__,
+            attrs,
+            ModelFilterSet,
         )
-
-        return filterset()
