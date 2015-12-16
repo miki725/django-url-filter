@@ -35,6 +35,33 @@ LOOKUP_CALLABLE_FROM_METHOD_REGEX = re.compile(
 
 
 class BaseFilter(six.with_metaclass(abc.ABCMeta, object)):
+    """
+    Base class to be used for defining both filters and filtersets.
+
+    This class implements the bare-minimum functions which are used across
+    both filters and filtersets however all other functionality must be
+    implemented in subclasses. Additionally by using a single base class,
+    both filters and filtersets inherit from the same base class hence
+    instance checks can be easily done by filteset's metaclass in order
+    to find all declared filters defined in it.
+
+    Parameters
+    ----------
+    source : str
+        Name of the attribute for which which filter applies to
+        within the model of the queryset to be filtered
+        as given to the :class:`.FilterSet`.
+
+    Attributes
+    ----------
+    parent : :class:`.FilterSet`
+        Parent :class:`.FilterSet` to which this filter is bound to
+    name : str
+        Name of the field as it is defined in parent :class:`.FilterSet`
+    is_bound : bool
+        If this filter has been bound to a parent yet
+    """
+
     def __init__(self, source=None, *args, **kwargs):
         self._source = source
         self.parent = None
@@ -49,6 +76,21 @@ class BaseFilter(six.with_metaclass(abc.ABCMeta, object)):
     @abc.abstractmethod
     def repr(self, prefix=''):
         """
+        Get the representation of the filter or its subclasses.
+
+        Subclasses **must** overwrite this method.
+
+        .. note::
+            This class should return unicode text data
+
+        Parameters
+        ----------
+        prefix : str
+            All nested filtersets provide useful representation of the complete
+            filterset including all descendants however in that case descendants
+            need to be indented in order for the representation to get structure.
+            This parameter is used to do just that. It specifies the prefix
+            the representation must use before returning any of its representations.
         """
 
     @property
@@ -57,16 +99,18 @@ class BaseFilter(six.with_metaclass(abc.ABCMeta, object)):
         Source field/attribute in queryset model to be used for filtering.
 
         This property is helpful when ``source`` parameter is not provided
-        when instantiating ``Filter`` since it will use the filter name
-        as it is defined in the ``FilterSet``. For example::
+        when instantiating :class:`.BaseFilter` or its subclasses since it will
+        use the filter name as it is defined in the :class:`.FilterSet`.
+        For example::
 
+            >>> from .filtersets import FilterSet
             >>> class MyFilterSet(FilterSet):
-            ...     foo = Filter(form_field=CharField())
-            ...     bar = Filter(source='stuff', form_field=CharField())
+            ...     foo = Filter(form_field=forms.CharField())
+            ...     bar = Filter(source='stuff', form_field=forms.CharField())
             >>> fs = MyFilterSet()
-            >>> print(fs.fields['foo'].source)
+            >>> print(fs.filters['foo'].source)
             foo
-            >>> print(fs.fields['bar'].source)
+            >>> print(fs.filters['bar'].source)
             stuff
         """
         return self._source or self.name
@@ -84,7 +128,7 @@ class BaseFilter(six.with_metaclass(abc.ABCMeta, object)):
         """
         Bind the filter to the filterset.
 
-        This method should be used by the parent ``FilterSet``
+        This method should be used by the parent :class:`.FilterSet`
         since it allows to specify the parent and name of each
         filter within the filterset.
         """
@@ -104,24 +148,30 @@ class BaseFilter(six.with_metaclass(abc.ABCMeta, object)):
 
 class Filter(BaseFilter):
     """
-    Filter class which main job is to convert leaf ``LookupConfig``
-    to ``FilterSpec``.
+    Class which job is to convert leaf :class:`.LookupConfig` to
+    :class:`.FilterSpec`
 
-    Each filter by itself is meant to be used a "field" in the
-    ``FilterSpec``.
+    Each filter by itself is meant to be used a "filter" (field) in the
+    :class:`.FilterSet`.
+
+    Examples
+    --------
+
+    ::
+
+        >>> from .filtersets import FilterSet
+        >>> class MyFilterSet(FilterSet):
+        ...     foo = Filter(forms.CharField())
+        ...     bar = Filter(forms.IntegerField())
 
     Parameters
     ----------
-    source : str
-        Name of the attribute for which which filter applies to
-        within the model of the queryset to be filtered
-        as given to the ``FilterSet``.
     form_field : Field
         Instance of Django's ``forms.Field`` which will be used
         to clean the filter value as provided in the queryset.
         For example if field is ``IntegerField``, this filter
         will make sure to convert the filtering value to integer
-        before creating a ``FilterSpec``.
+        before creating a :class:`.FilterSpec`.
     lookups : list, optional
         List of strings of allowed lookups for this filter.
         By default all supported lookups are allowed.
@@ -133,23 +183,35 @@ class Filter(BaseFilter):
         will be used.
     is_default : bool, optional
         Boolean specifying if this filter should be used as a default
-        filter in the parent ``FilterSet``.
+        filter in the parent :class:`.FilterSet`.
         By default it is ``False``.
         Primarily this is used when querystring lookup key
-        refers to a nested ``FilterSet`` however it does not specify
+        refers to a nested :class:`.FilterSet` however it does not specify
         which filter to use. For example lookup key ``user__profile``
         intends to filter something in the user's profile however
         it does not specify by which field to filter on.
-        In that case the default filter within profile ``FilterSet``
+        In that case the default filter within profile :class:`.FilterSet`
         will be used. At most, one default filter should be provided
-        in the ``FilterSet``.
+        in the :class:`.FilterSet`.
+    no_lookup : bool, optional
+        When ``True``, this filter does not allow to explicitly specify
+        lookups in the URL. For example ``id__gt`` will not be allowed.
+        This is useful when a given filter should only support a single
+        lookup and that lookup name should not be exposed in the URL.
+        This is of particular use when defining custom callable filters.
+        By default it is ``False``.
 
     Attributes
     ----------
-    parent : FilterSet
-        Parent ``FilterSet`` to which this filter is bound to
-    name : str
-        Name of the field as it is defined in parent ``FilterSet``
+    form_field : Field
+        Django form field which is provided in initialization which
+        should be used to validate data as provided in the querystring
+    default_lookup : str
+        Default lookup to be used as provided in initialization
+    is_default : bool
+        If this filter should be a default filter as provided in initialization
+    no_lookup : str
+        If this filter should not support explicit lookups as provided in initialization
     """
 
     def __init__(self, form_field,
@@ -164,13 +226,27 @@ class Filter(BaseFilter):
         self.no_lookup = no_lookup
 
     def repr(self, prefix=''):
+        """
+        Get custom representation of the filter
+
+        The representation includes the following information:
+
+        * filter class name
+        * source name (same as :attr:`.source`) when filter is bound to parent
+        * primary form field (same as :attr:`.form_field`)
+        * which lookups this filter supports
+        * default lookup (same as :attr:`.default_lookup`)
+        * if the filter is a default filter (same as :attr:`.is_default`) when
+          filter is bound to parent
+        * if this filter does not support explicit lookups (same as :attr:`.no_lookup`)
+        """
         return (
             '{name}('
             '{source}'
             'form_field={form_field}, '
             'lookups={lookups}, '
             'default_lookup="{default_lookup}", '
-            'is_default={is_default}, '
+            '{is_default}'
             'no_lookup={no_lookup}'
             ')'
             ''.format(name=self.__class__.__name__,
@@ -178,12 +254,31 @@ class Filter(BaseFilter):
                       form_field=self.form_field.__class__.__name__,
                       lookups=self._given_lookups or 'ALL',
                       default_lookup=self.default_lookup,
-                      is_default=self.is_default,
+                      is_default='is_default={}, '.format(self.is_default) if self.is_bound else '',
                       no_lookup=self.no_lookup)
         )
 
     @cached_property
     def lookups(self):
+        """
+        Cached property for getting lookups this filter supports
+
+        The reason why we need as a property is because lookups
+        cant be hardcoded. There are 3 main distinct possibilities
+        which drive which lookups are supported:
+
+        * lookups were explicitly provided in the filter instantiation
+          in which case we use those lookups. For example::
+
+              >>> f = Filter(forms.CharField(), lookups=['exact', 'contains'])
+        * when filter is already bound to a parent filterset and root
+          filterset has a defined ``filter_backend`` we use supported
+          lookups as explicitly defined by the backend. This is necessary
+          since different backends support different sets of lookups.
+        * when nether lookups are explicitly provided and filter is not bound
+          yet we have no choice but not support any lookups and so we
+          use empty set as supported lookups
+        """
         if self._given_lookups:
             return set(self._given_lookups)
         if hasattr(self.root, 'filter_backend'):
@@ -194,9 +289,9 @@ class Filter(BaseFilter):
         """
         Get the form field for a particular lookup.
 
-        This method does not blindly return ``form_field`` attribute
+        This method does not blindly return :attr:`.form_field` attribute
         since some lookups require to use different validations.
-        For example for if the ``form_field`` is ``CharField`` but
+        For example if the :attr:`.form_field` is ``CharField`` but
         the lookup is ``isnull``, it makes more sense to use
         ``BooleanField`` as form field.
 
@@ -286,6 +381,30 @@ class Filter(BaseFilter):
 
 
 def form_field_for_filter(form_field):
+    """
+    Decorator for specifying form field for a custom callable filter
+    on the filter callable method
+
+    Examples
+    --------
+    ::
+
+        >>> class MyFilterCallable(CallableFilter):
+        ...     @form_field_for_filter(forms.CharField())
+        ...     def filter_foo_for_django(self, queryset, spec):
+        ...         return queryset
+
+    Parameters
+    ----------
+    form_field : Field
+        Django form field which should be used for the decorated
+        custom callable filter
+
+    Returns
+    -------
+    func
+        Function which can be used to decorate a class method
+    """
     def wrapper(f):
         @wraps(f)
         def inner(self, *args, **kwargs):
@@ -299,12 +418,68 @@ def form_field_for_filter(form_field):
 
 
 class CallableFilter(Filter):
+    """
+    Custom filter class meant to be subclassed in order to add
+    support for custom lookups via custom callables
+
+    The goal of this filter is to provide:
+
+    * support for custom callbacks (or overwrite existing ones)
+    * support different filtering backends
+
+    Custom callable functions for lookups and different backends
+    are defined via class methods by using the following method
+    name pattern::
+
+        filter_<lookup_name>_for_<backend_name>
+
+    Obviously multiple methods can be used to implement functionality
+    for multiple lookups and/or backends. This makes callable filters
+    pretty flexible and ideal for implementing custom reusable filtering
+    filters which follow DRY.
+
+    Examples
+    --------
+    ::
+
+        >>> from django.http import QueryDict
+        >>> from .filtersets import FilterSet
+
+        >>> class MyCallableFilter(CallableFilter):
+        ...     @form_field_for_filter(forms.CharField())
+        ...     def filter_foo_for_django(self, queryset, spec):
+        ...         f = queryset.filter if not spec.is_negated else queryset.exclude
+        ...         return f(foo=spec.value)
+        ...     def filter_foo_for_sqlalchemy(self, queryset, spec):
+        ...         op = operator.eq if not spec.is_negated else operator.ne
+        ...         return queryset.filter(op(Foo.foo, spec.value))
+
+        >>> class MyFilterSet(FilterSet):
+        ...     field = MyCallableFilter()
+
+        >>> f = MyFilterSet(data=QueryDict('field__foo=bar'), queryset=[])
+
+    .. note::
+        Unlike base class :class:`.Filter` this filter makes
+        ``form_field`` parameter optional. Please note however that
+        when ``form_field`` parameter is not provided, all custom
+        filter callables should define their own appropriate form fields
+        by using :func:`.form_field_for_filter`.
+    """
+
     def __init__(self, form_field=None, *args, **kwargs):
         # need to overwrite to make form_field optional
         super(CallableFilter, self).__init__(form_field, *args, **kwargs)
 
     @cached_property
     def lookups(self):
+        """
+        Get all supported lookups for the filter
+
+        This property is identical to the super implementation except it also
+        finds all custom lookups from the class methods and adds them to the
+        set of supported lookups as returned by the super implementation.
+        """
         lookups = super(CallableFilter, self).lookups
 
         r = LOOKUP_CALLABLE_FROM_METHOD_REGEX
@@ -317,6 +492,16 @@ class CallableFilter(Filter):
         return getattr(self, name)
 
     def get_form_field(self, lookup):
+        """
+        Get the form field for a particular lookup.
+
+        This method attempts to return form field for custom callables
+        as set by :func:`.form_field_for_filter`. When either custom
+        lookup is not set or its form field is not set, super implementation
+        is used to get the form field. If form field at that point is not
+        found, this method raises ``AssertionError``. That can only happen
+        when `form_field` parameter is not provided during initialization.
+        """
         try:
             return self._get_filter_method_for_lookup(lookup).form_field
         except AttributeError:
@@ -337,6 +522,11 @@ class CallableFilter(Filter):
         return form_field
 
     def get_spec(self, config):
+        """
+        Get the :class:`.FilterSpec` for the given :class:`.LookupConfig`
+        with appropriately set :attr:`.FilterSpec.filter_callable`
+        when the lookup is a custom lookup
+        """
         spec = super(CallableFilter, self).get_spec(config)
         spec.filter_callable = self._get_filter_method_for_lookup(spec.lookup)
         return spec

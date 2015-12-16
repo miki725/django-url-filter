@@ -7,6 +7,16 @@ from .base import BaseFilterBackend
 
 
 class PlainFilterBackend(BaseFilterBackend):
+    """
+    Filter backend for filtering plain Python iterables.
+
+    .. warning::
+        The filter backend does filtering inside a regular loop
+        by comparing attributes of individual objects within iterable.
+        As a result, this is **NOT** efficient method for filtering
+        any large amounts of data. In those cases, it would probably
+        be better to find more appropriate and efficient way to filter data.
+    """
     name = 'plain'
     enforce_same_models = False
     supported_lookups = {
@@ -37,18 +47,31 @@ class PlainFilterBackend(BaseFilterBackend):
     }
 
     def get_model(self):
+        """
+        Get the model from the given queryset
+
+        Since there is no specific model for filtering Python lists,
+        this simply returns ``object``
+        """
         return object
 
     def filter_by_specs(self, queryset):
+        """
+        Filter queryset by applying all filter specifications
+
+        The filtering is done by calling manually loping over all
+        items in the iterable and comparing inner attributes with the
+        filter specification.
+        """
         if not self.regular_specs:
             return queryset
 
-        return filter(self.filter_callable, queryset)
+        return filter(self._filter_callable, queryset)
 
-    def filter_callable(self, item):
-        return all(self.filter_by_spec(item, spec) for spec in self.regular_specs)
+    def _filter_callable(self, item):
+        return all(self._filter_by_spec(item, spec) for spec in self.regular_specs)
 
-    def filter_by_spec(self, item, spec):
+    def _filter_by_spec(self, item, spec):
         filtered = self._filter_by_spec_and_value(item, spec.components, spec)
         if spec.is_negated:
             return not filtered

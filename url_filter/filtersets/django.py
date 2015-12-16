@@ -28,6 +28,8 @@ class DjangoModelFilterSetOptions(ModelFilterSetOptions):
     Attributes
     ----------
     allow_related_reverse : bool, optional
+        Flag specifying whether reverse relationships should
+        be allowed while creating filter sets for children models.
     """
     def __init__(self, options=None):
         super(DjangoModelFilterSetOptions, self).__init__(options)
@@ -36,7 +38,7 @@ class DjangoModelFilterSetOptions(ModelFilterSetOptions):
 
 class ModelFilterSet(BaseModelFilterSet):
     """
-    ``FilterSet`` for Django models.
+    :class:`.FilterSet` for Django models.
 
     The filterset can be configured via ``Meta`` class attribute,
     very much like Django's ``ModelForm`` is configured.
@@ -97,7 +99,7 @@ class ModelFilterSet(BaseModelFilterSet):
 
     def _build_filter_from_field(self, field):
         """
-        Build ``Filter`` for a standard Django model field.
+        Build :class:`.Filter` for a standard Django model field.
         """
         return Filter(
             form_field=self._get_form_field_for_field(field),
@@ -106,7 +108,7 @@ class ModelFilterSet(BaseModelFilterSet):
 
     def _build_filterset_from_related_field(self, field):
         """
-        Build a ``FilterSet`` for a Django relation model field
+        Build a :class:`.FilterSet` for a Django relation model field
         such as ``ForeignKey``.
         """
         return self._build_django_filterset(field, {
@@ -115,7 +117,7 @@ class ModelFilterSet(BaseModelFilterSet):
 
     def _build_filterset_from_reverse_field(self, field):
         """
-        Build a ``FilterSet`` for a Django reverse relation model field.
+        Build a :class:`.FilterSet` for a Django reverse relation model field.
         """
         return self._build_django_filterset(field, {
             'exclude': [field.field.name],

@@ -60,7 +60,7 @@ SQLALCHEMY_FIELD_MAPPING = SubClassDict({
 
 class SQLAlchemyModelFilterSet(BaseModelFilterSet):
     """
-    ``FilterSet`` for SQLAlchemy models.
+    :class:`.FilterSet` for SQLAlchemy models.
 
     The filterset can be configured via ``Meta`` class attribute,
     very much like Django's ``ModelForm`` is configured.
@@ -78,6 +78,16 @@ class SQLAlchemyModelFilterSet(BaseModelFilterSet):
             return self._build_filterset_from_related_field(field)
 
     def _build_state(self):
+        """
+        Build state of all column properties for the SQLAlchemy model
+        which normalizes to a dict where keys are field names and values
+        are column property instances.
+        This state is computed before main loop which builds all filters
+        for all fields. As a result all helper builder methods
+        can use this state to get column property instances for necessary
+        fields by simply doing a dictionary lookup instead of requiring
+        search operations to find appropriate properties.
+        """
         return SQLAlchemyFilterBackend._get_properties_for_model(self.Meta.model)
 
     def _get_model_field_names(self):
@@ -109,7 +119,7 @@ class SQLAlchemyModelFilterSet(BaseModelFilterSet):
 
     def _build_filter_from_field(self, field):
         """
-        Build ``Filter`` for a standard SQLAlchemy model field.
+        Build :class:`.Filter` for a standard SQLAlchemy model field.
         """
         column = SQLAlchemyFilterBackend._get_column_for_field(field)
 
@@ -119,6 +129,9 @@ class SQLAlchemyModelFilterSet(BaseModelFilterSet):
         )
 
     def _build_filterset_from_related_field(self, field):
+        """
+        Build :class:`.FilterSet` for a relation SQLAlchemy model field.
+        """
         m = SQLAlchemyFilterBackend._get_related_model_for_field(field)
 
         return self._build_filterset(

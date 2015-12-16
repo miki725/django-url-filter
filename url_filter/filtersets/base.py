@@ -20,7 +20,6 @@ from ..utils import LookupConfig
 
 
 __all__ = [
-    'BaseModelFilterSet',
     'FilterSet',
     'FilterSetOptions',
     'ModelFilterSetOptions',
@@ -33,10 +32,10 @@ class StrictMode(enum.Enum):
     Strictness mode enum.
 
     :``drop`` (default):
-        ignores all filter failures. when any occur, ``FilterSet``
+        ignores all filter failures. when any occur, :class:`.FilterSet`
         simply then does not filter provided queryset.
     :``fail``:
-        when validation fails for any filter within ``FilterSet``,
+        when validation fails for any filter within :class:`.FilterSet`,
         all error are compiled and cumulative ``ValidationError`` is raised.
     """
     drop = 'drop'
@@ -44,16 +43,22 @@ class StrictMode(enum.Enum):
 
 
 LOOKUP_RE = re.compile(
-    r'^(?:[^\d\W]\w*)(?:{}?[^\d\W]\w*)*(?:\!)?$'
+    r'^(?:[^\d\W]\w*)(?:{}?[^\d\W]\w*)*(?:!)?$'
     r''.format(LOOKUP_SEP), re.IGNORECASE
 )
 
 
 class FilterKeyValidator(RegexValidator):
+    """
+    Custom regex validator for validating the querystring filter
+    is of correct syntax::
+
+        name[__<relation>]*[__<lookup_method>][!]
+    """
     regex = LOOKUP_RE
     message = (
         'Filter key is of invalid format. '
-        'It must be `name[__<relation>]*[__<method>][!]`.'
+        'It must be `name[__<relation>]*[__<lookup_method>][!]`.'
     )
 
 filter_key_validator = FilterKeyValidator()
@@ -61,22 +66,22 @@ filter_key_validator = FilterKeyValidator()
 
 class FilterSetOptions(object):
     """
-    Base class for handling options passed to ``FilterSet``
+    Base class for handling options passed to :class:`.FilterSet`
     via ``Meta`` attribute.
     """
     def __init__(self, options=None):
         pass
 
 
-class FilterSetMeta(abc.ABCMeta):
+class FilterSetMeta(type(BaseFilter)):
     """
-    Metaclass for creating ``FilterSet`` classes.
+    Metaclass for creating :class:`.FilterSet` classes.
 
     Its primary job is to do:
 
     * collect all declared filters in all bases
       and set them as ``_declared_filters`` on created
-      ``FilterSet`` class.
+      :class:`.FilterSet` class.
     * instantiate ``Meta`` by using ``filter_options_class`` attribute
     """
 
@@ -108,53 +113,52 @@ class FilterSet(six.with_metaclass(FilterSetMeta, BaseFilter)):
     """
     Main user-facing classes to use filtersets.
 
-    ``FilterSet`` primarily does:
+    It primarily does:
 
     * takes queryset to filter
     * takes querystring data which will be used to filter
       given queryset
-    * from the querystring, it constructs a list of ``LookupConfig``
-    * loops over the created configs and attemps to get
-      ``FilterSpec`` for each
-    * in the process, if delegates the job of constructing spec
+    * from the querystring, it constructs a list of :class:`.LookupConfig`
+    * loops over the created configs and attempts to get
+      :class:`.FilterSpec` for each
+    * in the process, it delegates the job of constructing spec
       to child filters when any match is found between filter
-      defined on the filter and name in the config
+      defined on the filter and lookup name in the config
 
     Parameters
     ----------
-    source : str
-        Name of the attribute for which which filter applies to
-        within the model of the queryset to be filtered
-        as given to the ``FilterSet``.
     data : QueryDict, optional
-        QueryDict of querystring data.
-        Only optional when ``FilterSet`` is used a nested filter
-        within another ``FilterSet``.
+        ``QueryDict`` of querystring data.
+        Only optional when :class:`.FilterSet` is used as a nested filter
+        within another :class:`.FilterSet`.
     queryset : iterable, optional
         Can be any iterable as supported by the filter backend.
-        Only optional when ``FilterSet`` is used a nested filter
-        within another ``FilterSet``.
+        Only optional when :class:`.FilterSet` is used as a nested filter
+        within another :class:`.FilterSet`.
     context : dict, optional
         Context for filtering. This is passed to filtering backend.
         Usually this would consist of passing ``request`` and ``view``
         object from the Django view.
     strict_mode : str, optional
-        Strict mode how ``FilterSet`` should behave when any validation
-        fails. See ``StrictMode`` doc for more information.
+        Strict mode how :class:`.FilterSet` should behave when any validation
+        fails. See :class:`.StrictMode` doc for more information.
         Default is ``drop``.
-
-    Attributes
-    ----------
-    filter_backend_class
-        Class to be used as filter backend. By default
-        ``DjangoFilterBackend`` is used.
-    filter_options_class
-        Class to be used to construct ``Meta`` during
-        ``FilterSet`` class creation time in its metalclass.
     """
     filter_backend_class = DjangoFilterBackend
+    """
+    Class to be used as filter backend. By default
+    :class:`.DjangoFilterBackend` is used.
+    """
     filter_options_class = FilterSetOptions
+    """
+    Class to be used to construct ``Meta`` during
+    :class:`.FilterSet` class creation time in its metaclass.
+    """
     default_strict_mode = StrictMode.drop
+    """
+    Default strict mode which should be used when one is not
+    provided in initialization.
+    """
 
     def __init__(self, data=None, queryset=None, context=None,
                  strict_mode=None,
@@ -166,6 +170,18 @@ class FilterSet(six.with_metaclass(FilterSetMeta, BaseFilter)):
         self.strict_mode = strict_mode or self.default_strict_mode
 
     def repr(self, prefix=''):
+        """
+        Custom representation of the filterset
+
+
+        Parameters
+        ----------
+        prefix : str
+            Prefix with which each line of the representation should
+            be prefixed with. This allows to recursively get the
+            representation of all descendants with correct indentation
+            (children are indented compared to parent)
+        """
         header = '{name}({source})'.format(
             name=self.__class__.__name__,
             source='source="{}"'.format(self.source) if self.is_bound else '',
@@ -183,8 +199,11 @@ class FilterSet(six.with_metaclass(FilterSetMeta, BaseFilter)):
     def get_filters(self):
         """
         Get all filters defined in this filterset.
+
         By default only declared filters are returned however
-        this methoc can be used a hook to customize that.
+        this method is meant to be used as a hook in subclasses
+        in order to enhance functionality such as automatically
+        adding filters from model fields.
         """
         return deepcopy(self._declared_filters)
 
@@ -192,13 +211,14 @@ class FilterSet(six.with_metaclass(FilterSetMeta, BaseFilter)):
     def filters(self):
         """
         Cached property for accessing filters available in this filteset.
-        In addition to getting filters via ``get_filters``,
-        this property binds all filters to the filtset by using ``bind``.
+        In addition to getting filters via :meth:`.get_filters`,
+        this property binds all filters to the filterset by using
+        :meth:`.BaseFilter.bind`.
 
         See Also
         --------
         get_filters
-        bind
+        :meth:`.BaseFilter.bind`
         """
         filters = self.get_filters()
 
@@ -223,10 +243,23 @@ class FilterSet(six.with_metaclass(FilterSetMeta, BaseFilter)):
 
     def validate_key(self, key):
         """
-        Validate that ``LookupConfig`` key is correct.
+        Validate that :class:`.LookupConfig` key is correct.
 
         This is the key as provided in the querystring.
         Currently key is validated against a regex expression.
+
+        Useful to filter out invalid filter querystring pairs
+        since not whole querystring is not dedicated for filter
+        purposes but could contain other information such as
+        pagination information. In that case if the key is
+        invalid key for filtering, we can simply ignore it
+        without wasting time trying to get filter specification
+        for it.
+
+        Parameters
+        ----------
+        key : str
+            Key as provided in the querystring
         """
         filter_key_validator(key)
 
@@ -259,15 +292,15 @@ class FilterSet(six.with_metaclass(FilterSetMeta, BaseFilter)):
 
     def filter(self):
         """
-        Main method which should be used on root ``FilterSet``
+        Main method which should be used on root :class:`.FilterSet`
         to filter queryset.
 
         This method:
 
-        * asserts that filtering is being done on root ``FilterSet``
+        * asserts that filtering is being done on root :class:`.FilterSet`
           and that all necessary data is provided
-        * creates ``LookupConfig``s from the provided data (querystring)
-        * loops over all configs and attemps to get ``FilterSpec``
+        * creates :class:`.LookupConfig` from the provided data (querystring)
+        * loops over all configs and attempts to get :class:`.FilterSet`
           for all of them
         * instantiates filter backend
         * uses the created filter specs to filter queryset by using specs
@@ -294,21 +327,21 @@ class FilterSet(six.with_metaclass(FilterSetMeta, BaseFilter)):
 
     def get_specs(self):
         """
-        Get ``FilterSpecs`` for the given querystring data.
+        Get list of :class:`.FilterSpec` for the given querystring data.
 
         This function does:
 
-        * unpacks the querystring data to ``LookupConfig``s
-        * loops throught all configs and uses appropriate children
-          filters to generate ``FilterSpec``s
+        * unpacks the querystring data to a list of :class:`.LookupConfig`
+        * loops through all configs and uses appropriate children
+          filters to generate list of :class:`.FilterSpec`
         * if any validations fails while generating specs,
           all errors are collected and depending on ``strict_mode``
-          it reraises the errors or ignores them.
+          it re-raises the errors or ignores them.
 
         Returns
         -------
         list
-            List of ``FilterSpec``s
+            List of :class:`.FilterSpec`
         """
         configs = self._generate_lookup_configs()
         specs = []
@@ -317,6 +350,10 @@ class FilterSet(six.with_metaclass(FilterSetMeta, BaseFilter)):
         for data in configs:
             try:
                 self.validate_key(data.key)
+            except ValidationError:
+                continue
+
+            try:
                 specs.append(self.get_spec(data))
             except SkipFilter:
                 pass
@@ -332,7 +369,7 @@ class FilterSet(six.with_metaclass(FilterSetMeta, BaseFilter)):
 
     def get_spec(self, config):
         """
-        Get ``FilterSpec`` for the given ``LookupConfig``.
+        Get :class:`.FilterSpec` for the given :class:`.LookupConfig`.
 
         If the config is non leaf config (it has more nested fields),
         then the appropriate matching child filter is used
@@ -344,7 +381,7 @@ class FilterSet(six.with_metaclass(FilterSetMeta, BaseFilter)):
         Parameters
         ----------
         config : LookupConfig
-            Config for which to generate ``FilterSpec``
+            Config for which to generate :class:`.FilterSpec`
 
         Returns
         -------
@@ -384,12 +421,12 @@ class FilterSet(six.with_metaclass(FilterSetMeta, BaseFilter)):
 
 class ModelFilterSetOptions(FilterSetOptions):
     """
-    Custom options for ``FilterSet``s used for model-generated filtersets.
+    Custom options for :class:`.FilterSet` used for model-generated filtersets.
 
     Attributes
     ----------
     model : Model
-        Model class from which ``FilterSet`` will
+        Model class from which :class:`.FilterSet` will
         extract necessary filters.
     fields : None, list, optional
         Specific model fields for which filters
@@ -398,11 +435,11 @@ class ModelFilterSetOptions(FilterSetOptions):
         fields filters will be created for.
     exclude : list, optional
         Specific model fields for which filters
-        should not be created for.
+        should **not** be created for.
     allow_related : bool, optional
         Whether related/nested fields should be allowed
         when model fields are automatically determined
-        (e.g. when explicit ``fields`` is not provided).
+        (e.g. when explicit :attr:`.fields` is not provided).
     """
     def __init__(self, options=None):
         super(ModelFilterSetOptions, self).__init__(options)
@@ -414,7 +451,7 @@ class ModelFilterSetOptions(FilterSetOptions):
 
 class BaseModelFilterSet(FilterSet):
     """
-    Base ``FilterSet`` for model-generated filtersets.
+    Base :class:`.FilterSet` for model-generated filtersets.
 
     The filterset can be configured via ``Meta`` class attribute,
     very much like how Django's ``ModelForm`` is configured.
@@ -423,7 +460,7 @@ class BaseModelFilterSet(FilterSet):
 
     def get_filters(self):
         """
-        Get all filters defined in this filterset by introspecing
+        Get all filters defined in this filterset by introspecting
         the given model in ``Meta.model``.
         """
         filters = super(BaseModelFilterSet, self).get_filters()
@@ -461,7 +498,7 @@ class BaseModelFilterSet(FilterSet):
         Get a list of all model fields.
 
         This is used when ``Meta.fields`` is ``None``
-        in which case this method returns all model fields.
+        in which case this method returns all model field names.
 
         .. note::
             This method is an abstract method and must be implemented
@@ -482,7 +519,7 @@ class BaseModelFilterSet(FilterSet):
         name : str
             Name of the field for which to build the filter within the ``Meta.model``
         state
-            State of the model as returned by ``build_state``.
+            State of the model as returned by :meth:`._build_state`.
             Since state is computed outside of the loop which builds
             filters, state can be useful to store information outside
             of the loop so that it can be reused for all filters.
@@ -490,7 +527,7 @@ class BaseModelFilterSet(FilterSet):
 
     def _build_filterset(self, name, meta_attrs, base):
         """
-        Helper method for building filtersets.
+        Helper method for building child filtersets.
 
         Parameters
         ----------
@@ -519,6 +556,6 @@ class BaseModelFilterSet(FilterSet):
         """
         Hook function to build state to be used while building all the filters.
         Useful to compute common data between all filters such as some
-        data about the data so that the computation can be avoided while
-        building inidividual filters.
+        data about model so that the computation can be avoided while
+        building individual filters.
         """

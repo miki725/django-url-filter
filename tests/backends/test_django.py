@@ -54,7 +54,7 @@ class TestDjangoFilterBackend(object):
 
     def test_prepare_spec(self):
         backend = DjangoFilterBackend(Place.objects.all())
-        spec = backend.prepare_spec(FilterSpec(['name'], 'exact', 'value'))
+        spec = backend._prepare_spec(FilterSpec(['name'], 'exact', 'value'))
 
         assert spec == 'name__exact'
 

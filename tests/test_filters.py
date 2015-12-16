@@ -59,6 +59,12 @@ class TestFilter(object):
 
         assert repr(f) == (
             'Filter(form_field=CharField, lookups=ALL, '
+            'default_lookup="foo", no_lookup=False)'
+        )
+
+        f.is_bound = True
+        assert repr(f) == (
+            'Filter(source="foo", form_field=CharField, lookups=ALL, '
             'default_lookup="foo", is_default=True, no_lookup=False)'
         )
 

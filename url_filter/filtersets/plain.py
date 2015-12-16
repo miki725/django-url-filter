@@ -26,7 +26,7 @@ DATA_TYPES_MAPPING = SubClassDict({
 
 class PlainModelFilterSet(BaseModelFilterSet):
     """
-    ``FilterSet`` for plain Python objects.
+    :class:`.FilterSet` for plain Python objects.
 
     The filterset can be configured via ``Meta`` class attribute,
     very much like Django's ``ModelForm`` is configured.

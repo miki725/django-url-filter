@@ -13,5 +13,6 @@ Submodules
 
    url_filter.backends.base
    url_filter.backends.django
+   url_filter.backends.plain
    url_filter.backends.sqlalchemy
 
