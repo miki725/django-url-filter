@@ -166,8 +166,21 @@ class TestCallableFilter(object):
                 pass
 
         f = Foo()
+        f.filter_backend = mock.Mock(supported_lookups=set())
+        f.filter_backend.name = 'django'
 
         assert f.lookups == {'foo'}
+
+    def test_lookups_not_all_backends(self):
+        class Foo(CallableFilter):
+            def filter_foo_for_django(self):
+                pass
+
+        f = Foo()
+        f.filter_backend = mock.Mock(supported_lookups=set())
+        f.filter_backend.name = 'sqlalchemy'
+
+        assert f.lookups == set()
 
     def test_get_form_field(self):
         field = forms.CharField()

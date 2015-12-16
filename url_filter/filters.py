@@ -30,7 +30,7 @@ LOOKUP_FIELD_OVERWRITES = {
 }
 
 LOOKUP_CALLABLE_FROM_METHOD_REGEX = re.compile(
-    r'^filter_(?P<filter>[\w\d]+)_for_(?P<backend>[\w\d])+$'
+    r'^filter_(?P<filter>[\w\d]+)_for_(?P<backend>[\w\d]+)$'
 )
 
 
@@ -483,7 +483,10 @@ class CallableFilter(Filter):
         lookups = super(CallableFilter, self).lookups
 
         r = LOOKUP_CALLABLE_FROM_METHOD_REGEX
-        custom_lookups = {m.groupdict()['filter'] for m in (r.match(i) for i in dir(self)) if m}
+        custom_lookups = {
+            m.groupdict()['filter'] for m in (r.match(i) for i in dir(self))
+            if m and m.groupdict()['backend'] == self.root.filter_backend.name
+        }
 
         return lookups | custom_lookups
 
