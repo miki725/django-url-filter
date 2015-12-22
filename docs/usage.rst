@@ -8,7 +8,7 @@ In its simplest form, Django URL Filter usage revolves around :class:`.FilterSet
 They can be used manually::
 
     from django import forms
-    from url_filter.filter import Filter
+    from url_filter.filters import Filter
     from url_filter.filtersets import FilterSet
 
     class ProfileFilterSet(FilterSet):
