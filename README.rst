@@ -62,7 +62,7 @@ with Django REST Framework but it can be used without DRF (see below).
       filter_backends = [DjangoFilterBackend]
       filter_fields = ['username', 'email']
 
-Alternatively filteset can be manually created and used directly
+Alternatively filterset can be manually created and used directly
 to filter querysets::
 
   class UserFilterSet(ModelFilterSet):
