@@ -72,6 +72,7 @@ class TestPlainModelFilterSet(object):
                         "serves_hot_dogs": True,
                         "serves_pizza": False,
                         "dummy": [{}],
+                        "ignored": [object()],
                     },
                     "nicknames": ["dogs"],
                     "name": "Demon Dogs",
