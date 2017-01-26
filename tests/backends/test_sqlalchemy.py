@@ -67,7 +67,8 @@ class TestSQLAlchemyFilterBackend(object):
 
         filtered = backend.filter()
 
-        assert six.text_type(filtered) == (
+        sql = six.text_type(filtered)
+        assert sql == (
             'SELECT one_to_one_place.id AS one_to_one_place_id, '
             'one_to_one_place.name AS one_to_one_place_name, '
             'one_to_one_place.address AS one_to_one_place_address \n'
@@ -76,7 +77,7 @@ class TestSQLAlchemyFilterBackend(object):
             'ON one_to_one_restaurant.place_id = one_to_one_place.id '
             'JOIN one_to_one_waiter '
             'ON one_to_one_waiter.restaurant_id = one_to_one_restaurant.place_id '
-            '\nWHERE one_to_one_waiter.name = :name_1'
+            '\nWHERE one_to_one_waiter.name ={}'.format(sql.rsplit('=', 1)[-1])
         )
 
     def _test_build_clause(self, alchemy_db, name, lookup, value, expected, is_negated=False):
