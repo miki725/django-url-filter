@@ -30,6 +30,7 @@ class TestPlainModelFilterSet(object):
                         "serves_hot_dogs": True,
                         "serves_pizza": False,
                     },
+                    "nicknames": ["dogs"],
                     "name": "Demon Dogs",
                     "address": "944 W. Fullerton",
                     "ignored": [{}],
@@ -39,7 +40,7 @@ class TestPlainModelFilterSet(object):
         filters = PlaceFilterSet().get_filters()
 
         assert set(filters.keys()) == {
-            'id', 'name', 'address',
+            'id', 'name', 'address', 'nicknames',
         }
 
         assert isinstance(filters['id'], Filter)
@@ -70,8 +71,9 @@ class TestPlainModelFilterSet(object):
                         ],
                         "serves_hot_dogs": True,
                         "serves_pizza": False,
-                        "ignored": [5],
+                        "dummy": [{}],
                     },
+                    "nicknames": ["dogs"],
                     "name": "Demon Dogs",
                     "address": "944 W. Fullerton"
                 }
@@ -79,10 +81,10 @@ class TestPlainModelFilterSet(object):
         filters = PlaceFilterSet().get_filters()
 
         assert set(filters.keys()) == {
-            'id', 'address', 'name', 'restaurant',
+            'id', 'address', 'name', 'nicknames', 'restaurant',
         }
         assert set(filters['restaurant'].filters.keys()) == {
-            'place', 'serves_hot_dogs', 'serves_pizza', 'waiters'
+            'place', 'serves_hot_dogs', 'serves_pizza', 'waiters',
         }
         assert set(filters['restaurant'].filters['waiters'].filters.keys()) == {
             'id', 'name', 'restaurant',

@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, print_function, unicode_literals
 
+from django.core.exceptions import ValidationError as DjangoValidationError
+from rest_framework.exceptions import ValidationError
 from rest_framework.filters import BaseFilterBackend
 
 from ..filtersets import ModelFilterSet
@@ -154,6 +156,9 @@ class DjangoFilterBackend(BaseFilterBackend):
                     ''.format(filter_model, model)
                 )
 
-            return _filter.filter()
+            try:
+                return _filter.filter()
+            except DjangoValidationError as e:
+                raise ValidationError(e.message_dict)
 
         return queryset

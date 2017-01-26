@@ -229,15 +229,8 @@ def dictify(obj):
     if isinstance(obj, dict):
         return obj
     else:
-        if hasattr(obj, '__slots__'):
-            return {
-                k: getattr(obj, k)
-                for k in obj.__slots__
-                if not k.startswith('_') and hasattr(obj, k)
-            }
-        else:
-            return {
-                k: v
-                for k, v in vars(obj).items()
-                if not k.startswith('_')
-            }
+        return {
+            k: getattr(obj, k)
+            for k in dir(obj)
+            if not k.startswith('_')
+        }
