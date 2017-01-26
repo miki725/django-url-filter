@@ -26,6 +26,7 @@ pip-log.txt
 .cache
 .coverage
 .tox
+.venv
 nosetests.xml
 htmlcov
 

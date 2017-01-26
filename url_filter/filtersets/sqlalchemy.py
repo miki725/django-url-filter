@@ -35,15 +35,17 @@ from .base import BaseModelFilterSet
 __all__ = ['SQLAlchemyModelFilterSet']
 
 
-_STRING = lambda field, column: forms.CharField(max_length=column.type.length)
+def _string(field, column):
+    return forms.CharField(max_length=column.type.length)
+
 
 SQLALCHEMY_FIELD_MAPPING = SubClassDict({
     BIGINT: forms.IntegerField,
     BigInteger: forms.IntegerField,
     Integer: forms.IntegerField,
     Boolean: partial(forms.BooleanField, required=False),
-    CHAR: _STRING,
-    CLOB: _STRING,
+    CHAR: _string,
+    CLOB: _string,
     DATE: forms.DateTimeField,
     Date: forms.DateField,
     DateTime: forms.DateTimeField,
@@ -52,9 +54,9 @@ SQLALCHEMY_FIELD_MAPPING = SubClassDict({
     INTEGER: forms.IntegerField,
     Numeric: forms.IntegerField,
     SMALLINT: forms.IntegerField,
-    String: _STRING,
+    String: _string,
     TIMESTAMP: forms.DateTimeField,
-    VARCHAR: _STRING,
+    VARCHAR: _string,
 })
 
 

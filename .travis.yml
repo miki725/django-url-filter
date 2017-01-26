@@ -10,6 +10,9 @@ env:
 
 sudo: false
 
+before_install:
+  - pip install -U pytest
+
 # command to install dependencies, e.g. pip install -r requirements.txt --use-mirrors
 install:
   - pip install $DJANGO

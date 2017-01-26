@@ -23,8 +23,8 @@ requirements = read('requirements.txt').splitlines() + [
 ]
 
 test_requirements = (
-    read('requirements.txt').splitlines()
-    + read('requirements-dev.txt').splitlines()[1:]
+    read('requirements.txt').splitlines() +
+    read('requirements-dev.txt').splitlines()[1:]
 )
 
 setup(
