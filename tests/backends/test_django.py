@@ -69,7 +69,7 @@ class TestDjangoFilterBackend(object):
 
         result = backend.filter()
 
-        assert result == qs.filter.return_value.exclude.return_value
+        assert result == qs.filter.return_value.exclude.return_value.distinct.return_value
         qs.filter.assert_called_once_with(name__exact='value')
         qs.filter.return_value.exclude.assert_called_once_with(address__contains='value')
 
@@ -85,5 +85,5 @@ class TestDjangoFilterBackend(object):
 
         result = backend.filter()
 
-        assert result == qs.filter.return_value
-        qs.filter.assert_called_once_with(spec)
+        assert result == qs.distinct.return_value.filter.return_value
+        qs.distinct.return_value.filter.assert_called_once_with(spec)

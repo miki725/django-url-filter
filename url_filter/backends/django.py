@@ -99,4 +99,4 @@ class DjangoFilterBackend(BaseFilterBackend):
         if exclude:
             queryset = queryset.exclude(**exclude)
 
-        return queryset
+        return queryset.distinct()
