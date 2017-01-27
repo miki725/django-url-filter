@@ -3,6 +3,7 @@ from __future__ import print_function, unicode_literals
 
 from rest_framework.routers import DefaultRouter
 
+from test_project.generic import api as g_api
 from test_project.many_to_many import api as m2m_api
 from test_project.many_to_one import api as m2o_api
 from test_project.one_to_one import api as o2o_api
@@ -27,5 +28,8 @@ router.register('many-to-many/publications/alchemy', m2m_api.SQLAlchemyPublicati
 router.register('many-to-many/publications', m2m_api.PublicationViewSet, 'many-to-many|publication')
 router.register('many-to-many/articles/alchemy', m2m_api.SQLAlchemyArticleViewSet, 'many-to-many-alchemy|article')
 router.register('many-to-many/articles', m2m_api.ArticleViewSet, 'many-to-many|article')
+
+router.register('generic/a', g_api.ModelAViewSet, 'generic|a')
+router.register('generic/b', g_api.ModelBViewSet, 'generic|b')
 
 urlpatterns = router.urls

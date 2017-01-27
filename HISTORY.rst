@@ -12,6 +12,9 @@ History
 * Added `CallableFilter <https://django-url-filter.readthedocs.io/en/latest/api/url_filter.filters.html#url_filter.filters.CallableFilter>`_ which allows to implement custom filters.
 * Normalizing to DRF's ``ValidationError`` when using ``StrictMode.Fail``
   since filterset raises Django's ``ValidationError`` which caused 500 status code.
+* Fixes ``ModelFilterSet`` automatic introspection to ignore ``GenericForeignKey``
+  since they dont have form fields associated with them.
+  See `#20 <https://github.com/miki725/django-url-filter/issues/20>`_.
 * Releasing with `wheels <http://pythonwheels.com/>`_.
 
 

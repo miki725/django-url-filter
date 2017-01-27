@@ -5,6 +5,7 @@ import pytest
 from django import forms
 from django.db import models
 
+from test_project.generic.models import ModelB
 from test_project.many_to_many.models import Article as M2MArticle, Publication
 from test_project.many_to_one.models import Article as M2OArticle
 from test_project.one_to_one.models import Place, Restaurant
@@ -207,6 +208,17 @@ class TestModelFilterSet(object):
         assert isinstance(filters['pub_date'], Filter)
         assert isinstance(filters['pub_date'].form_field, forms.DateField)
         assert isinstance(filters['reporter'], ModelFilterSet)
+
+    def test_get_filters_without_generic_foreign_key(self):
+        class ModelBFilterSet(ModelFilterSet):
+            class Meta(object):
+                model = ModelB
+
+        filters = ModelBFilterSet().get_filters()
+
+        assert set(filters.keys()) == {
+            'id', 'name', 'a', 'content_type', 'object_id',
+        }
 
     def test_get_form_field_for_field(self):
         fs = ModelFilterSet()
