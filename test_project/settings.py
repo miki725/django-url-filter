@@ -13,6 +13,7 @@ DATABASES = {
 }
 
 INSTALLED_APPS = (
+    'test_project.generic',
     'test_project.many_to_many',
     'test_project.many_to_one',
     'test_project.one_to_one',
@@ -32,6 +33,13 @@ SECRET_KEY = 'foo'
 
 MIDDLEWARE_CLASSES = [
     'test_project.middleware.SQLAlchemySessionMiddleware',
+]
+
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'APP_DIRS': True,
+    },
 ]
 
 ROOT_URLCONF = 'test_project.urls'

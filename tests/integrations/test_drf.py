@@ -3,7 +3,9 @@ from __future__ import print_function, unicode_literals
 
 import mock
 import pytest
+from django.core.exceptions import ValidationError as DjangoValidationError
 from django.http import QueryDict
+from rest_framework.exceptions import ValidationError
 
 from test_project.one_to_one.api import PlaceFilterSet
 from test_project.one_to_one.models import Place, Restaurant
@@ -62,6 +64,25 @@ class TestDjangoFilterBackend(object):
         )
 
         assert filtered == mock_filter.return_value
+
+    @mock.patch.object(FilterSet, 'filter')
+    def test_get_filter_queryset_invalid_query(self, mock_filter, db, rf):
+        mock_filter.side_effect = DjangoValidationError({'foo': 'bar'})
+
+        class View(object):
+            filter_fields = ['name']
+
+        request = rf.get('/')
+        request.query_params = QueryDict()
+
+        with pytest.raises(ValidationError) as e:
+            DjangoFilterBackend().filter_queryset(
+                request=request,
+                queryset=Place.objects.all(),
+                view=View()
+            )
+
+        assert e.value.detail == {'foo': ['bar']}
 
     @mock.patch.object(FilterSet, 'filter')
     def test_filter_queryset_supplied_model_mismatch(self, mock_filter, db, rf):

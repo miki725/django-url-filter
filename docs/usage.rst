@@ -153,7 +153,8 @@ Django REST Framework
 +++++++++++++++++++++
 
 Django URL Filter can rather easily be integrated with DRF.
-For that, a DRF-specific filter backend :class:`.DjangoFilterBackend` is implemented and can be used in settings::
+For that, a DRF-specific filter backend :class:`DjangoFilterBackend <url_filter.integrations.drf.DjangoFilterBackend>`
+is implemented and can be used in settings::
 
     # settings.py
     REST_FRAMEWORK = {
@@ -183,4 +184,5 @@ control over :class:`.FilterSet` is required, it can be set explicitly::
         filter_backends = [DjangoFilterBackend]
         filter_class = MyFilterSet
 
-For more available options, please refer to :class:`.DjangoFilterBackend` documentation.
+For more available options, please refer to
+:class:`DjangoFilterBackend <url_filter.integrations.drf.DjangoFilterBackend>` documentation.

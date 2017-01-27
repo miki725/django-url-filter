@@ -3,6 +3,7 @@ from __future__ import absolute_import, print_function, unicode_literals
 import operator
 
 from django import forms
+from django.contrib.contenttypes.fields import GenericForeignKey
 from django.db import models
 from django.db.models.fields.related import ForeignObjectRel, RelatedField
 
@@ -93,6 +94,9 @@ class ModelFilterSet(BaseModelFilterSet):
             if not self.Meta.allow_related_reverse:
                 raise SkipFilter
             return self._build_filterset_from_reverse_field(field)
+
+        elif isinstance(field, GenericForeignKey):
+            raise SkipFilter
 
         else:
             return self._build_filter_from_field(field)

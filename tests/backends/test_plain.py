@@ -33,6 +33,9 @@ DATA = [
         },
         "name": "Demon Dogs",
         "address": "944 W. Fullerton",
+        "nicknames": [
+            "dogs",
+        ],
         "created": datetime(2015, 6, 12, 9, 30, 55),
     },
     {
@@ -51,6 +54,10 @@ DATA = [
         },
         "name": "Ace Hardware",
         "address": "1013 N. Ashland",
+        "nicknames": [
+            "Ace",
+            "ace",
+        ],
         "created": datetime(2014, 5, 12, 14, 30, 37),
         "nulldata": None,
     }
@@ -95,6 +102,12 @@ class TestPlainFilterBackend(object):
             []
         )
 
+    def test_filter_exact_simple_list(self):
+        self._test_filter(
+            FilterSpec(['nicknames'], 'exact', 'ace', False),
+            [DATA[1]]
+        )
+
     def test_filter_exact_negated(self):
         self._test_filter(
             FilterSpec(['restaurant', 'waiters', 'name'], 'exact', 'John', True),
@@ -135,6 +148,12 @@ class TestPlainFilterBackend(object):
         self._test_filter(
             FilterSpec(['restaurant', 'waiters', 'name'], 'in', ['John', 'Steve'], False),
             [DATA[1]]
+        )
+
+    def test_filter_in_simple_list(self):
+        self._test_filter(
+            FilterSpec(['nicknames'], 'in', ['ace', 'dogs'], False),
+            DATA
         )
 
     def test_filter_isnull(self):

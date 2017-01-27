@@ -22,6 +22,7 @@ from .models import Place, Restaurant, Waiter
 class PlaceSerializer(ModelSerializer):
     class Meta(object):
         model = Place
+        exclude = []
 
 
 class RestaurantSerializer(ModelSerializer):
@@ -29,6 +30,7 @@ class RestaurantSerializer(ModelSerializer):
 
     class Meta(object):
         model = Restaurant
+        exclude = []
 
 
 class WaiterNestedSerializer(ModelSerializer):
@@ -36,11 +38,13 @@ class WaiterNestedSerializer(ModelSerializer):
 
     class Meta(object):
         model = Waiter
+        exclude = []
 
 
 class WaiterSerializer(ModelSerializer):
     class Meta(object):
         model = Waiter
+        exclude = []
 
 
 class RestaurantNestedSerializer(ModelSerializer):
@@ -49,6 +53,7 @@ class RestaurantNestedSerializer(ModelSerializer):
 
     class Meta(object):
         model = Restaurant
+        exclude = []
 
 
 class RestaurantNestedWithoutPlaceSerializer(ModelSerializer):
@@ -56,6 +61,7 @@ class RestaurantNestedWithoutPlaceSerializer(ModelSerializer):
 
     class Meta(object):
         model = Restaurant
+        exclude = []
 
 
 class PlaceNestedSerializer(ModelSerializer):
@@ -63,6 +69,7 @@ class PlaceNestedSerializer(ModelSerializer):
 
     class Meta(object):
         model = Place
+        exclude = []
 
 
 class PlaceWaiterCallableFilter(CallableFilter):

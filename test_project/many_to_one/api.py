@@ -15,6 +15,7 @@ from .models import Article, Reporter
 class ReporterSerializer(ModelSerializer):
     class Meta(object):
         model = Reporter
+        exclude = []
 
 
 class ArticleSerializer(ModelSerializer):
@@ -28,6 +29,7 @@ class ReporterNestedSerializer(ModelSerializer):
 
     class Meta(object):
         model = Reporter
+        exclude = []
 
 
 class ArticleNestedSerializer(ModelSerializer):
@@ -35,6 +37,7 @@ class ArticleNestedSerializer(ModelSerializer):
 
     class Meta(object):
         model = Article
+        exclude = []
 
 
 class ReporterFilterSet(ModelFilterSet):
@@ -42,6 +45,7 @@ class ReporterFilterSet(ModelFilterSet):
 
     class Meta(object):
         model = Reporter
+        exclude = []
 
 
 class SQLAlchemyReporterFilterSet(SQLAlchemyModelFilterSet):
@@ -50,6 +54,7 @@ class SQLAlchemyReporterFilterSet(SQLAlchemyModelFilterSet):
 
     class Meta(object):
         model = alchemy.Reporter
+        exclude = []
 
 
 class ArticleFilterSet(ModelFilterSet):
@@ -57,6 +62,7 @@ class ArticleFilterSet(ModelFilterSet):
 
     class Meta(object):
         model = Article
+        exclude = []
 
 
 class SQLAlchemyArticleFilterSet(SQLAlchemyModelFilterSet):
@@ -65,6 +71,7 @@ class SQLAlchemyArticleFilterSet(SQLAlchemyModelFilterSet):
 
     class Meta(object):
         model = alchemy.Article
+        exclude = []
 
 
 class ReporterViewSet(ReadOnlyModelViewSet):

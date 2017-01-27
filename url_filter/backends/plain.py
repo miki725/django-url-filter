@@ -78,7 +78,7 @@ class PlainFilterBackend(BaseFilterBackend):
         return filtered
 
     def _filter_by_spec_and_value(self, item, components, spec):
-        if not components:
+        if not components and not isinstance(item, (list, tuple)):
             comparator = getattr(self, '_compare_{}'.format(spec.lookup))
             try:
                 return comparator(item, spec)

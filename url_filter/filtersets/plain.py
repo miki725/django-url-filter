@@ -44,6 +44,8 @@ class PlainModelFilterSet(BaseModelFilterSet):
 
         elif isinstance(value, (list, tuple, set)) and value:
             value = list(value)[0]
+            if DATA_TYPES_MAPPING.get(type(value)):
+                return self._build_filter_from_field(value)
             if not isinstance(value, dict):
                 raise SkipFilter
             if not self.Meta.allow_related:
@@ -62,6 +64,8 @@ class PlainModelFilterSet(BaseModelFilterSet):
         return Filter(form_field=DATA_TYPES_MAPPING.get(type(field)))
 
     def _build_filterset_from_related_field(self, name, field):
+        if not field:
+            raise SkipFilter
         return self._build_filterset(
             name.title(),
             {'model': field},

@@ -15,6 +15,7 @@ from .models import Article, Publication
 class PublicationSerializer(ModelSerializer):
     class Meta(object):
         model = Publication
+        exclude = []
 
 
 class ArticleSerializer(ModelSerializer):
@@ -28,6 +29,7 @@ class PublicationNestedSerializer(ModelSerializer):
 
     class Meta(object):
         model = Publication
+        exclude = []
 
 
 class ArticleNestedSerializer(ModelSerializer):
@@ -35,6 +37,7 @@ class ArticleNestedSerializer(ModelSerializer):
 
     class Meta(object):
         model = Article
+        exclude = []
 
 
 class PublicationFilterSet(ModelFilterSet):
@@ -42,6 +45,7 @@ class PublicationFilterSet(ModelFilterSet):
 
     class Meta(object):
         model = Publication
+        exclude = []
 
 
 class SQLAlchemyPublicationFilterSet(SQLAlchemyModelFilterSet):
@@ -50,6 +54,7 @@ class SQLAlchemyPublicationFilterSet(SQLAlchemyModelFilterSet):
 
     class Meta(object):
         model = alchemy.Publication
+        exclude = []
 
 
 class ArticleFilterSet(ModelFilterSet):
@@ -57,6 +62,7 @@ class ArticleFilterSet(ModelFilterSet):
 
     class Meta(object):
         model = Article
+        exclude = []
 
 
 class SQLAlchemyArticleFilterSet(SQLAlchemyModelFilterSet):
@@ -65,6 +71,7 @@ class SQLAlchemyArticleFilterSet(SQLAlchemyModelFilterSet):
 
     class Meta(object):
         model = alchemy.Article
+        exclude = []
 
 
 class PublicationViewSet(ReadOnlyModelViewSet):
