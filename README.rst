@@ -4,6 +4,8 @@ Django URL Filter
 
 .. image:: https://badge.fury.io/py/django-url-filter.svg
     :target: http://badge.fury.io/py/django-url-filter
+.. image:: https://readthedocs.org/projects/django-url-filter/badge/?version=latest
+    :target: http://django-url-filter.readthedocs.io/en/latest/?badge=latest
 .. image:: https://travis-ci.org/miki725/django-url-filter.svg?branch=master
     :target: https://travis-ci.org/miki725/django-url-filter
 .. image:: https://coveralls.io/repos/miki725/django-url-filter/badge.svg?branch=master&service=github
