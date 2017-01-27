@@ -19,7 +19,7 @@ class ModelA(models.Model):
 class ModelB(models.Model):
     name = models.CharField(max_length=64)
     a = models.ForeignKey(ModelA, blank=True, null=True, related_name='rel_b')
-    content_type = models.ForeignKey(ContentType, models.DO_NOTHING)
+    content_type = models.ForeignKey(ContentType, related_name='+')
     object_id = models.PositiveIntegerField()
     content_object = GenericForeignKey('content_type', 'object_id')
 
