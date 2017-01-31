@@ -3,7 +3,7 @@
 History
 -------
 
-0.3.0 (2016-01-26)
+0.3.0 (2017-01-26)
 ~~~~~~~~~~~~~~~~~~
 
 * Added plain objects filtering support.
