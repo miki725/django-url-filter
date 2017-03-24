@@ -11,7 +11,7 @@ In order to filter any data, this library breaks the process
 to 3 phases:
 
 1. Parse the URL querystring into :class:`.LookupConfig`
-2. Loop throught all the configs and generate :class:`.FilterSpec` when possible
+2. Loop through all the configs and generate :class:`.FilterSpec` when possible
 3. Use the list of specs to actually filter data
 
 And here is a bit more information about each phase.
