@@ -8,10 +8,10 @@ Basics
 ------
 
 In order to filter any data, this library breaks the process
-to 3 phases:
+into 3 phases:
 
 1. Parse the URL querystring into :class:`.LookupConfig`
-2. Loop throught all the configs and generate :class:`.FilterSpec` when possible
+2. Loop through all the configs and generate :class:`.FilterSpec` when possible
 3. Use the list of specs to actually filter data
 
 And here is a bit more information about each phase.
@@ -29,9 +29,9 @@ as a simple dictionary::
     }
 
 .. note::
-  Technically this is not 100% true since key
+  Technically, this is not 100% true since key
   can be repeated which is why Django uses ``QueryDict`` but for
-  the purposes of this discussion, lets assume no duplicate keys
+  the purposes of this discussion, let's assume no duplicate keys
   are present.
 
 The filtering however is not flat. Each querystring key can be nested
@@ -46,7 +46,7 @@ contain lookup. For example::
     ?foo__nested__othernested__contains=bar
 
 In order to accomodate the nested structure of querystring keys,
-Django URL Filter parses all querystring key-value pairs to
+Django URL Filter parses all querystring key-value pairs into
 nested dictionaries. For example::
 
     ?foo__nested__othernested=bar => {
@@ -88,7 +88,7 @@ It stores 3 required pieces of information on how to filter data:
   compared while doing filtering. Example is ``exact``, ``contains``.
   By default only lookups from Django ORM are supported however custom
   :class:`.CallableFilter` can be used to define custom lookups.
-* If the filter is negated. For example to filter when username is ``'foo'``
+* If the filter is negated. For example, to filter when username is ``'foo'``
   or filter when username is not ``'foo'``.
 
 Filtering
@@ -170,4 +170,4 @@ Some important things to note:
 * Root :class:`.FilterSet` does all the looping over querystring data and
   generated configurations.
 * Children filters of a root :class:`.FilterSet` are only responsible for
-  generating :class:`.FilterSpec` and in the process validating the data.
+  generating :class:`.FilterSpec` and in the process of validating the data.
