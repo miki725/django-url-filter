@@ -9,4 +9,4 @@ Development Lead
 Contributors
 ------------
 
-None yet. Why not be the first?
+* João Neto - https://github.com/netjinho
