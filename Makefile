@@ -43,6 +43,7 @@ clean-test-all: clean-test
 
 lint:
 	flake8 .
+	importanize --ci
 
 test:
 	py.test -sv --cov=url_filter --cov-report=term-missing --doctest-modules tests/ url_filter/
