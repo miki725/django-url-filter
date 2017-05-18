@@ -1,12 +1,12 @@
 language: python
 
 python:
-  - "3.5"
+  - "3.6"
   - "2.7"
   - "pypy"
 
 env:
-  - "$DJANGO='django<1.9'"
+  - "$DJANGO='django<2'"
 
 sudo: false
 
