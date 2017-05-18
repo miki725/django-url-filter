@@ -398,10 +398,12 @@ class FilterSet(six.with_metaclass(FilterSetMeta, BaseFilter)):
             value = LookupConfig(config.key, config.data)
 
         if name not in self.filters:
-            if self.default_filter:
+            if self.default_filter and self is not self.root:
                 # if name is not found as a filter, there is a possibility
                 # it is a lookup made on the default filter of this filterset
                 # in which case we try to get that spec directly from the child
+                # however that is only allowed on nested filtersets
+                # since on root filterset filter must be specified
                 return self.default_filter.get_spec(config)
             else:
                 raise SkipFilter
