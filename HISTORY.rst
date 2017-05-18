@@ -3,6 +3,13 @@
 History
 -------
 
+0.3.1 (2017-05-18)
+~~~~~~~~~~~~~~~~~~
+
+* Fixed bug where default filters were used in root filtersets.
+  As a result additional querystring parameters were validation which
+  broke other functionality such as pagination.
+
 0.3.0 (2017-01-26)
 ~~~~~~~~~~~~~~~~~~
 
@@ -16,7 +23,6 @@ History
   since they dont have form fields associated with them.
   See `#20 <https://github.com/miki725/django-url-filter/issues/20>`_.
 * Releasing with `wheels <http://pythonwheels.com/>`_.
-
 
 0.2.0 (2015-09-12)
 ~~~~~~~~~~~~~~~~~~
