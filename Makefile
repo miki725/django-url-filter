@@ -41,8 +41,12 @@ clean-test:
 clean-test-all: clean-test
 	rm -rf .tox/
 
+importanize:
+	importanize --ci
+
 lint:
 	flake8 .
+	python --version | grep "Python 3" && make importanize || true
 
 test:
 	py.test -sv --cov=url_filter --cov-report=term-missing --doctest-modules tests/ url_filter/

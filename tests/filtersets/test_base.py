@@ -169,7 +169,7 @@ class TestFilterSet(object):
             thing = Filter(form_field=forms.IntegerField(min_value=0, max_value=15))
 
         class FooFilterSet(FilterSet):
-            field = Filter(form_field=forms.CharField())
+            field = Filter(form_field=forms.CharField(), is_default=True)
             bar = BarFilterSet()
 
         def _test(data, expected, **kwargs):
@@ -188,6 +188,7 @@ class TestFilterSet(object):
             FilterSpec(['bar', 'id'], 'isnull', True, False),
         ])
         _test('bar__gt=foo', [])
+        _test('page=1', [], strict_mode=StrictMode.fail)
 
     def test_filter_one_to_one(self, one_to_one):
         class PlaceFilterSet(FilterSet):
