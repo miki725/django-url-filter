@@ -66,7 +66,7 @@ class PlainFilterBackend(BaseFilterBackend):
         if not self.regular_specs:
             return queryset
 
-        return filter(self._filter_callable, queryset)
+        return list(filter(self._filter_callable, queryset))
 
     def _filter_callable(self, item):
         return all(self._filter_by_spec(item, spec) for spec in self.regular_specs)

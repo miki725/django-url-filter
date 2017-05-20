@@ -3,6 +3,13 @@
 History
 -------
 
+0.3.2 (2017-05-19)
+~~~~~~~~~~~~~~~~~~
+
+* Fixed plain backend to return list in Python 3 vs ``filter()`` generator
+  which is not compatible with Django pagination since it requires ``len()``
+  to be implemented.
+
 0.3.1 (2017-05-18)
 ~~~~~~~~~~~~~~~~~~
 
