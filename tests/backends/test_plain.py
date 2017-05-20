@@ -82,7 +82,7 @@ class TestPlainFilterBackend(object):
         backend = PlainFilterBackend(DATA)
         backend.bind([spec])
 
-        assert list(backend.filter()) == expected
+        assert backend.filter() == expected
 
     def test_filter_contains(self):
         self._test_filter(
