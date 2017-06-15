@@ -3,6 +3,16 @@
 History
 -------
 
+0.3.3 (2017-06-15)
+~~~~~~~~~~~~~~~~~~
+
+* Fixed bug which did not allow to use SQLAlchemy backend fully
+  without having ``django.contrib.contenttypes`` in installed apps.
+  See `#36 <https://github.com/miki725/django-url-filter/issues/36>`_.
+* Improved SQLAlchemy versions compatibility.
+* Added ``URLFilterBackend`` alias in DRF integration for backend to reduce
+  confusion with ``DjangoFilterBackend`` as in url filter core backend.
+
 0.3.2 (2017-05-19)
 ~~~~~~~~~~~~~~~~~~
 

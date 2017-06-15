@@ -3,7 +3,7 @@ from __future__ import absolute_import, print_function, unicode_literals
 import operator
 
 from django import forms
-from django.contrib.contenttypes.fields import GenericForeignKey
+from django.conf import settings
 from django.db import models
 from django.db.models.fields.related import ForeignObjectRel, RelatedField
 
@@ -14,6 +14,13 @@ from .base import BaseModelFilterSet, ModelFilterSetOptions
 
 
 __all__ = ['ModelFilterSet', 'DjangoModelFilterSetOptions']
+
+
+GenericForeignKey = None
+
+
+if 'django.contrib.contenttypes' in settings.INSTALLED_APPS:
+    from django.contrib.contenttypes.fields import GenericForeignKey
 
 
 MODEL_FIELD_OVERWRITES = SubClassDict({
@@ -95,7 +102,7 @@ class ModelFilterSet(BaseModelFilterSet):
                 raise SkipFilter
             return self._build_filterset_from_reverse_field(field)
 
-        elif isinstance(field, GenericForeignKey):
+        elif GenericForeignKey and isinstance(field, GenericForeignKey):
             raise SkipFilter
 
         else:

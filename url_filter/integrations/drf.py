@@ -162,3 +162,6 @@ class DjangoFilterBackend(BaseFilterBackend):
                 raise ValidationError(e.message_dict)
 
         return queryset
+
+
+URLFilterBackend = DjangoFilterBackend
