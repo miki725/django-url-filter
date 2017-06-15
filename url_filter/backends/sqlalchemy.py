@@ -66,7 +66,7 @@ class SQLAlchemyFilterBackend(BaseFilterBackend):
         """
         Get the model from the given queryset
         """
-        return self.queryset._primary_entity.entities[0]
+        return self.queryset._only_entity_zero().mapper.class_
 
     def filter_by_specs(self, queryset):
         """
