@@ -55,8 +55,10 @@ Usage Example
 
 To make example short, it demonstrates Django URL Filter integration
 with Django REST Framework but it can be used without DRF (see below).
-
 ::
+
+  from url_filter.integrations.drf import DjangoFilterBackend
+
 
   class UserViewSet(ModelViewSet):
       queryset = User.objects.all()
@@ -66,6 +68,9 @@ with Django REST Framework but it can be used without DRF (see below).
 
 Alternatively filterset can be manually created and used directly
 to filter querysets::
+
+  from url_filter.filtersets import ModelFilterSet
+
 
   class UserFilterSet(ModelFilterSet):
       class Meta(object):
