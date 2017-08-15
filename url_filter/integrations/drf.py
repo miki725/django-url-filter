@@ -142,17 +142,17 @@ class DjangoFilterBackend(BaseFilterBackend):
         """
         filter_class = self.get_filter_class(view, queryset)
 
-        if view.prettify:
-            query_dict = QueryDict(mutable=True)
-            for key, value in request.query_params.items():
-                if view.prettify.get(key):
-                    query_dict[view.prettify.get(key)] = value
-                else:
-                    query_dict[key] = value
-        else:
-            query_dict = request.query_params
-
         if filter_class:
+            if hasattr(view, 'prettify'):
+                query_dict = QueryDict(mutable=True)
+                for key, value in request.query_params.items():
+                    if view.prettify.get(key):
+                        query_dict[view.prettify.get(key)] = value
+                    else:
+                        query_dict[key] = value
+            else:
+                query_dict = request.query_params
+
             _filter = filter_class(
                 data=query_dict,
                 queryset=queryset,

@@ -99,3 +99,41 @@ class TestDjangoFilterBackend(object):
                 queryset=Restaurant.objects.all(),
                 view=View()
             )
+
+    @mock.patch.object(FilterSet, 'filter')
+    def test_get_filter_queryset_with_active_preffity(self, mock_filter, db, rf):
+        class View(object):
+            filter_fields = ['name']
+            prettify = {
+                'name': 'name'
+            }
+
+        request = rf.get('/')
+        request.query_params = QueryDict('name=bar')
+
+        filtered = DjangoFilterBackend().filter_queryset(
+            request=request,
+            queryset=Place.objects.all(),
+            view=View()
+        )
+
+        assert filtered == mock_filter.return_value
+
+    @mock.patch.object(FilterSet, 'filter')
+    def test_get_filter_queryset_with_inactive_preffity(self, mock_filter, db, rf):
+        class View(object):
+            filter_fields = ['name']
+            prettify = {
+                'other__name': 'name'
+            }
+
+        request = rf.get('/')
+        request.query_params = QueryDict('name=bar')
+
+        filtered = DjangoFilterBackend().filter_queryset(
+            request=request,
+            queryset=Place.objects.all(),
+            view=View()
+        )
+
+        assert filtered == mock_filter.return_value
