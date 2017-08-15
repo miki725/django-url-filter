@@ -55,6 +55,7 @@ Usage Example
 
 To make example short, it demonstrates Django URL Filter integration
 with Django REST Framework but it can be used without DRF (see below).
+
 ::
 
   from url_filter.integrations.drf import DjangoFilterBackend
