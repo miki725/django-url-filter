@@ -69,7 +69,8 @@ with Django REST Framework but it can be used without DRF (see below).
 Alternatively filterset can be manually created and used directly
 to filter querysets::
 
-  from url_filter.filtersets import ModelFilterSet, QueryDict
+  from django.http import QueryDict
+  from url_filter.filtersets import ModelFilterSet
 
 
   class UserFilterSet(ModelFilterSet):
