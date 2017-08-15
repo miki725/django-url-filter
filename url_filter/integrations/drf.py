@@ -2,6 +2,7 @@
 from __future__ import absolute_import, print_function, unicode_literals
 
 from django.core.exceptions import ValidationError as DjangoValidationError
+from django.http import QueryDict
 from rest_framework.exceptions import ValidationError
 from rest_framework.filters import BaseFilterBackend
 
@@ -141,9 +142,19 @@ class DjangoFilterBackend(BaseFilterBackend):
         """
         filter_class = self.get_filter_class(view, queryset)
 
+        if view.prettify:
+            query_dict = QueryDict(mutable=True)
+            for key, value in request.query_params.items():
+                if view.prettify.get(key):
+                    query_dict[view.prettify.get(key)] = value
+                else:
+                    query_dict[key] = value
+        else:
+            query_dict = request.query_params
+
         if filter_class:
             _filter = filter_class(
-                data=request.query_params,
+                data=query_dict,
                 queryset=queryset,
                 context=self.get_filter_context(request, view),
             )

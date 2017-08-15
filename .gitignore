@@ -47,3 +47,5 @@ docs/_build
 
 # IDEs
 /.idea
+
+\.vscode/
