@@ -6,7 +6,7 @@ from decimal import Decimal
 import six
 from django import forms
 
-from ..backends.sqlalchemy import SQLAlchemyFilterBackend
+from ..backends.plain import PlainFilterBackend
 from ..exceptions import SkipFilter
 from ..filters import Filter
 from ..utils import SubClassDict, dictify
