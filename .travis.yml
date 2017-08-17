@@ -17,7 +17,7 @@ before_install:
 install:
   - pip install $DJANGO
   - pip install -r requirements-dev.txt
-  - pip install coveralls
+  - pip install coveralls==1.1  # travis pypy not compatible with later versions
   - pip freeze
 
 # command to run tests, e.g. python setup.py test
