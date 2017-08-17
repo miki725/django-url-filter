@@ -67,6 +67,7 @@ class SQLAlchemyModelFilterSet(BaseModelFilterSet):
     The filterset can be configured via ``Meta`` class attribute,
     very much like Django's ``ModelForm`` is configured.
     """
+    filter_backend_class = SQLAlchemyFilterBackend
 
     def _build_filter(self, name, fields):
         field = fields[name]
