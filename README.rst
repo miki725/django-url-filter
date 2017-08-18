@@ -141,3 +141,13 @@ Features
   with common usage patterns like integration with Django REST Framework.
   This means that its easy to use in custom applications with custom
   requirements (which is probably most of the time!)
+
+
+Settings (Django)
+-----------------
+
+::
+
+    ...
+    URL_FILTER_DISTINCT = False  # The default is True so the results will be unique
+    ...
