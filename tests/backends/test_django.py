@@ -3,6 +3,7 @@ from __future__ import absolute_import, print_function, unicode_literals
 
 import mock
 
+from django.conf import settings
 from test_project.one_to_one.models import Place
 from url_filter.backends.django import DjangoFilterBackend
 from url_filter.utils import FilterSpec
@@ -59,6 +60,39 @@ class TestDjangoFilterBackend(object):
         assert spec == 'name__exact'
 
     def test_filter(self):
+        settings.URL_FILTER_DISTINCT = True
+        qs = mock.Mock()
+
+        backend = DjangoFilterBackend(qs)
+        backend.bind([
+            FilterSpec(['name'], 'exact', 'value', False),
+            FilterSpec(['address'], 'contains', 'value', True),
+        ])
+
+        result = backend.filter()
+
+        assert result == qs.filter.return_value.exclude.return_value.distinct.return_value
+        qs.filter.assert_called_once_with(name__exact='value')
+        qs.filter.return_value.exclude.assert_called_once_with(address__contains='value')
+
+    def test_filter_not_distinct(self):
+        settings.URL_FILTER_DISTINCT = False
+        qs = mock.Mock()
+
+        backend = DjangoFilterBackend(qs)
+        backend.bind([
+            FilterSpec(['name'], 'exact', 'value', False),
+            FilterSpec(['address'], 'contains', 'value', True),
+        ])
+
+        result = backend.filter()
+
+        assert result == qs.filter.return_value.exclude.return_value
+        qs.filter.assert_called_once_with(name__exact='value')
+        qs.filter.return_value.exclude.assert_called_once_with(address__contains='value')
+
+    def test_filter_distinct(self):
+        settings.URL_FILTER_DISTINCT = True
         qs = mock.Mock()
 
         backend = DjangoFilterBackend(qs)
@@ -74,6 +108,7 @@ class TestDjangoFilterBackend(object):
         qs.filter.return_value.exclude.assert_called_once_with(address__contains='value')
 
     def test_filter_callable_specs(self):
+        settings.URL_FILTER_DISTINCT = True
         qs = mock.Mock()
 
         def foo(queryset, spec):

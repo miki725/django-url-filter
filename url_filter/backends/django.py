@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, print_function, unicode_literals
 
+from django.conf import settings
 from django.db.models.constants import LOOKUP_SEP
 
 from .base import BaseFilterBackend
@@ -99,4 +100,10 @@ class DjangoFilterBackend(BaseFilterBackend):
         if exclude:
             queryset = queryset.exclude(**exclude)
 
-        return queryset.distinct()
+        use_distinct = True
+        if hasattr(settings, 'URL_FILTER_DISTINCT'):
+            use_distinct = settings.URL_FILTER_DISTINCT
+
+        if use_distinct:
+            return queryset.distinct()
+        return queryset
