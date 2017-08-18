@@ -100,10 +100,7 @@ class DjangoFilterBackend(BaseFilterBackend):
         if exclude:
             queryset = queryset.exclude(**exclude)
 
-        use_distinct = True
-        if hasattr(settings, 'URL_FILTER_DISTINCT'):
-            use_distinct = settings.URL_FILTER_DISTINCT
-
+        use_distinct = getattr(settings, 'URL_FILTER_DISTINCT', True)
         if use_distinct:
             return queryset.distinct()
         return queryset
