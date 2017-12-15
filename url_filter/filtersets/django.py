@@ -123,11 +123,12 @@ class ModelFilterSet(BaseModelFilterSet):
         Build a :class:`.FilterSet` for a Django relation model field
         such as ``ForeignKey``.
         """
-        return self._build_django_filterset(
-            field, {
-                'exclude': [field.remote_field.name],
-            }
-        )
+        try:
+            name = field.remote_field.name
+        except AttributeError:
+            # django version < 1.9
+            name = field.rel.name
+        return self._build_django_filterset(field, {'exclude': [name]})
 
     def _build_filterset_from_reverse_field(self, field):
         """
