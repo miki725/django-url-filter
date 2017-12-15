@@ -6,6 +6,7 @@ from decimal import Decimal
 import six
 from django import forms
 
+from ..backends.plain import PlainFilterBackend
 from ..exceptions import SkipFilter
 from ..filters import Filter
 from ..utils import SubClassDict, dictify
@@ -31,6 +32,7 @@ class PlainModelFilterSet(BaseModelFilterSet):
     The filterset can be configured via ``Meta`` class attribute,
     very much like Django's ``ModelForm`` is configured.
     """
+    filter_backend_class = PlainFilterBackend
 
     def _build_state(self):
         return dictify(self.Meta.model)

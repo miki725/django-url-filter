@@ -3,6 +3,15 @@
 History
 -------
 
+0.3.4 (2017-08-17)
+~~~~~~~~~~~~~~~~~~
+
+* Py36 compatibility by switching to ``enum-compat`` from ``enum34``
+* Improvement to ``README`` by including imports in code examples
+* Defaulting ``SQLAlchemyModelFilterSet`` to use ``SQLAlchemyFilterBackend``
+* Defaulting ``PlainModelFilterSet`` to use ``PlainFilterBackend``
+* Using universal wheels for distribution
+
 0.3.3 (2017-06-15)
 ~~~~~~~~~~~~~~~~~~
 
