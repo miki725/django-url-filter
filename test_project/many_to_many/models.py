@@ -13,7 +13,7 @@ class Publication(models.Model):
         return self.title
 
     class Meta:
-        ordering = ('title',)
+        ordering = ('title', )
 
 
 @six.python_2_unicode_compatible
@@ -25,4 +25,4 @@ class Article(models.Model):
         return self.headline
 
     class Meta:
-        ordering = ('headline',)
+        ordering = ('headline', )
