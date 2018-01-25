@@ -1,7 +1,11 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, print_function, unicode_literals
 
+import operator
+from functools import reduce
+
 from django.db.models.constants import LOOKUP_SEP
+from django.db.models import Q
 
 from .base import BaseFilterBackend
 
@@ -97,6 +101,7 @@ class DjangoFilterBackend(BaseFilterBackend):
         if include:
             queryset = queryset.filter(**include)
         if exclude:
-            queryset = queryset.exclude(**exclude)
+            queryset = queryset.exclude(reduce(operator.or_,
+                                               (Q(**{k: v}) for k, v in exclude.items())))
 
         return queryset.distinct()
