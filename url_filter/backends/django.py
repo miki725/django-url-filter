@@ -96,6 +96,11 @@ class DjangoFilterBackend(BaseFilterBackend):
 
         if include:
             queryset = queryset.filter(**include)
+
+        # Plain queryset.exclude(**exclude) would cause exclusion of ALL
+        # negative-matching objects. I.e. x!=1&y!=2 is equivalent
+        # to "NOT (x = 1 AND y = 2)" SQL, which is not an intuitive behavior.
+        # We chain .exclude to achieve "NOT (x = 1) AND NOT (y = 2)" instead.
         for lookup, value in exclude.items():
             queryset = queryset.exclude(**{lookup: value})
 
