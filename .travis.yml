@@ -4,29 +4,14 @@ python:
   - "3.6"
   - "2.7"
   - "pypy"
-
-env:
-  - deps='django<1.9 djangorestframework<3.7'
-  - deps='django<2'
-
-matrix:
-  include:
-    - python: "3.6"
-      env: deps='django<2.1'
+  - "pypy3"
 
 sudo: false
 
-before_install:
-  - pip install -U pytest
-
-# command to install dependencies, e.g. pip install -r requirements.txt --use-mirrors
 install:
-  - pip install $deps
-  - pip install -r requirements-dev.txt
-  - pip install coveralls==1.1  # travis pypy not compatible with later versions
-  - pip freeze
+  - pip install tox-travis
+  - pip install coveralls==1.1
 
-# command to run tests, e.g. python setup.py test
-script: make check
+script: tox
 
 after_success: coveralls
