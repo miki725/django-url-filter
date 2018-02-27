@@ -3,6 +3,16 @@
 History
 -------
 
+0.3.5 (2018-02-27)
+~~~~~~~~~~~~~~~~~~
+
+* Django 2 support.
+* Using `tox-travis <https://github.com/tox-dev/tox-travis>`_ for travis builds.
+* Fixed negated queries in Django backend.
+  Previously negation did ``NOT (condition1 and condition2)`` vs expected
+  ``NOT condition1 and NOT condition2``.
+  See `#53 <https://github.com/miki725/django-url-filter/issues/53>`_.
+
 0.3.4 (2017-08-17)
 ~~~~~~~~~~~~~~~~~~
 
