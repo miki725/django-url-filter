@@ -1,5 +1,5 @@
-url_filter.backends package
-===========================
+url\_filter.backends package
+============================
 
 .. automodule:: url_filter.backends
     :members:

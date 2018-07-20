@@ -1,5 +1,5 @@
-url_filter.filtersets package
-=============================
+url\_filter.filtersets package
+==============================
 
 .. automodule:: url_filter.filtersets
     :members:

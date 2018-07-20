@@ -1,5 +1,5 @@
-url_filter.backends.sqlalchemy module
-=====================================
+url\_filter.backends.sqlalchemy module
+======================================
 
 .. automodule:: url_filter.backends.sqlalchemy
     :members:

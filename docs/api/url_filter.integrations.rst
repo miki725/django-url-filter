@@ -1,5 +1,5 @@
-url_filter.integrations package
-===============================
+url\_filter.integrations package
+================================
 
 .. automodule:: url_filter.integrations
     :members:
@@ -12,4 +12,5 @@ Submodules
 .. toctree::
 
    url_filter.integrations.drf
+   url_filter.integrations.drf_coreapi
 
