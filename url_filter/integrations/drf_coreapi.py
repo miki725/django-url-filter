@@ -27,7 +27,10 @@ class CoreAPIURLFilterBackend(URLFilterBackend):
             if not filter_class
             else list(chain(*[
                 [coreapi.Field(name=name, required=False, location="query", schema=None)] +
-                [coreapi.Field(name=name + '__' + l, required=False, location="query", schema=None) for l in field.lookups]
+                ([
+                    coreapi.Field(name=name + "__" + l, required=False, location="query", schema=None)
+                    for l in field.lookups
+                ] if not field.no_lookup else [])
                 for name, field in filter_class(data={}, queryset=queryset).filters.items()
             ]))
         )
