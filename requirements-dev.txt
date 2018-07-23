@@ -6,6 +6,8 @@ djangorestframework
 flake8
 importanize
 mock
+pdbpp
+ptpython
 pytest
 pytest-cov
 pytest-django

@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, print_function, unicode_literals
-from itertools import chain
 
 import coreapi
 import coreschema
@@ -8,6 +7,7 @@ from django import forms
 from django.db.models.constants import LOOKUP_SEP
 
 from ..fields import MultipleValuesField
+from ..filtersets import FilterSet
 from .drf import URLFilterBackend
 
 
@@ -52,6 +52,30 @@ def _field_to_schema(field, lookup):
     return FORM_FIELD_TO_SCHEMA.get(type(form_field), coreschema.String)(description=DESCRIPTION.get(lookup))
 
 
+def _all_filters(filterset, prefix=()):
+    for name, field in filterset.filters.items():
+        if isinstance(field, FilterSet):
+            for i in _all_filters(field, prefix=prefix + (name,)):
+                yield i
+
+        else:
+            yield coreapi.Field(
+                name=LOOKUP_SEP.join(prefix + (name,)),
+                required=False,
+                location="query",
+                schema=_field_to_schema(field, field.default_lookup),
+            )
+            if field.no_lookup:
+                continue
+            for lookup in field.lookups:
+                yield coreapi.Field(
+                    name=LOOKUP_SEP.join(prefix + (name, lookup)),
+                    required=False,
+                    location="query",
+                    schema=_field_to_schema(field, lookup),
+                )
+
+
 class CoreAPIURLFilterBackend(URLFilterBackend):
     """
     Same as :py:class:`url_filter.integrations.drf.DjangoFilterBackend` except
@@ -70,22 +94,5 @@ class CoreAPIURLFilterBackend(URLFilterBackend):
         return (
             []
             if not filter_class
-            else list(chain(*[
-                [coreapi.Field(
-                    name=name,
-                    required=False,
-                    location="query",
-                    schema=_field_to_schema(field, field.default_lookup),
-                )] +
-                ([
-                    coreapi.Field(
-                        name=''.join([name, LOOKUP_SEP, l]),
-                        required=False,
-                        location="query",
-                        schema=_field_to_schema(field, l),
-                    )
-                    for l in field.lookups
-                ] if not field.no_lookup else [])
-                for name, field in filter_class(data={}, queryset=queryset).filters.items()
-            ]))
+            else list(_all_filters(filter_class(data={}, queryset=queryset)))
         )
