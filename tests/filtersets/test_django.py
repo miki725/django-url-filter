@@ -28,6 +28,9 @@ class TestModelFilterSet(object):
                 model = Place
                 allow_related = False
                 allow_related_reverse = False
+                extra_kwargs = {
+                    'id': {'no_lookup': True},
+                }
 
         filters = PlaceFilterSet().get_filters()
 
@@ -37,6 +40,7 @@ class TestModelFilterSet(object):
 
         assert isinstance(filters['id'], Filter)
         assert isinstance(filters['id'].form_field, forms.IntegerField)
+        assert filters['id'].no_lookup is True
         assert isinstance(filters['name'], Filter)
         assert isinstance(filters['name'].form_field, forms.CharField)
         assert isinstance(filters['address'], Filter)
@@ -127,6 +131,11 @@ class TestModelFilterSet(object):
         class RestaurantFilterSet(ModelFilterSet):
             class Meta(object):
                 model = Restaurant
+                extra_kwargs = {
+                    'place': {
+                        'id': {'no_lookup': True},
+                    },
+                }
 
         filters = RestaurantFilterSet().get_filters()
 
@@ -139,6 +148,8 @@ class TestModelFilterSet(object):
         assert set(filters['waiter'].filters.keys()) == {
             'id', 'name',
         }
+
+        assert filters['place'].filters['id'].no_lookup is True
 
         assert isinstance(filters['serves_hot_dogs'], Filter)
         assert isinstance(filters['serves_hot_dogs'].form_field, forms.BooleanField)

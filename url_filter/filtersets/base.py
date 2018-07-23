@@ -443,12 +443,15 @@ class ModelFilterSetOptions(FilterSetOptions):
         Whether related/nested fields should be allowed
         when model fields are automatically determined
         (e.g. when explicit :attr:`.fields` is not provided).
+    extra_kwargs : dict, optional
+        Additional kwargs to be given to auto-generated individual filters
     """
     def __init__(self, options=None):
         super(ModelFilterSetOptions, self).__init__(options)
         self.model = getattr(options, 'model', None)
         self.fields = getattr(options, 'fields', None)
         self.exclude = getattr(options, 'exclude', [])
+        self.extra_kwargs = getattr(options, 'extra_kwargs', {})
         self.allow_related = getattr(options, 'allow_related', True)
 
 
@@ -528,7 +531,7 @@ class BaseModelFilterSet(FilterSet):
             of the loop so that it can be reused for all filters.
         """
 
-    def _build_filterset(self, name, meta_attrs, base):
+    def _build_filterset(self, name, field_name, meta_attrs, base):
         """
         Helper method for building child filtersets.
 
@@ -537,11 +540,15 @@ class BaseModelFilterSet(FilterSet):
         name : str
             Name of the filterset to build. The returned class
             will use the name as a prefix in the class name.
+        field_name : str
+            Field name as filterset will be added to parent
+            filterset. It will be used to extract ``extra_kwargs``.
         meta_attrs : dict
             Attributes to use for the ``Meta``.
         base : type
             Class to use as a base class for the filterset.
         """
+        meta_attrs.update({'extra_kwargs': self._get_filter_extra_kwargs(field_name)})
         meta = type(str('Meta'), (object,), meta_attrs)
 
         filterset = type(
@@ -562,3 +569,10 @@ class BaseModelFilterSet(FilterSet):
         data about model so that the computation can be avoided while
         building individual filters.
         """
+
+    def _get_filter_extra_kwargs(self, name):
+        """
+        Get additional kwargs for individual filters
+        as defined in Meta
+        """
+        return self.Meta.extra_kwargs.get(name, {})

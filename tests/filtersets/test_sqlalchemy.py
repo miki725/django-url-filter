@@ -29,6 +29,9 @@ class TestSQLAlchemyModelFilterSet(object):
             class Meta(object):
                 model = Place
                 allow_related = False
+                extra_kwargs = {
+                    'id': {'no_lookup': True},
+                }
 
         filters = PlaceFilterSet().get_filters()
 
@@ -38,6 +41,7 @@ class TestSQLAlchemyModelFilterSet(object):
 
         assert isinstance(filters['id'], Filter)
         assert isinstance(filters['id'].form_field, forms.IntegerField)
+        assert filters['id'].no_lookup is True
         assert isinstance(filters['name'], Filter)
         assert isinstance(filters['name'].form_field, forms.CharField)
         assert isinstance(filters['address'], Filter)
@@ -88,6 +92,11 @@ class TestSQLAlchemyModelFilterSet(object):
         class RestaurantFilterSet(SQLAlchemyModelFilterSet):
             class Meta(object):
                 model = Restaurant
+                extra_kwargs = {
+                    'place': {
+                        'id': {'no_lookup': True},
+                    },
+                }
 
         filters = RestaurantFilterSet().get_filters()
 
@@ -100,6 +109,8 @@ class TestSQLAlchemyModelFilterSet(object):
         assert set(filters['waiter_set'].filters.keys()) == {
             'id', 'name', 'restaurant_id'
         }
+
+        assert filters['place'].filters['id'].no_lookup is True
 
         assert isinstance(filters['serves_hot_dogs'], Filter)
         assert isinstance(filters['serves_hot_dogs'].form_field, forms.BooleanField)
