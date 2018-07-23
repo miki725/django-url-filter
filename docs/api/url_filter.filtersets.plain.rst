@@ -1,5 +1,5 @@
-url_filter.filtersets.plain module
-==================================
+url\_filter.filtersets.plain module
+===================================
 
 .. automodule:: url_filter.filtersets.plain
     :members:

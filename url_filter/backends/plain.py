@@ -30,6 +30,7 @@ class PlainFilterBackend(BaseFilterBackend):
         'icontains',
         'iendswith',
         'iexact',
+        'iin',
         'in',
         'iregex',
         'isnull',
@@ -133,6 +134,9 @@ class PlainFilterBackend(BaseFilterBackend):
     def _compare_in(self, value, spec):
         return value in spec.value
 
+    def _compare_iin(self, value, spec):
+        return value.lower() in [i.lower() for i in spec.value]
+
     def _compare_iregex(self, value, spec):
         return bool(re.match(spec.value, value, re.IGNORECASE))
 
@@ -170,7 +174,8 @@ class PlainFilterBackend(BaseFilterBackend):
         return value.startswith(spec.value)
 
     def _compare_week_day(self, value, spec):
-        return value.weekday() + 1 == spec.value
+        # expected 1-Sunday and 7-Saturday
+        return ((value.weekday() + 1) % 7) + 1 == spec.value
 
     def _compare_year(self, value, spec):
         return value.year == spec.value

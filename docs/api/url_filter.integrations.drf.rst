@@ -1,5 +1,5 @@
-url_filter.integrations.drf module
-==================================
+url\_filter.integrations.drf module
+===================================
 
 .. automodule:: url_filter.integrations.drf
     :members:

@@ -95,29 +95,30 @@ class ModelFilterSet(BaseModelFilterSet):
         if isinstance(field, RelatedField):
             if not self.Meta.allow_related:
                 raise SkipFilter
-            return self._build_filterset_from_related_field(field)
+            return self._build_filterset_from_related_field(name, field)
 
         elif isinstance(field, ForeignObjectRel):
             if not self.Meta.allow_related_reverse:
                 raise SkipFilter
-            return self._build_filterset_from_reverse_field(field)
+            return self._build_filterset_from_reverse_field(name, field)
 
         elif GenericForeignKey and isinstance(field, GenericForeignKey):
             raise SkipFilter
 
         else:
-            return self._build_filter_from_field(field)
+            return self._build_filter_from_field(name, field)
 
-    def _build_filter_from_field(self, field):
+    def _build_filter_from_field(self, name, field):
         """
         Build :class:`.Filter` for a standard Django model field.
         """
         return Filter(
             form_field=self._get_form_field_for_field(field),
             is_default=field.primary_key,
+            **self._get_filter_extra_kwargs(name)
         )
 
-    def _build_filterset_from_related_field(self, field):
+    def _build_filterset_from_related_field(self, name, field):
         """
         Build a :class:`.FilterSet` for a Django relation model field
         such as ``ForeignKey``.
@@ -125,25 +126,26 @@ class ModelFilterSet(BaseModelFilterSet):
         # field.rel for Django < 1.9
         remote_field = getattr(field, 'remote_field', None) or field.rel
 
-        return self._build_django_filterset(field, {
+        return self._build_django_filterset(name, field, {
             'exclude': [remote_field.name],
         })
 
-    def _build_filterset_from_reverse_field(self, field):
+    def _build_filterset_from_reverse_field(self, name, field):
         """
         Build a :class:`.FilterSet` for a Django reverse relation model field.
         """
-        return self._build_django_filterset(field, {
+        return self._build_django_filterset(name, field, {
             'exclude': [field.field.name],
         })
 
-    def _build_django_filterset(self, field, meta_attrs):
+    def _build_django_filterset(self, name, field, meta_attrs):
         m = field.related_model
         attrs = {'model': m}
         attrs.update(meta_attrs)
 
         return self._build_filterset(
             m.__name__,
+            name,
             attrs,
             ModelFilterSet,
         )

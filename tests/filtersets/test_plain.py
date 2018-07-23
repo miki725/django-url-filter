@@ -36,6 +36,9 @@ class TestPlainModelFilterSet(object):
                     "ignored": [{}],
                 }
                 allow_related = False
+                extra_kwargs = {
+                    'id': {'no_lookup': True},
+                }
 
         filters = PlaceFilterSet().get_filters()
 
@@ -45,6 +48,7 @@ class TestPlainModelFilterSet(object):
 
         assert isinstance(filters['id'], Filter)
         assert isinstance(filters['id'].form_field, forms.IntegerField)
+        assert filters['id'].no_lookup is True
         assert isinstance(filters['name'], Filter)
         assert isinstance(filters['name'].form_field, forms.CharField)
         assert isinstance(filters['address'], Filter)
@@ -78,6 +82,11 @@ class TestPlainModelFilterSet(object):
                     "name": "Demon Dogs",
                     "address": "944 W. Fullerton"
                 }
+                extra_kwargs = {
+                    'restaurant': {
+                        'place': {'no_lookup': True},
+                    },
+                }
 
         filters = PlaceFilterSet().get_filters()
 
@@ -90,6 +99,8 @@ class TestPlainModelFilterSet(object):
         assert set(filters['restaurant'].filters['waiters'].filters.keys()) == {
             'id', 'name', 'restaurant',
         }
+
+        assert filters['restaurant'].filters['place'].no_lookup is True
 
         assert isinstance(filters['id'], Filter)
         assert isinstance(filters['id'].form_field, forms.IntegerField)

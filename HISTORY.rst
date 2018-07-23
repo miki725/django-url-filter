@@ -3,6 +3,15 @@
 History
 -------
 
+0.3.6 (2018-07-23)
+~~~~~~~~~~~~~~~~~~
+
+* Added support for ``extra_kwargs`` in ``ModelFilterSet.Meta``.
+* Added ``CoreAPIURLFilterBackend`` which enables documented filters in swagger docs.
+* Added ``iin`` lookup in plain and sqlalchemy backends.
+* Fixing inconsistency between plain and Django ``week_day`` lookup.
+  Now both are consistent with ``1``-Monday and ``7``-Sunday.
+
 0.3.5 (2018-02-27)
 ~~~~~~~~~~~~~~~~~~
 

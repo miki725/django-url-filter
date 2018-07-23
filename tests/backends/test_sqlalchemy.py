@@ -159,6 +159,12 @@ class TestSQLAlchemyFilterBackend(object):
             Waiter.name.in_(['Django', 'rocks'])
         )
 
+    def test_build_clause_iin(self, alchemy_db):
+        self._test_build_clause(
+            alchemy_db, 'name', 'iin', ['Django', 'rocks'],
+            func.lower(Waiter.name).in_(['django', 'rocks'])
+        )
+
     def test_build_clause_isnull(self, alchemy_db):
         self._test_build_clause(
             alchemy_db, 'name', 'isnull', True,

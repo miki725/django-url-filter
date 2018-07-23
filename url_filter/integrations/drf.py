@@ -46,6 +46,10 @@ class DjangoFilterBackend(BaseFilterBackend):
     * ``filter_class_default`` - base class to use while creating new :class:`.FilterSet`.
       This is primarily useful when using non-Django data-sources.
       By default :attr:`.default_filter_set` is used.
+
+    See Also
+    --------
+    :py:class:`url_filter.integrations.drf_coreapi.CoreAPIURLFilterBackend`
     """
     default_filter_set = ModelFilterSet
     """
@@ -84,7 +88,7 @@ class DjangoFilterBackend(BaseFilterBackend):
             return filter_class
 
         if filter_fields:
-            model = queryset.model
+            model = filter_class_default.filter_backend_class(queryset).get_model()
 
             meta_kwargs = filter_class_meta_kwargs.copy()
             meta_kwargs.update({

@@ -1,5 +1,5 @@
-url_filter.validators module
-============================
+url\_filter.validators module
+=============================
 
 .. automodule:: url_filter.validators
     :members:

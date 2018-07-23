@@ -150,6 +150,12 @@ class TestPlainFilterBackend(object):
             [DATA[1]]
         )
 
+    def test_filter_iin(self):
+        self._test_filter(
+            FilterSpec(['restaurant', 'waiters', 'name'], 'iin', ['john', 'steve'], False),
+            [DATA[1]]
+        )
+
     def test_filter_in_simple_list(self):
         self._test_filter(
             FilterSpec(['nicknames'], 'in', ['ace', 'dogs'], False),
@@ -246,7 +252,7 @@ class TestPlainFilterBackend(object):
 
     def test_filter_week_day(self):
         self._test_filter(
-            FilterSpec(['created'], 'week_day', 1, False),
+            FilterSpec(['created'], 'week_day', 2, False),  # Monday
             [DATA[1]]
         )
 

@@ -1,5 +1,5 @@
-url_filter.utils module
-=======================
+url\_filter.utils module
+========================
 
 .. automodule:: url_filter.utils
     :members:

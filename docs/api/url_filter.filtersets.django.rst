@@ -1,5 +1,5 @@
-url_filter.filtersets.django module
-===================================
+url\_filter.filtersets.django module
+====================================
 
 .. automodule:: url_filter.filtersets.django
     :members:

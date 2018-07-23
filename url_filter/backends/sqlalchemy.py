@@ -44,6 +44,7 @@ class SQLAlchemyFilterBackend(BaseFilterBackend):
         'icontains',
         'iendswith',
         'iexact',
+        'iin',
         'in',
         'isnull',
         'istartswith',
@@ -155,6 +156,9 @@ class SQLAlchemyFilterBackend(BaseFilterBackend):
 
     def _build_clause_in(self, spec, column):
         return column.in_(spec.value)
+
+    def _build_clause_iin(self, spec, column):
+        return func.lower(column).in_(lower(i) for i in spec.value)
 
     def _build_clause_isnull(self, spec, column):
         if spec.value:

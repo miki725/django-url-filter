@@ -73,12 +73,12 @@ class SQLAlchemyModelFilterSet(BaseModelFilterSet):
         field = fields[name]
 
         if isinstance(field, ColumnProperty):
-            return self._build_filter_from_field(field)
+            return self._build_filter_from_field(name, field)
 
         elif isinstance(field, RelationshipProperty):
             if not self.Meta.allow_related:
                 raise SkipFilter
-            return self._build_filterset_from_related_field(field)
+            return self._build_filterset_from_related_field(name, field)
 
     def _build_state(self):
         """
@@ -120,7 +120,7 @@ class SQLAlchemyModelFilterSet(BaseModelFilterSet):
         else:
             return form_field(field, column)
 
-    def _build_filter_from_field(self, field):
+    def _build_filter_from_field(self, name, field):
         """
         Build :class:`.Filter` for a standard SQLAlchemy model field.
         """
@@ -129,9 +129,10 @@ class SQLAlchemyModelFilterSet(BaseModelFilterSet):
         return Filter(
             form_field=self._get_form_field_for_field(field),
             is_default=column.primary_key,
+            **self._get_filter_extra_kwargs(name)
         )
 
-    def _build_filterset_from_related_field(self, field):
+    def _build_filterset_from_related_field(self, name, field):
         """
         Build :class:`.FilterSet` for a relation SQLAlchemy model field.
         """
@@ -139,6 +140,7 @@ class SQLAlchemyModelFilterSet(BaseModelFilterSet):
 
         return self._build_filterset(
             m.__name__,
+            name,
             {
                 'model': m,
                 'exclude': [field.back_populates]
