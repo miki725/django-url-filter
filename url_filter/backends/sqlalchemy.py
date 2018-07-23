@@ -158,7 +158,7 @@ class SQLAlchemyFilterBackend(BaseFilterBackend):
         return column.in_(spec.value)
 
     def _build_clause_iin(self, spec, column):
-        return func.lower(column).in_(lower(spec.value))
+        return func.lower(column).in_(lower(i) for i in spec.value)
 
     def _build_clause_isnull(self, spec, column):
         if spec.value:
