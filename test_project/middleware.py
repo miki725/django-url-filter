@@ -9,9 +9,12 @@ Session = sessionmaker(bind=settings.SQLALCHEMY_ENGINE)
 
 
 class SQLAlchemySessionMiddleware(object):
-    def process_request(self, request):
-        request.alchemy_session = Session()
+    def __init__(self, get_response):
+        self.get_response = get_response
 
-    def process_response(self, request, response):
-        request.alchemy_session.close()
-        return response
+    def __call__(self, request):
+        request.alchemy_session = Session()
+        try:
+            return self.get_response(request)
+        finally:
+            request.alchemy_session.close()

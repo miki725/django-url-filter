@@ -31,7 +31,7 @@ INSTALLED_APPS = (
 STATIC_URL = '/static/'
 SECRET_KEY = 'foo'
 
-MIDDLEWARE_CLASSES = [
+MIDDLEWARE = [
     'test_project.middleware.SQLAlchemySessionMiddleware',
 ]
 
