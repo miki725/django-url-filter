@@ -2,7 +2,7 @@
 from __future__ import absolute_import, print_function, unicode_literals
 import itertools
 
-from sqlalchemy import func
+from sqlalchemy import false, func
 from sqlalchemy.orm import class_mapper
 from sqlalchemy.sql.expression import not_
 
@@ -62,6 +62,12 @@ class SQLAlchemyFilterBackend(BaseFilterBackend):
             'are being queried (e.g. session.query(Foo, Bar)).'
             ''.format(self.__class__.__name__)
         )
+
+    def empty(self):
+        """
+        Get empty queryset
+        """
+        return self.queryset.filter(false())
 
     def get_model(self):
         """

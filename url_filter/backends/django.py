@@ -43,6 +43,12 @@ class DjangoFilterBackend(BaseFilterBackend):
         'year',
     }
 
+    def empty(self):
+        """
+        Get empty queryset
+        """
+        return self.queryset.none()
+
     def get_model(self):
         """
         Get the model from the given queryset

@@ -44,6 +44,14 @@ class TestSQLAlchemyFilterBackend(object):
                 alchemy_db.query(Place, Restaurant),
             )
 
+    def test_empty(self, alchemy_db):
+        backend = SQLAlchemyFilterBackend(
+            alchemy_db.query(Place),
+            context={'context': 'here'},
+        )
+
+        assert backend.empty().count() == 0
+
     def test_get_model(self, alchemy_db):
         backend = SQLAlchemyFilterBackend(alchemy_db.query(Place))
 

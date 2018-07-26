@@ -7,6 +7,7 @@ from django.http import QueryDict
 
 from test_project.one_to_one.models import Restaurant, Waiter
 from url_filter.backends.django import DjangoFilterBackend
+from url_filter.exceptions import Empty
 from url_filter.filters import Filter
 from url_filter.filtersets.base import FilterSet, StrictMode
 from url_filter.utils import FilterSpec
@@ -152,12 +153,15 @@ class TestFilterSet(object):
             FilterSpec(['bar', 'thing'], 'range', [5, 10], False),
         ])
         _test('bar=5', [])
-        _test('bar__thing__range=5,10,15', [])
-        _test('bar__thing=100', [])
-        _test('bar__thing__in=100,5', [])
+        _test('bar__thing__range=5,10,15', [], strict_mode=StrictMode.drop)
+        _test('bar__thing=100', [], strict_mode=StrictMode.drop)
+        _test('bar__thing__in=100,5', [], strict_mode=StrictMode.drop)
 
         with pytest.raises(forms.ValidationError):
             _test('bar__thing__in=100,5', [], strict_mode=StrictMode.fail)
+
+        with pytest.raises(Empty):
+            _test('bar__thing__in=100,5', [], strict_mode=StrictMode.empty)
 
     def test_get_specs_using_default_filter(self):
         class BarFilterSet(FilterSet):
@@ -187,8 +191,14 @@ class TestFilterSet(object):
         _test('bar__isnull=True', [
             FilterSpec(['bar', 'id'], 'isnull', True, False),
         ])
-        _test('bar__gt=foo', [])
+        _test('bar__gt=foo', [], strict_mode=StrictMode.drop)
         _test('page=1', [], strict_mode=StrictMode.fail)
+
+        with pytest.raises(forms.ValidationError):
+            _test('bar=aa', [], strict_mode=StrictMode.fail)
+
+        with pytest.raises(Empty):
+            _test('bar__in=aa,5', [], strict_mode=StrictMode.empty)
 
     def test_filter_one_to_one(self, one_to_one):
         class PlaceFilterSet(FilterSet):
@@ -218,6 +228,13 @@ class TestFilterSet(object):
             assert filtered.count() == count
             assert set(filtered) == set(expected)
 
+        _test(
+            RestaurantFilterSet,
+            'pk=hello',
+            Restaurant.objects.all(),
+            Restaurant.objects.none(),
+            0
+        )
         _test(
             RestaurantFilterSet,
             'place__name__startswith=Demon',

@@ -145,6 +145,12 @@ class BaseFilterBackend(six.with_metaclass(abc.ABCMeta, object)):
         .. note:: **MUST** be implemented by subclasses
         """
 
+    @abc.abstractmethod
+    def empty(self):
+        """
+        Method for returning empty queryset when any validations failed.
+        """
+
     def filter_by_callables(self, queryset):
         """
         Method for filtering queryset by using custom filter callables

@@ -14,7 +14,7 @@ from django.db.models.constants import LOOKUP_SEP
 from django.http import QueryDict
 
 from ..backends.django import DjangoFilterBackend
-from ..exceptions import SkipFilter
+from ..exceptions import Empty, SkipFilter
 from ..filters import BaseFilter
 from ..utils import LookupConfig
 
@@ -31,6 +31,9 @@ class StrictMode(enum.Enum):
     """
     Strictness mode enum.
 
+    :``empty``:
+        when validation fails for any filter within :class:`.FilterSet`,
+        empty queryset should be returned
     :``drop`` (default):
         ignores all filter failures. when any occur, :class:`.FilterSet`
         simply then does not filter provided queryset.
@@ -38,6 +41,7 @@ class StrictMode(enum.Enum):
         when validation fails for any filter within :class:`.FilterSet`,
         all error are compiled and cumulative ``ValidationError`` is raised.
     """
+    empty = 'empty'
     drop = 'drop'
     fail = 'fail'
 
@@ -143,7 +147,7 @@ class FilterSet(six.with_metaclass(FilterSetMeta, BaseFilter)):
     strict_mode : str, optional
         Strict mode how :class:`.FilterSet` should behave when any validation
         fails. See :class:`.StrictMode` doc for more information.
-        Default is ``drop``.
+        Default is ``empty``.
     """
     filter_backend_class = DjangoFilterBackend
     """
@@ -155,7 +159,7 @@ class FilterSet(six.with_metaclass(FilterSetMeta, BaseFilter)):
     Class to be used to construct ``Meta`` during
     :class:`.FilterSet` class creation time in its metaclass.
     """
-    default_strict_mode = StrictMode.drop
+    default_strict_mode = StrictMode.empty
     """
     Default strict mode which should be used when one is not
     provided in initialization.
@@ -321,10 +325,13 @@ class FilterSet(six.with_metaclass(FilterSetMeta, BaseFilter)):
             '``data`` should be an instance of QueryDict.'
         )
 
-        specs = self.get_specs()
-        self.filter_backend.bind(specs)
-
-        return self.filter_backend.filter()
+        try:
+            specs = self.get_specs()
+        except Empty:
+            return self.filter_backend.empty()
+        else:
+            self.filter_backend.bind(specs)
+            return self.filter_backend.filter()
 
     def get_specs(self):
         """
@@ -363,8 +370,11 @@ class FilterSet(six.with_metaclass(FilterSetMeta, BaseFilter)):
                     getattr(e, 'error_list', [getattr(e, 'message', '')])
                 )
 
-        if errors and self.strict_mode == StrictMode.fail:
-            raise ValidationError(dict(errors))
+        if errors:
+            if self.strict_mode == StrictMode.fail:
+                raise ValidationError(dict(errors))
+            elif self.strict_mode == StrictMode.empty:
+                raise Empty
 
         return specs
 
