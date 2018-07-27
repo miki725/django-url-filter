@@ -108,9 +108,13 @@ class TestFilter(object):
         f = Filter(form_field=forms.IntegerField())
 
         assert f.clean_value('5', 'exact') == 5
+        assert f.clean_value('1,2', 'in') == [1, 2]
 
         with pytest.raises(forms.ValidationError):
             f.clean_value('a', 'exact')
+
+        with pytest.raises(forms.ValidationError):
+            f.clean_value('1,a,2,b', 'in')
 
     def test_get_spec(self):
         p = Filter(source='parent', form_field=forms.CharField())

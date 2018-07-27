@@ -234,3 +234,11 @@ def dictify(obj):
             for k in dir(obj)
             if not k.startswith('_')
         }
+
+
+def dict_pop(key, d):
+    """
+    Pop key from dictionary and return updated dictionary
+    """
+    d.pop(key, None)
+    return d

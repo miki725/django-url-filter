@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, print_function, unicode_literals
 import abc
-import enum
 import re
 from collections import defaultdict
 from copy import deepcopy
@@ -14,6 +13,7 @@ from django.db.models.constants import LOOKUP_SEP
 from django.http import QueryDict
 
 from ..backends.django import DjangoFilterBackend
+from ..constants import StrictMode
 from ..exceptions import Empty, SkipFilter
 from ..filters import BaseFilter
 from ..utils import LookupConfig
@@ -25,25 +25,6 @@ __all__ = [
     'ModelFilterSetOptions',
     'StrictMode',
 ]
-
-
-class StrictMode(enum.Enum):
-    """
-    Strictness mode enum.
-
-    :``empty``:
-        when validation fails for any filter within :class:`.FilterSet`,
-        empty queryset should be returned
-    :``drop`` (default):
-        ignores all filter failures. when any occur, :class:`.FilterSet`
-        simply then does not filter provided queryset.
-    :``fail``:
-        when validation fails for any filter within :class:`.FilterSet`,
-        all error are compiled and cumulative ``ValidationError`` is raised.
-    """
-    empty = 'empty'
-    drop = 'drop'
-    fail = 'fail'
 
 
 LOOKUP_RE = re.compile(

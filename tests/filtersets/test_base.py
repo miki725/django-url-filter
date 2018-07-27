@@ -154,14 +154,24 @@ class TestFilterSet(object):
         ])
         _test('bar=5', [])
         _test('bar__thing__range=5,10,15', [], strict_mode=StrictMode.drop)
+        _test('bar__thing__range=5,100', [], strict_mode=StrictMode.drop)
         _test('bar__thing=100', [], strict_mode=StrictMode.drop)
-        _test('bar__thing__in=100,5', [], strict_mode=StrictMode.drop)
+        _test('bar__thing__in=100,50', [], strict_mode=StrictMode.drop)
+        _test('bar__thing__in=100,5', [
+            FilterSpec(['bar', 'thing'], 'in', [5], False)
+        ], strict_mode=StrictMode.drop)
+        _test('bar__thing__in=100,5', [
+            FilterSpec(['bar', 'thing'], 'in', [5], False)
+        ], strict_mode=StrictMode.empty)
 
         with pytest.raises(forms.ValidationError):
             _test('bar__thing__in=100,5', [], strict_mode=StrictMode.fail)
 
         with pytest.raises(Empty):
-            _test('bar__thing__in=100,5', [], strict_mode=StrictMode.empty)
+            _test('bar__thing__in=100,50', [], strict_mode=StrictMode.empty)
+
+        with pytest.raises(Empty):
+            _test('bar__thing__range=5,100', [], strict_mode=StrictMode.empty)
 
     def test_get_specs_using_default_filter(self):
         class BarFilterSet(FilterSet):
@@ -198,7 +208,7 @@ class TestFilterSet(object):
             _test('bar=aa', [], strict_mode=StrictMode.fail)
 
         with pytest.raises(Empty):
-            _test('bar__in=aa,5', [], strict_mode=StrictMode.empty)
+            _test('bar__in=aa', [], strict_mode=StrictMode.empty)
 
     def test_filter_one_to_one(self, one_to_one):
         class PlaceFilterSet(FilterSet):
