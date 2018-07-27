@@ -3,6 +3,21 @@
 History
 -------
 
+0.3.7 (2018-07-27)
+~~~~~~~~~~~~~~~~~~
+
+* Added ``StrictModel.empty`` which is new default.
+  It returns empty queryset when any filter validations fail.
+* Fixed ``in`` lookup. Previously if any of the items were invalid
+  whole filter would fail and depending on strict mode would
+  either return all results, no results or will raise exception.
+  Now in ``StrictMode.empty`` and ``StrictMode.drop`` any invalid
+  items are ignored which will filter results for valid items.
+  See `#63 <https://github.com/miki725/django-url-filter/issues/64>`_.
+* Added ability in ``ModelFilterSet`` to customize filter names
+  by providing ``extra_kwargs`` with field ``source``.
+  See `#66 <https://github.com/miki725/django-url-filter/issues/66>`_.
+
 0.3.6 (2018-07-23)
 ~~~~~~~~~~~~~~~~~~
 
