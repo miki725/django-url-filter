@@ -7,10 +7,10 @@ from django.http import QueryDict
 
 from test_project.one_to_one.models import Restaurant, Waiter
 from url_filter.backends.django import DjangoFilterBackend
+from url_filter.constants import StrictMode
 from url_filter.exceptions import Empty
 from url_filter.filters import Filter
 from url_filter.filtersets.base import FilterSet
-from url_filter.constants import StrictMode
 from url_filter.utils import FilterSpec
 
 
