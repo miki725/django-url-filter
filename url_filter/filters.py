@@ -2,20 +2,21 @@
 from __future__ import absolute_import, print_function, unicode_literals
 import abc
 import re
-from functools import partial, wraps
+from functools import wraps
 
 import six
 from cached_property import cached_property
 from django import forms
 from django.core.exceptions import ValidationError
 
+from .constants import StrictMode
 from .fields import MultipleValuesField
-from .utils import FilterSpec
+from .utils import FilterSpec, dict_pop
 
 
 MANY_LOOKUP_FIELD_OVERWRITES = {
-    'in': partial(MultipleValuesField, min_values=1),
-    'range': partial(MultipleValuesField, min_values=2, max_values=2),
+    'in': lambda **kwargs: MultipleValuesField(min_values=1, **kwargs),
+    'range': lambda **kwargs: MultipleValuesField(min_values=2, max_values=2, **dict_pop('all_valid', kwargs)),
 }
 
 LOOKUP_FIELD_OVERWRITES = {
@@ -306,7 +307,10 @@ class Filter(BaseFilter):
             Instantiated form field appropriate for the given lookup.
         """
         if lookup in MANY_LOOKUP_FIELD_OVERWRITES:
-            return MANY_LOOKUP_FIELD_OVERWRITES[lookup](child=self.form_field)
+            return MANY_LOOKUP_FIELD_OVERWRITES[lookup](
+                child=self.form_field,
+                all_valid=getattr(self.root, 'strict_mode', StrictMode.fail) == StrictMode.fail,
+            )
         elif lookup in LOOKUP_FIELD_OVERWRITES:
             return LOOKUP_FIELD_OVERWRITES[lookup]
         else:

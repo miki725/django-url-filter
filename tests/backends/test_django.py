@@ -18,6 +18,14 @@ class TestDjangoFilterBackend(object):
         assert backend.model is Place
         assert backend.context == {'context': 'here'}
 
+    def test_empty(self):
+        backend = DjangoFilterBackend(
+            Place.objects.all(),
+            context={'context': 'here'},
+        )
+
+        assert backend.empty().count() == 0
+
     def test_get_model(self):
         backend = DjangoFilterBackend(Place.objects.all())
 

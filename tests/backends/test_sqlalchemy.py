@@ -3,8 +3,8 @@ from __future__ import absolute_import, print_function, unicode_literals
 
 import pytest
 import six
+from alchemy_mock.comparison import ExpressionMatcher
 from sqlalchemy import func
-from sqlalchemy.sql.elements import ClauseList, Grouping
 from sqlalchemy.types import String
 
 from test_project.one_to_one.alchemy import Place, Restaurant, Waiter
@@ -13,20 +13,7 @@ from url_filter.utils import FilterSpec
 
 
 def assert_alchemy_expressions_equal(exp1, exp2):
-    assert six.text_type(exp1) == six.text_type(exp2)
-
-    if isinstance(exp1.right, Grouping):
-        values1 = list(i.value for i in exp1.right.element.clauses)
-        values2 = list(i.value for i in exp2.right.element.clauses)
-        assert values1 == values2
-
-    elif isinstance(exp1.right, ClauseList):
-        values1 = list(i.value for i in exp1.right.clauses)
-        values2 = list(i.value for i in exp2.right.clauses)
-        assert values1 == values2
-
-    elif hasattr(exp1.right, 'value'):
-        assert exp1.right.value == exp2.right.value
+    assert ExpressionMatcher(exp1) == exp2
 
 
 class TestSQLAlchemyFilterBackend(object):
@@ -43,6 +30,14 @@ class TestSQLAlchemyFilterBackend(object):
             SQLAlchemyFilterBackend(
                 alchemy_db.query(Place, Restaurant),
             )
+
+    def test_empty(self, alchemy_db):
+        backend = SQLAlchemyFilterBackend(
+            alchemy_db.query(Place),
+            context={'context': 'here'},
+        )
+
+        assert 'WHERE 0 = 1' in six.text_type(backend.empty())
 
     def test_get_model(self, alchemy_db):
         backend = SQLAlchemyFilterBackend(alchemy_db.query(Place))

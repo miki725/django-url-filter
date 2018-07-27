@@ -35,13 +35,21 @@ class TestMultipleValuesField(object):
         with pytest.raises(forms.ValidationError):
             field.clean('hello,world,and,many,happy,rainbows')
 
+    def test_clean_all_valid(self):
+        field = MultipleValuesField(forms.IntegerField(), all_valid=False)
+
+        assert field.clean('1,2,3') == [1, 2, 3]
+        assert field.clean('a,1,b,2') == [1, 2]
+
     def test_many_to_python(self):
         field = MultipleValuesField()
 
         assert field.many_to_python('hello,world') == ['hello', 'world']
 
     def test_many_validate(self):
-        assert MultipleValuesField().many_validate('') is None
+        assert MultipleValuesField().many_validate([1, 2]) is None
+        with pytest.raises(forms.ValidationError):
+            MultipleValuesField().many_validate([])
 
     def test_many_run_validators(self):
         field = MultipleValuesField(error_messages={'min_length': 'foo'})

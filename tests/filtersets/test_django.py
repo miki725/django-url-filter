@@ -46,6 +46,32 @@ class TestModelFilterSet(object):
         assert isinstance(filters['address'], Filter)
         assert isinstance(filters['address'].form_field, forms.CharField)
 
+    def test_get_filters_no_relations_place_diff_source(self):
+        class PlaceFilterSet(ModelFilterSet):
+            class Meta(object):
+                model = Place
+                allow_related = False
+                allow_related_reverse = False
+                fields = ['id', 'name', 'location']
+                extra_kwargs = {
+                    'id': {'no_lookup': True},
+                    'location': {'source': 'address'}
+                }
+
+        filters = PlaceFilterSet().get_filters()
+
+        assert set(filters.keys()) == {
+            'id', 'name', 'location',
+        }
+
+        assert isinstance(filters['id'], Filter)
+        assert isinstance(filters['id'].form_field, forms.IntegerField)
+        assert filters['id'].no_lookup is True
+        assert isinstance(filters['name'], Filter)
+        assert isinstance(filters['name'].form_field, forms.CharField)
+        assert isinstance(filters['location'], Filter)
+        assert isinstance(filters['location'].form_field, forms.CharField)
+
     def test_get_filters_no_relations_place_exclude_address(self):
         class PlaceFilterSet(ModelFilterSet):
             class Meta(object):

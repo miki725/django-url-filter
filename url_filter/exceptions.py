@@ -15,3 +15,10 @@ class SkipFilter(Exception):
     * filter lookup value is invalid
       (e.g. submitted "a" for integer field)
     """
+
+
+class Empty(Exception):
+    """
+    Exception to be used when filter backend should return
+    empty queryset when any of filter validations has failed.
+    """

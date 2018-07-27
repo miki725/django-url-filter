@@ -71,6 +71,11 @@ class TestPlainFilterBackend(object):
         assert backend.get_model() is object
         assert not backend.enforce_same_models
 
+    def test_empty(self):
+        backend = PlainFilterBackend([])
+
+        assert backend.empty() == []
+
     def test_filter_no_specs(self):
         qs = ['hello']
         backend = PlainFilterBackend(qs)

@@ -47,6 +47,12 @@ class PlainFilterBackend(BaseFilterBackend):
         'year',
     }
 
+    def empty(self):
+        """
+        Get empty queryset
+        """
+        return []
+
     def get_model(self):
         """
         Get the model from the given queryset
