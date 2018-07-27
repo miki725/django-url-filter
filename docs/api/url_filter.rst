@@ -20,6 +20,7 @@ Submodules
 
 .. toctree::
 
+   url_filter.constants
    url_filter.exceptions
    url_filter.fields
    url_filter.filters
