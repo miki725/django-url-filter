@@ -5,7 +5,8 @@ from rest_framework.serializers import ModelSerializer
 from rest_framework.viewsets import ReadOnlyModelViewSet
 
 from url_filter.backends.sqlalchemy import SQLAlchemyFilterBackend
-from url_filter.filtersets import ModelFilterSet, StrictMode
+from url_filter.filtersets import ModelFilterSet
+from url_filter.constants import StrictMode
 from url_filter.filtersets.sqlalchemy import SQLAlchemyModelFilterSet
 
 from . import alchemy

@@ -11,7 +11,8 @@ from rest_framework.viewsets import ReadOnlyModelViewSet
 from url_filter.backends.plain import PlainFilterBackend
 from url_filter.backends.sqlalchemy import SQLAlchemyFilterBackend
 from url_filter.filters import CallableFilter, Filter, form_field_for_filter
-from url_filter.filtersets import ModelFilterSet, StrictMode
+from url_filter.filtersets import ModelFilterSet
+from url_filter.constants import StrictMode
 from url_filter.filtersets.plain import PlainModelFilterSet
 from url_filter.filtersets.sqlalchemy import SQLAlchemyModelFilterSet
 
