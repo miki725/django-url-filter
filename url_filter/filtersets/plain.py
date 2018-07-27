@@ -38,7 +38,7 @@ class PlainModelFilterSet(BaseModelFilterSet):
         return dictify(self.Meta.model)
 
     def _build_filter(self, name, model):
-        value = model.get(name)
+        value = model.get(self._get_filter_extra_kwargs(name).get('source', name))
         primitive = DATA_TYPES_MAPPING.get(type(value))
 
         if primitive:

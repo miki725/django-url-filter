@@ -70,7 +70,7 @@ class SQLAlchemyModelFilterSet(BaseModelFilterSet):
     filter_backend_class = SQLAlchemyFilterBackend
 
     def _build_filter(self, name, fields):
-        field = fields[name]
+        field = fields[self._get_filter_extra_kwargs(name).get('source', name)]
 
         if isinstance(field, ColumnProperty):
             return self._build_filter_from_field(name, field)

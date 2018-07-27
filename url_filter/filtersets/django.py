@@ -90,7 +90,9 @@ class ModelFilterSet(BaseModelFilterSet):
         return form_field
 
     def _build_filter(self, name, state):
-        field = self.Meta.model._meta.get_field(name)
+        field = self.Meta.model._meta.get_field(
+            self._get_filter_extra_kwargs(name).get('source', name)
+        )
 
         if isinstance(field, RelatedField):
             if not self.Meta.allow_related:
