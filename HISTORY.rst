@@ -3,6 +3,12 @@
 History
 -------
 
+0.3.8 (2018-08-08)
+~~~~~~~~~~~~~~~~~~
+
+* Fixed ``SQLAlchemyFilterBackend`` by not joining nested models
+  when they are already eager loaded via ``query.options()``.
+
 0.3.7 (2018-07-27)
 ~~~~~~~~~~~~~~~~~~
 
