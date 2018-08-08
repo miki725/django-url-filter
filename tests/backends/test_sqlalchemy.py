@@ -5,6 +5,7 @@ import pytest
 import six
 from alchemy_mock.comparison import ExpressionMatcher
 from sqlalchemy import func
+from sqlalchemy.orm import joinedload
 from sqlalchemy.types import String
 
 from test_project.one_to_one.alchemy import Place, Restaurant, Waiter
@@ -74,6 +75,20 @@ class TestSQLAlchemyFilterBackend(object):
             'ON one_to_one_waiter.restaurant_id = one_to_one_restaurant.place_id '
             '\nWHERE one_to_one_waiter.name ={}'.format(sql.rsplit('=', 1)[-1])
         )
+
+    def test_filter_already_eagerloaded(self, alchemy_db):
+        backend = SQLAlchemyFilterBackend(
+            alchemy_db.query(Place).options(joinedload(Place.restaurant).joinedload(Restaurant.waiter_set)),
+        )
+        backend.bind([
+            FilterSpec(['restaurant', 'waiter_set', 'name'], 'exact', 'John', False),
+        ])
+
+        filtered = backend.filter()
+
+        sql = six.text_type(filtered)
+        assert 'place JOIN one_to_one' not in sql
+        assert 'place LEFT OUTER JOIN one_to_one' in sql
 
     def _test_build_clause(self, alchemy_db, name, lookup, value, expected, is_negated=False):
         backend = SQLAlchemyFilterBackend(

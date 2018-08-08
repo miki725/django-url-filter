@@ -127,6 +127,10 @@ class SQLAlchemyFilterBackend(BaseFilterBackend):
             else:
                 to_join.append(_field)
 
+        existing_eagerloads = [list(i.path) for i in self.queryset._with_options]
+        if to_join in existing_eagerloads:
+            to_join = []
+
         builder = getattr(self, '_build_clause_{}'.format(spec.lookup))
         column = self._get_attribute_for_field(field)
         clause = builder(spec, column)
