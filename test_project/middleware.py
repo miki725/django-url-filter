@@ -8,6 +8,12 @@ from sqlalchemy.orm import sessionmaker
 Session = sessionmaker(bind=settings.SQLALCHEMY_ENGINE)
 
 
+def dbs():
+    return {
+        'default': settings.SQLALCHEMY_ENGINE,
+    }
+
+
 class SQLAlchemySessionMiddleware(object):
     def __init__(self, get_response):
         self.get_response = get_response

@@ -52,3 +52,8 @@ release: clean  ## package and upload a release
 dist: clean  ## build python package ditribution
 	python setup.py sdist bdist_wheel
 	ls -l dist
+
+syncdb:  ## apply all migrations and load fixtures
+	python manage.py migrate
+	python manage.py migrate --run-syncdb
+	python manage.py loaddata one_to_one many_to_one many_to_many
