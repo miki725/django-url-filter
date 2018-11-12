@@ -16,6 +16,7 @@ from .utils import FilterSpec, dict_pop
 
 MANY_LOOKUP_FIELD_OVERWRITES = {
     'in': lambda **kwargs: MultipleValuesField(min_values=1, **kwargs),
+    'iin': lambda **kwargs: MultipleValuesField(min_values=1, **kwargs),
     'range': lambda **kwargs: MultipleValuesField(min_values=2, max_values=2, **dict_pop('all_valid', kwargs)),
 }
 
