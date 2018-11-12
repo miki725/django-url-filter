@@ -3,6 +3,12 @@
 History
 -------
 
+0.3.9 (2018-11-12)
+~~~~~~~~~~~~~~~~~~
+
+* Adding ``iin`` form field overwrite for SQLAlchemy as otherwise by default
+  ``iin`` lookup is not validated correctly.
+
 0.3.8 (2018-08-08)
 ~~~~~~~~~~~~~~~~~~
 
