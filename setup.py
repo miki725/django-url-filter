@@ -18,14 +18,11 @@ history = read('HISTORY.rst').replace('.. :changelog:', '')
 licence = read('LICENSE.rst')
 readme = read('README.rst')
 
-requirements = read('requirements.txt').splitlines() + [
-    'setuptools',
-]
+req = read('requirements.txt').splitlines()
+dev_req = read('requirements-dev.txt').splitlines()[1:]
 
-test_requirements = (
-    read('requirements.txt').splitlines() +
-    read('requirements-dev.txt').splitlines()[1:]
-)
+requirements = req + ['setuptools']
+test_requirements = req + dev_req
 
 setup(
     name='django-url-filter',
