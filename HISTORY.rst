@@ -3,6 +3,13 @@
 History
 -------
 
+0.3.10 (2018-11-14)
+~~~~~~~~~~~~~~~~~~
+
+* Only running ``distinct`` on queryset when one of filters is on one-to-many relation.
+  This should help with performance.
+  See `#26 <https://github.com/miki725/django-url-filter/issues/26>`_.
+
 0.3.9 (2018-11-12)
 ~~~~~~~~~~~~~~~~~~
 

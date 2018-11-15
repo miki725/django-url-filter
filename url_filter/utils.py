@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, print_function, unicode_literals
 import inspect
+from contextlib import contextmanager
 
 
 class FilterSpec(object):
@@ -242,3 +243,21 @@ def dict_pop(key, d):
     """
     d.pop(key, None)
     return d
+
+
+@contextmanager
+def suppress(e):
+    """
+    Suppress given exception type
+
+    For example::
+
+        >>> with suppress(ValueError):
+        ...     print('test')
+        ...     raise ValueError
+        test
+    """
+    try:
+        yield
+    except e:
+        pass

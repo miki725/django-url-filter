@@ -70,6 +70,7 @@ class TestDjangoFilterBackend(object):
         qs = mock.Mock()
 
         backend = DjangoFilterBackend(qs)
+        backend.model = Place
         backend.bind([
             FilterSpec(['name'], 'exact', 'value', False),
             FilterSpec(['address'], 'contains', 'value', True),
@@ -77,9 +78,23 @@ class TestDjangoFilterBackend(object):
 
         result = backend.filter()
 
-        assert result == qs.filter.return_value.exclude.return_value.distinct.return_value
+        assert result == qs.filter.return_value.exclude.return_value
         qs.filter.assert_called_once_with(name__exact='value')
         qs.filter.return_value.exclude.assert_called_once_with(address__contains='value')
+
+    def test_filter_to_many(self):
+        qs = mock.Mock()
+
+        backend = DjangoFilterBackend(qs)
+        backend.model = Place
+        backend.bind([
+            FilterSpec(['restaurant', 'waiter', 'name'], 'exact', 'value', False),
+        ])
+
+        result = backend.filter()
+
+        assert result == qs.filter.return_value.distinct.return_value
+        qs.filter.assert_called_once_with(restaurant__waiter__name__exact='value')
 
     def test_filter_callable_specs(self):
         qs = mock.Mock()
@@ -93,5 +108,5 @@ class TestDjangoFilterBackend(object):
 
         result = backend.filter()
 
-        assert result == qs.distinct.return_value.filter.return_value
-        qs.distinct.return_value.filter.assert_called_once_with(spec)
+        assert result == qs.filter.return_value
+        qs.filter.assert_called_once_with(spec)
