@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, print_function, unicode_literals
 
+from django.core.exceptions import FieldDoesNotExist
 from django.db.models.constants import LOOKUP_SEP
 
+from ..utils import suppress
 from .base import BaseFilterBackend
 
 
@@ -110,4 +112,16 @@ class DjangoFilterBackend(BaseFilterBackend):
         for lookup, value in exclude.items():
             queryset = queryset.exclude(**{lookup: value})
 
-        return queryset.distinct()
+        to_many = self._is_any_to_many()
+        return queryset.distinct() if to_many else queryset
+
+    def _is_any_to_many(self):
+        return any(self._is_to_many(self.model, i.components) for i in self.regular_specs)
+
+    def _is_to_many(self, model, components):
+        if not components:
+            return False
+
+        with suppress(FieldDoesNotExist):
+            f = model._meta.get_field(components[0])
+            return f.one_to_many or f.many_to_many or self._is_to_many(f.related_model, components[1:])
