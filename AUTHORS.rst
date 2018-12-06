@@ -14,4 +14,4 @@ Contributors
 * Håken Lid - https://github.com/haakenlid
 * Ryan O’Hara - https://github.com/ryan-copperleaf
 * webrunners - https://github.com/webrunners
-
+* Simone Pellizzari - https://github.com/simone6021
