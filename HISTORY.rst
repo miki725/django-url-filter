@@ -3,6 +3,12 @@
 History
 -------
 
+0.3.11 (2018-12-06)
+~~~~~~~~~~~~~~~~~~~
+
+* Not modifying queryset in Django backend if no filters were applied.
+  See `#73 <https://github.com/miki725/django-url-filter/pull/73>`_.
+
 0.3.10 (2018-11-14)
 ~~~~~~~~~~~~~~~~~~
 

@@ -47,3 +47,4 @@ docs/_build
 
 # IDEs
 /.idea
+.DS_Store
