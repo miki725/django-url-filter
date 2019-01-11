@@ -87,23 +87,6 @@ class DjangoFilterBackend(BaseFilterBackend):
         if filter_class:
             return filter_class
 
-        if filter_fields == '__all__':
-            model = filter_class_default.filter_backend_class(queryset).get_model()
-            all_fields = list(map(lambda x: x.attname, getattr(model, '_meta').fields))
-
-            meta_kwargs = filter_class_meta_kwargs.copy()
-            meta_kwargs.update({
-                'model': model,
-                'fields': all_fields,
-            })
-            meta = type(str('Meta'), (object,), meta_kwargs)
-
-            return type(
-                str('{}FilterSet'.format(model.__name__)),
-                (filter_class_default,),
-                {'Meta': meta}
-            )
-
         if filter_fields:
             model = filter_class_default.filter_backend_class(queryset).get_model()
 
