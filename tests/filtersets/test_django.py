@@ -257,6 +257,18 @@ class TestModelFilterSet(object):
             'id', 'name', 'a', 'content_type', 'object_id',
         }
 
+    def test_get_filters_using_all(self):
+        class ModelBFilterSet(ModelFilterSet):
+            class Meta(object):
+                model = ModelB
+                fields = '__all__'
+
+        filters = ModelBFilterSet().get_filters()
+
+        assert set(filters.keys()) == {
+            'id', 'name', 'a', 'content_type', 'object_id',
+        }
+
     def test_get_form_field_for_field(self):
         fs = ModelFilterSet()
 

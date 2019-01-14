@@ -15,3 +15,4 @@ Contributors
 * Ryan O’Hara - https://github.com/ryan-copperleaf
 * webrunners - https://github.com/webrunners
 * Simone Pellizzari - https://github.com/simone6021
+* Jonathon Farzanfar - https://github.com/pctSW1
