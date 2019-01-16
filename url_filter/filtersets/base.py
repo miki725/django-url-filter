@@ -25,7 +25,6 @@ __all__ = [
     'ModelFilterSetOptions',
 ]
 
-
 LOOKUP_RE = re.compile(
     r'^(?:[^\d\W]\w*)(?:{}?[^\d\W]\w*)*(?:!)?$'
     r''.format(LOOKUP_SEP), re.IGNORECASE
@@ -54,6 +53,7 @@ class FilterSetOptions(object):
     Base class for handling options passed to :class:`.FilterSet`
     via ``Meta`` attribute.
     """
+
     def __init__(self, options=None):
         pass
 
@@ -436,6 +436,7 @@ class ModelFilterSetOptions(FilterSetOptions):
     extra_kwargs : dict, optional
         Additional kwargs to be given to auto-generated individual filters
     """
+
     def __init__(self, options=None):
         super(ModelFilterSetOptions, self).__init__(options)
         self.model = getattr(options, 'model', None)
@@ -467,7 +468,7 @@ class BaseModelFilterSet(FilterSet):
             ''.format(name=self.__class__.__name__)
         )
 
-        if self.Meta.fields is None:
+        if self.Meta.fields in [None, '__all__']:
             self.Meta.fields = self._get_model_field_names()
 
         state = self._build_state()
