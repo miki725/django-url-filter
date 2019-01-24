@@ -6,7 +6,7 @@ History
 0.3.12 (2019-01-24)
 ~~~~~~~~~~~~~~~~~~~
 
-* Adding support for ``FilterSet.Meta.fields == '__all__'` which is useful in DRF integration.
+* Adding support for ``FilterSet.Meta.fields == '__all__'`` which is useful in DRF integration.
   See `#39 <https://github.com/miki725/django-url-filter/pull/39>`_.
 
 0.3.11 (2018-12-06)
@@ -16,7 +16,7 @@ History
   See `#73 <https://github.com/miki725/django-url-filter/pull/73>`_.
 
 0.3.10 (2018-11-14)
-~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~
 
 * Only running ``distinct`` on queryset when one of filters is on one-to-many relation.
   This should help with performance.
