@@ -36,7 +36,10 @@ importanize:
 
 lint:  ## check style with flake8
 	flake8 .
-	python --version | grep "Python 3" && make importanize || true
+	if python -c "import sys; exit(1) if sys.version[:3] < '3.6' else exit(0)"; \
+	then \
+		make importanize ; \
+	fi
 
 test:  ## run tests quickly with the default Python
 	py.test -sv --cov=url_filter --cov-report=term-missing --doctest-modules tests/ url_filter/

@@ -36,6 +36,18 @@ class TestDjangoFilterBackend(object):
         assert filter_class.Meta.model is Place
         assert filter_class.Meta.fields == ['name']
 
+    def test_get_filter_class_all_fields(self):
+        class View(object):
+            filter_fields = '__all__'
+
+        filter_class = DjangoFilterBackend().get_filter_class(
+            View(), Place.objects.all()
+        )
+
+        assert issubclass(filter_class, ModelFilterSet)
+        assert filter_class.Meta.model is Place
+        assert set(filter_class().filters.keys()) == {'restaurant', 'id', 'name', 'address'}
+
     def test_get_filter_context(self):
         context = DjangoFilterBackend().get_filter_context(
             request='request', view='view',
