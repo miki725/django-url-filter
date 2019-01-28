@@ -9,7 +9,7 @@ help:  ## show help
 install: ## install all requirements including for testing
 	pip install -r requirements-dev.txt
 
-install-quite:  ## same as install but pipes all output to /dev/null
+install-quiet:  ## same as install but pipes all output to /dev/null
 	pip install -r requirements-dev.txt > /dev/null
 
 clean: clean-build clean-pyc  ## remove all artifacts
