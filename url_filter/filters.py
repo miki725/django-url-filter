@@ -7,7 +7,8 @@ from functools import wraps
 import six
 from cached_property import cached_property
 from django import forms
-from django.core.exceptions import ValidationError
+from django.core.exceptions import ValidationError, FieldDoesNotExist
+from django.db.models import Field
 
 from .constants import StrictMode
 from .fields import MultipleValuesField
@@ -477,13 +478,26 @@ class CallableFilter(Filter):
         super(CallableFilter, self).__init__(form_field, *args, **kwargs)
 
     @cached_property
+    def is_field(self):
+        """Return True if the attribute is instance of Field else return False.
+        """
+        model = self.root.queryset.model
+
+        try:
+            field = model._meta.get_field(self.name)
+            return True if isinstance(field, Field) else False
+        except FieldDoesNotExist:
+            return False
+
+    @cached_property
     def lookups(self):
         """
         Get all supported lookups for the filter
 
-        This property is identical to the super implementation except it also
-        finds all custom lookups from the class methods and adds them to the
-        set of supported lookups as returned by the super implementation.
+        This property is identical to the super implementation except it finds
+        all custom lookups from the class methods. And if the model attribute
+        is a field, adds them to the set of supported lookups as returned by
+        the super implementation. Else returns custom lookups only.
         """
         lookups = super(CallableFilter, self).lookups
 
@@ -493,7 +507,10 @@ class CallableFilter(Filter):
             if m and m.groupdict()['backend'] == self.root.filter_backend.name
         }
 
-        return lookups | custom_lookups
+        if self.is_field:
+            return lookups | custom_lookups
+        else:
+            return custom_lookups
 
     def _get_filter_method_for_lookup(self, lookup):
         name = 'filter_{}_for_{}'.format(lookup, self.root.filter_backend.name)
