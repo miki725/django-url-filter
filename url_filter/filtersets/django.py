@@ -112,12 +112,18 @@ class ModelFilterSet(BaseModelFilterSet):
 
     def _build_filter_from_field(self, name, field):
         """
-        Build :class:`.Filter` for a standard Django model field.
+        Build :class:`.Filter` for a standard Django model field. Retrieve
+        default field lookups if no lookups are specified by the user.
         """
+        filter_extra_kwargs = self._get_filter_extra_kwargs(name)
+
+        if not filter_extra_kwargs.get("lookups", None):
+            filter_extra_kwargs["lookups"] = tuple(field.get_lookups().keys())
+
         return Filter(
             form_field=self._get_form_field_for_field(field),
             is_default=field.primary_key,
-            **self._get_filter_extra_kwargs(name)
+            **filter_extra_kwargs
         )
 
     def _build_filterset_from_related_field(self, name, field):
