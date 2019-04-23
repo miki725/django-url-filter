@@ -4,6 +4,7 @@ import operator
 
 from django import forms
 from django.conf import settings
+from django.contrib.postgres.fields import JSONField
 from django.db import models
 from django.db.models.fields.related import ForeignObjectRel, RelatedField
 
@@ -26,6 +27,7 @@ if 'django.contrib.contenttypes' in settings.INSTALLED_APPS:
 MODEL_FIELD_OVERWRITES = SubClassDict({
     models.AutoField: forms.IntegerField(min_value=0),
     models.FileField: lambda m: forms.CharField(max_length=m.max_length),
+    JSONField: forms.CharField(),
 })
 
 
