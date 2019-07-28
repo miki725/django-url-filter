@@ -24,7 +24,7 @@ DESCRIPTION = {
     'iexact': 'Case insensitive match exactly the value as is',
     'iin': 'Case insensitive match when value is any of given comma separated values',
     'in': 'Match when value is any of given comma separated values',
-    'iregex': 'Case insensitive match when value is within comma separated range',
+    'iregex': 'Case insensitive match string by regex pattern',
     'isnull': 'Match when value is NULL',
     'istartswith': 'Case insensitive match when string starts with given substring',
     'lt': 'Match when value is less then given value',
