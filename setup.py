@@ -19,7 +19,7 @@ licence = read('LICENSE.rst')
 readme = read('README.rst')
 
 req = read('requirements.txt').splitlines()
-dev_req = read('requirements-dev.txt').splitlines()[1:]
+dev_req = read('requirements-dev.txt').splitlines()[2:]
 
 requirements = req + ['setuptools']
 test_requirements = req + dev_req

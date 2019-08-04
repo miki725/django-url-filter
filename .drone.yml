@@ -130,3 +130,23 @@ trigger:
     - push
   branch:
     - master
+
+---
+kind: pipeline
+name: release
+
+steps:
+- name: release
+  image: python:3.7
+  environment:
+    TWINE_USERNAME:
+      from_secret: pypi_username
+    TWINE_PASSWORD:
+      from_secret: pypi_token
+  commands:
+    - make install INSTALL_FILE=requirements-release.txt INSTALL_LOG=/dev/null
+    - make release
+
+trigger:
+  event:
+    - tag

@@ -1,4 +1,5 @@
 -r requirements.txt
+-r requirements-release.txt
 alchemy-mock
 coreapi
 coverage
