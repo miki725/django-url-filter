@@ -1,4 +1,6 @@
 .PHONY: clean-pyc clean-build docs clean
+ADDITIONAL_COVERAGE_FLAGS ?=
+INSTALL_LOG ?= /dev/stdout
 
 help:  ## show help
 	@grep -E '^[a-zA-Z_\-]+:.*?## .*$$' $(MAKEFILE_LIST) | \
@@ -7,10 +9,7 @@ help:  ## show help
 		awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
 
 install: ## install all requirements including for testing
-	pip install -r requirements-dev.txt
-
-install-quite:  ## same as install but pipes all output to /dev/null
-	pip install -r requirements-dev.txt > /dev/null
+	pip install -r requirements-dev.txt 2>&1 > $(INSTALL_LOG)
 
 clean: clean-build clean-pyc  ## remove all artifacts
 
@@ -42,7 +41,12 @@ lint:  ## check style with flake8
 	fi
 
 test:  ## run tests quickly with the default Python
-	py.test -sv --cov=url_filter --cov-report=term-missing --doctest-modules tests/ url_filter/
+	py.test -sv \
+		--cov=url_filter \
+		--cov-report=term-missing \
+		$(ADDITIONAL_COVERAGE_FLAGS) \
+		--doctest-modules \
+		tests/ url_filter/
 
 test-all:  ## run tests on every Python version with tox
 	tox

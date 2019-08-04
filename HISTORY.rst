@@ -3,6 +3,11 @@
 History
 -------
 
+0.3.13 (2019-07-28)
+~~~~~~~~~~~~~~~~~~~
+
+* Fixing `iregex` documentation in DRF coreapi integration.
+
 0.3.12 (2019-01-24)
 ~~~~~~~~~~~~~~~~~~~
 
