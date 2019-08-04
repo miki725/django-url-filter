@@ -62,7 +62,7 @@ dist: clean  ## build python package ditribution
 	twine check dist/*
 
 release: clean dist  ## package and upload a release
-	twine upload
+	twine upload dist/*
 
 syncdb:  ## apply all migrations and load fixtures
 	python manage.py migrate
