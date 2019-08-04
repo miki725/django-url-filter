@@ -22,7 +22,7 @@ class PublicationSerializer(ModelSerializer):
 class ArticleSerializer(ModelSerializer):
     class Meta(object):
         model = Article
-        exclude = ['publications']
+        exclude = ["publications"]
 
 
 class PublicationNestedSerializer(ModelSerializer):

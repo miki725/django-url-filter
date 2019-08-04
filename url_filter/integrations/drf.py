@@ -51,6 +51,7 @@ class DjangoFilterBackend(BaseFilterBackend):
     --------
     :py:class:`url_filter.integrations.drf_coreapi.CoreAPIURLFilterBackend`
     """
+
     default_filter_set = ModelFilterSet
     """
     Default base class which will be used while dynamically creating :class:`.FilterSet`
@@ -79,10 +80,12 @@ class DjangoFilterBackend(BaseFilterBackend):
             When appropriate :class:`.FilterSet` cannot be determined
             for filtering
         """
-        filter_class_default = getattr(view, 'filter_class_default', self.default_filter_set)
-        filter_class = getattr(view, 'filter_class', None)
-        filter_class_meta_kwargs = getattr(view, 'filter_class_meta_kwargs', {})
-        filter_fields = getattr(view, 'filter_fields', None)
+        filter_class_default = getattr(
+            view, "filter_class_default", self.default_filter_set
+        )
+        filter_class = getattr(view, "filter_class", None)
+        filter_class_meta_kwargs = getattr(view, "filter_class_meta_kwargs", {})
+        filter_fields = getattr(view, "filter_fields", None)
 
         if filter_class:
             return filter_class
@@ -91,16 +94,13 @@ class DjangoFilterBackend(BaseFilterBackend):
             model = filter_class_default.filter_backend_class(queryset).get_model()
 
             meta_kwargs = filter_class_meta_kwargs.copy()
-            meta_kwargs.update({
-                'model': model,
-                'fields': filter_fields,
-            })
-            meta = type(str('Meta'), (object,), meta_kwargs)
+            meta_kwargs.update({"model": model, "fields": filter_fields})
+            meta = type(str("Meta"), (object,), meta_kwargs)
 
             return type(
-                str('{}FilterSet'.format(model.__name__)),
+                str("{}FilterSet".format(model.__name__)),
                 (filter_class_default,),
-                {'Meta': meta}
+                {"Meta": meta},
             )
 
     def get_filter_context(self, request, view):
@@ -119,10 +119,7 @@ class DjangoFilterBackend(BaseFilterBackend):
         dict
             Context to be passed to :class:`.FilterSet`
         """
-        return {
-            'request': request,
-            'view': view,
-        }
+        return {"request": request, "view": view}
 
     def filter_queryset(self, request, queryset, view):
         """
@@ -152,12 +149,13 @@ class DjangoFilterBackend(BaseFilterBackend):
                 context=self.get_filter_context(request, view),
             )
 
-            filter_model = getattr(_filter.Meta, 'model', None)
+            filter_model = getattr(_filter.Meta, "model", None)
             if filter_model and _filter.filter_backend.enforce_same_models:
                 model = _filter.filter_backend.model
-                assert issubclass(model, filter_model), (
-                    'FilterSet model {} does not match queryset model {}'
-                    ''.format(filter_model, model)
+                assert issubclass(
+                    model, filter_model
+                ), "FilterSet model {} does not match queryset model {}" "".format(
+                    filter_model, model
                 )
 
             try:

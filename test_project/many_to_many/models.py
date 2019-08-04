@@ -13,16 +13,16 @@ class Publication(models.Model):
         return self.title
 
     class Meta:
-        ordering = ('title',)
+        ordering = ("title",)
 
 
 @six.python_2_unicode_compatible
 class Article(models.Model):
     headline = models.CharField(max_length=100)
-    publications = models.ManyToManyField(Publication, related_name='articles')
+    publications = models.ManyToManyField(Publication, related_name="articles")
 
     def __str__(self):
         return self.headline
 
     class Meta:
-        ordering = ('headline',)
+        ordering = ("headline",)

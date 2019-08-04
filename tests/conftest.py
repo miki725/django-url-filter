@@ -9,17 +9,17 @@ from sqlalchemy.orm import sessionmaker
 
 @pytest.fixture
 def one_to_one(db):
-    call_command('loaddata', 'one_to_one.json')
+    call_command("loaddata", "one_to_one.json")
 
 
 @pytest.fixture
 def many_to_one(db):
-    call_command('loaddata', 'many_to_one.json')
+    call_command("loaddata", "many_to_one.json")
 
 
 @pytest.fixture
 def many_to_many(db):
-    call_command('loaddata', 'many_to_many.json')
+    call_command("loaddata", "many_to_many.json")
 
 
 @pytest.fixture

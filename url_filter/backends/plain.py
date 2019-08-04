@@ -17,34 +17,35 @@ class PlainFilterBackend(BaseFilterBackend):
         any large amounts of data. In those cases, it would probably
         be better to find more appropriate and efficient way to filter data.
     """
-    name = 'plain'
+
+    name = "plain"
     enforce_same_models = False
     supported_lookups = {
-        'contains',
-        'day',
-        'endswith',
-        'exact',
-        'gt',
-        'gte',
-        'hour',
-        'icontains',
-        'iendswith',
-        'iexact',
-        'iin',
-        'in',
-        'iregex',
-        'isnull',
-        'istartswith',
-        'lt',
-        'lte',
-        'minute',
-        'month',
-        'range',
-        'regex',
-        'second',
-        'startswith',
-        'week_day',
-        'year',
+        "contains",
+        "day",
+        "endswith",
+        "exact",
+        "gt",
+        "gte",
+        "hour",
+        "icontains",
+        "iendswith",
+        "iexact",
+        "iin",
+        "in",
+        "iregex",
+        "isnull",
+        "istartswith",
+        "lt",
+        "lte",
+        "minute",
+        "month",
+        "range",
+        "regex",
+        "second",
+        "startswith",
+        "week_day",
+        "year",
     }
 
     def empty(self):
@@ -86,7 +87,7 @@ class PlainFilterBackend(BaseFilterBackend):
 
     def _filter_by_spec_and_value(self, item, components, spec):
         if not components and not isinstance(item, (list, tuple)):
-            comparator = getattr(self, '_compare_{}'.format(spec.lookup))
+            comparator = getattr(self, "_compare_{}".format(spec.lookup))
             try:
                 return comparator(item, spec)
             except Exception:
@@ -94,17 +95,14 @@ class PlainFilterBackend(BaseFilterBackend):
 
         if isinstance(item, (list, tuple)):
             return any(
-                self._filter_by_spec_and_value(i, components, spec)
-                for i in item
+                self._filter_by_spec_and_value(i, components, spec) for i in item
             )
 
         if not isinstance(item, dict):
             item = dictify(item)
 
         return self._filter_by_spec_and_value(
-            item.get(components[0], {}),
-            components[1:],
-            spec,
+            item.get(components[0], {}), components[1:], spec
         )
 
     def _compare_contains(self, value, spec):

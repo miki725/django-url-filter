@@ -13,4 +13,3 @@ Submodules
 
    url_filter.integrations.drf
    url_filter.integrations.drf_coreapi
-

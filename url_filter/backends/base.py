@@ -25,6 +25,7 @@ class BaseFilterBackend(six.with_metaclass(abc.ABCMeta, object)):
         it allows custom filters to reference all the information
         they need to be able to effectively filter data.
     """
+
     name = None
     """
     Name of the filter backend.
@@ -164,9 +165,6 @@ class BaseFilterBackend(six.with_metaclass(abc.ABCMeta, object)):
             return queryset
 
         for spec in self.callable_specs:
-            queryset = spec.filter_callable(
-                queryset=queryset,
-                spec=spec,
-            )
+            queryset = spec.filter_callable(queryset=queryset, spec=spec)
 
         return queryset

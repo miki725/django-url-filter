@@ -9,7 +9,7 @@ from sqlalchemy.sql.expression import not_
 from .base import BaseFilterBackend
 
 
-__all__ = ['SQLAlchemyFilterBackend']
+__all__ = ["SQLAlchemyFilterBackend"]
 
 
 def lower(value):
@@ -34,33 +34,34 @@ class SQLAlchemyFilterBackend(BaseFilterBackend):
         If query object queries multiple entities, ``AssertionError``
         will be raised.
     """
-    name = 'sqlalchemy'
+
+    name = "sqlalchemy"
     supported_lookups = {
-        'contains',
-        'endswith',
-        'exact',
-        'gt',
-        'gte',
-        'icontains',
-        'iendswith',
-        'iexact',
-        'iin',
-        'in',
-        'isnull',
-        'istartswith',
-        'lt',
-        'lte',
-        'range',
-        'startswith',
+        "contains",
+        "endswith",
+        "exact",
+        "gt",
+        "gte",
+        "icontains",
+        "iendswith",
+        "iexact",
+        "iin",
+        "in",
+        "isnull",
+        "istartswith",
+        "lt",
+        "lte",
+        "range",
+        "startswith",
     }
 
     def __init__(self, *args, **kwargs):
         super(SQLAlchemyFilterBackend, self).__init__(*args, **kwargs)
 
         assert len(self.queryset._entities) == 1, (
-            '{} does not support filtering when multiple entities '
-            'are being queried (e.g. session.query(Foo, Bar)).'
-            ''.format(self.__class__.__name__)
+            "{} does not support filtering when multiple entities "
+            "are being queried (e.g. session.query(Foo, Bar))."
+            "".format(self.__class__.__name__)
         )
 
     def empty(self):
@@ -131,7 +132,7 @@ class SQLAlchemyFilterBackend(BaseFilterBackend):
         if to_join in existing_eagerloads:
             to_join = []
 
-        builder = getattr(self, '_build_clause_{}'.format(spec.lookup))
+        builder = getattr(self, "_build_clause_{}".format(spec.lookup))
         column = self._get_attribute_for_field(field)
         clause = builder(spec, column)
 
@@ -199,10 +200,7 @@ class SQLAlchemyFilterBackend(BaseFilterBackend):
         (e.g. ``ColumnProperty``) or related classes.
         """
         mapper = class_mapper(model)
-        return {
-            i.key: i
-            for i in mapper.iterate_properties
-        }
+        return {i.key: i for i in mapper.iterate_properties}
 
     @classmethod
     def _get_column_for_field(cls, field):

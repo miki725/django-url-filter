@@ -2,6 +2,7 @@
     "exclude": [
         "*/.tox/*"
     ],
+    "length": 96,
     "groups": [
         {
             "type": "stdlib"

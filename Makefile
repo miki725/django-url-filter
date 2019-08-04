@@ -32,14 +32,10 @@ clean-test:  ## remove test and coverage artifacts
 clean-test-all: clean-test  ## remove all test-related artifacts including tox
 	rm -rf .tox/
 
-importanize:
-	importanize --ci
-
-lint:  ## check style with flake8
-	flake8 .
-	if python -c "import sys; exit(1) if sys.version[:3] < '3.6' else exit(0)"; \
+lint:  ## lint whole library
+	if python -c "import sys; exit(1) if sys.version[:3] < '3.6' or getattr(sys, 'pypy_version_info', None) else exit(0)"; \
 	then \
-		make importanize ; \
+		pre-commit run --all-files ; \
 	fi
 
 test:  ## run tests quickly with the default Python

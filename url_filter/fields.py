@@ -33,12 +33,18 @@ class MultipleValuesField(forms.CharField):
         it is ignored without failing complete field validation.
         Default is ``True`` which enforces validation for all items.
     """
-    def __init__(self, child=None,
-                 min_values=2, max_values=None,
-                 many_validators=None,
-                 delimiter=',',
-                 all_valid=True,
-                 *args, **kwargs):
+
+    def __init__(
+        self,
+        child=None,
+        min_values=2,
+        max_values=None,
+        many_validators=None,
+        delimiter=",",
+        all_valid=True,
+        *args,
+        **kwargs
+    ):
         self.child = child or forms.CharField()
         self.delimiter = delimiter
         self.all_valid = all_valid
@@ -90,7 +96,9 @@ class MultipleValuesField(forms.CharField):
         Hook for validating all values.
         """
         if not values and self.required:
-            raise forms.ValidationError(self.error_messages['required'], code='required')
+            raise forms.ValidationError(
+                self.error_messages["required"], code="required"
+            )
 
     def many_run_validators(self, values):
         """
@@ -104,8 +112,10 @@ class MultipleValuesField(forms.CharField):
             try:
                 v(values)
             except forms.ValidationError as e:
-                if hasattr(e, 'code') and e.code in self.error_messages:
-                    e = forms.ValidationError(self.error_messages[e.code], e.code, e.params)
+                if hasattr(e, "code") and e.code in self.error_messages:
+                    e = forms.ValidationError(
+                        self.error_messages[e.code], e.code, e.params
+                    )
                 errors.extend(e.error_list)
         if errors:
             raise forms.ValidationError(errors)

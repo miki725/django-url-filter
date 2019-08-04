@@ -1,53 +1,53 @@
 [
-{
-    "pk": 1,
+  {
     "fields": {
-        "title": "The Python Journal"
+      "title": "The Python Journal"
     },
-    "model": "many_to_many.publication"
-},
-{
-    "pk": 2,
+    "model": "many_to_many.publication",
+    "pk": 1
+  },
+  {
     "fields": {
-        "title": "Science News"
+      "title": "Science News"
     },
-    "model": "many_to_many.publication"
-},
-{
-    "pk": 3,
+    "model": "many_to_many.publication",
+    "pk": 2
+  },
+  {
     "fields": {
-        "title": "Science Weekly"
+      "title": "Science Weekly"
     },
-    "model": "many_to_many.publication"
-},
-{
-    "pk": 4,
+    "model": "many_to_many.publication",
+    "pk": 3
+  },
+  {
     "fields": {
-        "title": "Highlights for Children"
+      "title": "Highlights for Children"
     },
-    "model": "many_to_many.publication"
-},
-{
-    "pk": 1,
+    "model": "many_to_many.publication",
+    "pk": 4
+  },
+  {
     "fields": {
-        "headline": "Django lets you build Web apps easily",
-        "publications": [
-            1
-        ]
+      "headline": "Django lets you build Web apps easily",
+      "publications": [
+        1
+      ]
     },
-    "model": "many_to_many.article"
-},
-{
-    "pk": 2,
+    "model": "many_to_many.article",
+    "pk": 1
+  },
+  {
     "fields": {
-        "headline": "NASA uses Python",
-        "publications": [
-            4,
-            2,
-            3,
-            1
-        ]
+      "headline": "NASA uses Python",
+      "publications": [
+        4,
+        2,
+        3,
+        1
+      ]
     },
-    "model": "many_to_many.article"
-}
+    "model": "many_to_many.article",
+    "pk": 2
+  }
 ]

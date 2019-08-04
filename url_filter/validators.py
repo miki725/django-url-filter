@@ -14,11 +14,12 @@ class MinLengthValidator(_MinLengthValidator):
     """
     Customer Django min length validator with better-suited error message
     """
-    code = 'min_length'
+
+    code = "min_length"
     message = ungettext_lazy(
-        'Ensure this value has at least %(limit_value)d items (it has %(show_value)d).',
-        'Ensure this value has at least %(limit_value)d items (it has %(show_value)d).',
-        'limit_value'
+        "Ensure this value has at least %(limit_value)d items (it has %(show_value)d).",
+        "Ensure this value has at least %(limit_value)d items (it has %(show_value)d).",
+        "limit_value",
     )
 
     def compare(self, a, b):
@@ -33,11 +34,12 @@ class MaxLengthValidator(_MaxLengthValidator):
     """
     Customer Django max length validator with better-suited error message
     """
-    code = 'max_length'
+
+    code = "max_length"
     message = ungettext_lazy(
-        'Ensure this value has at most %(limit_value)d items (it has %(show_value)d).',
-        'Ensure this value has at most %(limit_value)d items (it has %(show_value)d).',
-        'limit_value'
+        "Ensure this value has at most %(limit_value)d items (it has %(show_value)d).",
+        "Ensure this value has at most %(limit_value)d items (it has %(show_value)d).",
+        "limit_value",
     )
 
     def compare(self, a, b):

@@ -26,7 +26,7 @@ class TestDjangoFilterBackend(object):
 
     def test_get_filter_class_by_filter_fields(self):
         class View(object):
-            filter_fields = ['name']
+            filter_fields = ["name"]
 
         filter_class = DjangoFilterBackend().get_filter_class(
             View(), Place.objects.all()
@@ -34,11 +34,11 @@ class TestDjangoFilterBackend(object):
 
         assert issubclass(filter_class, ModelFilterSet)
         assert filter_class.Meta.model is Place
-        assert filter_class.Meta.fields == ['name']
+        assert filter_class.Meta.fields == ["name"]
 
     def test_get_filter_class_all_fields(self):
         class View(object):
-            filter_fields = '__all__'
+            filter_fields = "__all__"
 
         filter_class = DjangoFilterBackend().get_filter_class(
             View(), Place.objects.all()
@@ -46,68 +46,64 @@ class TestDjangoFilterBackend(object):
 
         assert issubclass(filter_class, ModelFilterSet)
         assert filter_class.Meta.model is Place
-        assert set(filter_class().filters.keys()) == {'restaurant', 'id', 'name', 'address'}
+        assert set(filter_class().filters.keys()) == {
+            "restaurant",
+            "id",
+            "name",
+            "address",
+        }
 
     def test_get_filter_context(self):
         context = DjangoFilterBackend().get_filter_context(
-            request='request', view='view',
+            request="request", view="view"
         )
 
-        assert context == {
-            'request': 'request',
-            'view': 'view',
-        }
+        assert context == {"request": "request", "view": "view"}
 
     def test_get_filter_queryset_not_filtered(self):
         assert DjangoFilterBackend().filter_queryset(None, None, None) is None
 
-    @mock.patch.object(FilterSet, 'filter')
+    @mock.patch.object(FilterSet, "filter")
     def test_get_filter_queryset(self, mock_filter, db, rf):
         class View(object):
-            filter_fields = ['name']
+            filter_fields = ["name"]
 
-        request = rf.get('/')
+        request = rf.get("/")
         request.query_params = QueryDict()
 
         filtered = DjangoFilterBackend().filter_queryset(
-            request=request,
-            queryset=Place.objects.all(),
-            view=View()
+            request=request, queryset=Place.objects.all(), view=View()
         )
 
         assert filtered == mock_filter.return_value
 
-    @mock.patch.object(FilterSet, 'filter')
+    @mock.patch.object(FilterSet, "filter")
     def test_get_filter_queryset_invalid_query(self, mock_filter, db, rf):
-        mock_filter.side_effect = DjangoValidationError({'foo': 'bar'})
+        mock_filter.side_effect = DjangoValidationError({"foo": "bar"})
 
         class View(object):
-            filter_fields = ['name']
+            filter_fields = ["name"]
 
-        request = rf.get('/')
+        request = rf.get("/")
         request.query_params = QueryDict()
 
         with pytest.raises(ValidationError) as e:
             DjangoFilterBackend().filter_queryset(
-                request=request,
-                queryset=Place.objects.all(),
-                view=View()
+                request=request, queryset=Place.objects.all(), view=View()
             )
 
-        assert e.value.detail == {'foo': ['bar']}
+        assert e.value.detail == {"foo": ["bar"]}
 
-    @mock.patch.object(FilterSet, 'filter')
+    @mock.patch.object(FilterSet, "filter")
     def test_filter_queryset_supplied_model_mismatch(self, mock_filter, db, rf):
         class View(object):
             filter_class = PlaceFilterSet
-            filter_fields = ['name']
+            filter_fields = ["name"]
 
-        request = rf.get('/')
+        request = rf.get("/")
         request.query_params = QueryDict()
 
         with pytest.raises(AssertionError):
             DjangoFilterBackend().filter_queryset(
-                request=request,
-                queryset=Restaurant.objects.all(),
-                view=View()
+                request=request, queryset=Restaurant.objects.all(), view=View()
             )

@@ -17,6 +17,7 @@ class StrictMode(enum.Enum):
         when validation fails for any filter within :class:`.FilterSet`,
         all error are compiled and cumulative ``ValidationError`` is raised.
     """
-    empty = 'empty'
-    drop = 'drop'
-    fail = 'fail'
+
+    empty = "empty"
+    drop = "drop"
+    fail = "fail"
