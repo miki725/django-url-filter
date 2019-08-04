@@ -1,5 +1,6 @@
 .PHONY: clean-pyc clean-build docs clean
 ADDITIONAL_COVERAGE_FLAGS ?=
+INSTALL_FILE ?= requirements-dev.txt
 INSTALL_LOG ?= /dev/stdout
 
 help:  ## show help
@@ -9,7 +10,8 @@ help:  ## show help
 		awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
 
 install: ## install all requirements including for testing
-	pip install -r requirements-dev.txt 2>&1 > $(INSTALL_LOG)
+	pip install -r $(INSTALL_FILE) 2>&1 > $(INSTALL_LOG)
+	pip freeze
 
 clean: clean-build clean-pyc  ## remove all artifacts
 
@@ -53,12 +55,14 @@ test-all:  ## run tests on every Python version with tox
 
 check: lint clean-build clean-pyc clean-test test  ## run all necessary steps to check validity of project
 
-release: clean  ## package and upload a release
-	python setup.py sdist bdist_wheel upload
-
 dist: clean  ## build python package ditribution
+	check-manifest
 	python setup.py sdist bdist_wheel
 	ls -l dist
+	twine check dist/*
+
+release: clean dist  ## package and upload a release
+	twine upload
 
 syncdb:  ## apply all migrations and load fixtures
 	python manage.py migrate
