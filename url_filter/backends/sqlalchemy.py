@@ -128,9 +128,21 @@ class SQLAlchemyFilterBackend(BaseFilterBackend):
             else:
                 to_join.append(_field)
 
-        existing_eagerloads = [list(i.path) for i in self.queryset._with_options]
-        if to_join in existing_eagerloads:
-            to_join = []
+        existing_eagerloads = []
+        for option in self.queryset._with_options:
+            for suboption in itertools.takewhile(
+                lambda i: i.strategy[0] == ("lazy", "joined"), option._to_bind
+            ):
+                existing_eagerloads.append(list(suboption.path))
+
+        already_joined = set()
+        for i in range(1, len(to_join) + 1):
+            sub_to_join = to_join[:i]
+            if sub_to_join in existing_eagerloads:
+                already_joined |= set(sub_to_join)
+
+        n_already_joined = len(already_joined)
+        to_join = to_join[n_already_joined:]
 
         builder = getattr(self, "_build_clause_{}".format(spec.lookup))
         column = self._get_attribute_for_field(field)

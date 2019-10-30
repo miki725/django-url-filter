@@ -58,17 +58,32 @@ class TestSQLAlchemyFilterBackend(object):
         filtered = backend.filter()
 
         sql = six.text_type(filtered)
-        assert sql == (
-            "SELECT one_to_one_place.id AS one_to_one_place_id, "
-            "one_to_one_place.name AS one_to_one_place_name, "
-            "one_to_one_place.address AS one_to_one_place_address \n"
-            "FROM one_to_one_place "
-            "JOIN one_to_one_restaurant "
-            "ON one_to_one_restaurant.place_id = one_to_one_place.id "
-            "JOIN one_to_one_waiter "
-            "ON one_to_one_waiter.restaurant_id = one_to_one_restaurant.place_id "
-            "\nWHERE one_to_one_waiter.name ={}".format(sql.rsplit("=", 1)[-1])
+        # eagerloads via outerjoin
+        assert "LEFT OUTER JOIN one_to_one_restaurant" not in sql
+        assert "LEFT OUTER JOIN one_to_one_waiter" not in sql
+        # for filtering via inner join
+        assert "JOIN one_to_one_restaurant" in sql
+        assert "JOIN one_to_one_waiter" in sql
+
+    def test_filter_already_selectinload(self, alchemy_db):
+        backend = SQLAlchemyFilterBackend(
+            alchemy_db.query(Place).options(
+                joinedload(Place.restaurant).selectinload(Restaurant.waiter_set)
+            )
         )
+        backend.bind(
+            [FilterSpec(["restaurant", "waiter_set", "name"], "exact", "John", False)]
+        )
+
+        filtered = backend.filter()
+
+        sql = six.text_type(filtered)
+        # eagerloads via outerjoin
+        assert "LEFT OUTER JOIN one_to_one_restaurant" in sql
+        assert "LEFT OUTER JOIN one_to_one_waiter" not in sql
+        # for filtering via inner join
+        assert "JOIN one_to_one_restaurant" in sql
+        assert "JOIN one_to_one_waiter" in sql
 
     def test_filter_already_eagerloaded(self, alchemy_db):
         backend = SQLAlchemyFilterBackend(
@@ -83,8 +98,12 @@ class TestSQLAlchemyFilterBackend(object):
         filtered = backend.filter()
 
         sql = six.text_type(filtered)
-        assert "place JOIN one_to_one" not in sql
-        assert "place LEFT OUTER JOIN one_to_one" in sql
+        # eagerloads via outerjoin
+        assert "LEFT OUTER JOIN one_to_one_restaurant" in sql
+        assert "LEFT OUTER JOIN one_to_one_waiter" in sql
+        # for filtering via inner join
+        assert "JOIN one_to_one_restaurant" in sql
+        assert "JOIN one_to_one_waiter" in sql
 
     def _test_build_clause(
         self, alchemy_db, name, lookup, value, expected, is_negated=False
