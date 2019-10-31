@@ -128,20 +128,23 @@ class SQLAlchemyFilterBackend(BaseFilterBackend):
             else:
                 to_join.append(_field)
 
-        existing_eagerloads = []
+        # cant directly compare instrumented attributes
+        # so need to collect object ids which are unique
+        # since they are model singletons
+        existing_eagerloads_ids = []
         for option in self.queryset._with_options:
             for suboption in itertools.takewhile(
                 lambda i: i.strategy[0] == ("lazy", "joined"), option._to_bind
             ):
-                existing_eagerloads.append(list(suboption.path))
+                existing_eagerloads_ids.append([id(i) for i in suboption.path])
 
-        already_joined = set()
+        already_joined_ids = set()
         for i in range(1, len(to_join) + 1):
-            sub_to_join = to_join[:i]
-            if sub_to_join in existing_eagerloads:
-                already_joined |= set(sub_to_join)
+            sub_to_join_ids = [id(i) for i in to_join[:i]]
+            if sub_to_join_ids in existing_eagerloads_ids:
+                already_joined_ids |= set(sub_to_join_ids)
 
-        n_already_joined = len(already_joined)
+        n_already_joined = len(already_joined_ids)
         to_join = to_join[n_already_joined:]
 
         builder = getattr(self, "_build_clause_{}".format(spec.lookup))
