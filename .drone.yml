@@ -2,6 +2,11 @@ kind: pipeline
 name: tests
 
 steps:
+- name: lint
+  image: miki725/pre-commit
+  depends_on:
+    - clone
+
 - name: python3.8
   image: python:3.8
   commands:
