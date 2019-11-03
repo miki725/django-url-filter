@@ -32,32 +32,34 @@ from ..utils import SubClassDict
 from .base import BaseModelFilterSet
 
 
-__all__ = ['SQLAlchemyModelFilterSet']
+__all__ = ["SQLAlchemyModelFilterSet"]
 
 
 def _string(field, column):
     return forms.CharField(max_length=column.type.length)
 
 
-SQLALCHEMY_FIELD_MAPPING = SubClassDict({
-    BIGINT: forms.IntegerField,
-    BigInteger: forms.IntegerField,
-    Integer: forms.IntegerField,
-    Boolean: partial(forms.BooleanField, required=False),
-    CHAR: _string,
-    CLOB: _string,
-    DATE: forms.DateTimeField,
-    Date: forms.DateField,
-    DateTime: forms.DateTimeField,
-    DECIMAL: forms.DecimalField,
-    Float: forms.FloatField,
-    INTEGER: forms.IntegerField,
-    Numeric: forms.IntegerField,
-    SMALLINT: forms.IntegerField,
-    String: _string,
-    TIMESTAMP: forms.DateTimeField,
-    VARCHAR: _string,
-})
+SQLALCHEMY_FIELD_MAPPING = SubClassDict(
+    {
+        BIGINT: forms.IntegerField,
+        BigInteger: forms.IntegerField,
+        Integer: forms.IntegerField,
+        Boolean: partial(forms.BooleanField, required=False),
+        CHAR: _string,
+        CLOB: _string,
+        DATE: forms.DateTimeField,
+        Date: forms.DateField,
+        DateTime: forms.DateTimeField,
+        DECIMAL: forms.DecimalField,
+        Float: forms.FloatField,
+        INTEGER: forms.IntegerField,
+        Numeric: forms.IntegerField,
+        SMALLINT: forms.IntegerField,
+        String: _string,
+        TIMESTAMP: forms.DateTimeField,
+        VARCHAR: _string,
+    }
+)
 
 
 class SQLAlchemyModelFilterSet(BaseModelFilterSet):
@@ -67,10 +69,11 @@ class SQLAlchemyModelFilterSet(BaseModelFilterSet):
     The filterset can be configured via ``Meta`` class attribute,
     very much like Django's ``ModelForm`` is configured.
     """
+
     filter_backend_class = SQLAlchemyFilterBackend
 
     def _build_filter(self, name, fields):
-        field = fields[self._get_filter_extra_kwargs(name).get('source', name)]
+        field = fields[self._get_filter_extra_kwargs(name).get("source", name)]
 
         if isinstance(field, ColumnProperty):
             return self._build_filter_from_field(name, field)
@@ -100,7 +103,9 @@ class SQLAlchemyModelFilterSet(BaseModelFilterSet):
         This is used when ``Meta.fields`` is ``None``
         in which case this method returns all model fields.
         """
-        return list(SQLAlchemyFilterBackend._get_properties_for_model(self.Meta.model).keys())
+        return list(
+            SQLAlchemyFilterBackend._get_properties_for_model(self.Meta.model).keys()
+        )
 
     def _get_form_field_for_field(self, field):
         """
@@ -108,9 +113,7 @@ class SQLAlchemyModelFilterSet(BaseModelFilterSet):
         """
         column = SQLAlchemyFilterBackend._get_column_for_field(field)
 
-        form_field = SQLALCHEMY_FIELD_MAPPING.get(
-            column.type.__class__, None,
-        )
+        form_field = SQLALCHEMY_FIELD_MAPPING.get(column.type.__class__, None)
 
         if form_field is None:
             raise SkipFilter
@@ -141,9 +144,6 @@ class SQLAlchemyModelFilterSet(BaseModelFilterSet):
         return self._build_filterset(
             m.__name__,
             name,
-            {
-                'model': m,
-                'exclude': [field.back_populates]
-            },
+            {"model": m, "exclude": [field.back_populates]},
             SQLAlchemyModelFilterSet,
         )

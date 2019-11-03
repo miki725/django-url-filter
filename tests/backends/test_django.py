@@ -10,19 +10,13 @@ from url_filter.utils import FilterSpec
 
 class TestDjangoFilterBackend(object):
     def test_init(self):
-        backend = DjangoFilterBackend(
-            Place.objects.all(),
-            context={'context': 'here'},
-        )
+        backend = DjangoFilterBackend(Place.objects.all(), context={"context": "here"})
 
         assert backend.model is Place
-        assert backend.context == {'context': 'here'}
+        assert backend.context == {"context": "here"}
 
     def test_empty(self):
-        backend = DjangoFilterBackend(
-            Place.objects.all(),
-            context={'context': 'here'},
-        )
+        backend = DjangoFilterBackend(Place.objects.all(), context={"context": "here"})
 
         assert backend.empty().count() == 0
 
@@ -40,61 +34,67 @@ class TestDjangoFilterBackend(object):
 
     def test_includes(self):
         backend = DjangoFilterBackend(Place.objects.all())
-        backend.bind([
-            FilterSpec(['name'], 'exact', 'value', False),
-            FilterSpec(['address'], 'contains', 'value', True),
-        ])
+        backend.bind(
+            [
+                FilterSpec(["name"], "exact", "value", False),
+                FilterSpec(["address"], "contains", "value", True),
+            ]
+        )
 
-        assert list(backend.includes) == [
-            FilterSpec(['name'], 'exact', 'value', False),
-        ]
+        assert list(backend.includes) == [FilterSpec(["name"], "exact", "value", False)]
 
     def test_excludes(self):
         backend = DjangoFilterBackend(Place.objects.all())
-        backend.bind([
-            FilterSpec(['name'], 'exact', 'value', False),
-            FilterSpec(['address'], 'contains', 'value', True),
-        ])
+        backend.bind(
+            [
+                FilterSpec(["name"], "exact", "value", False),
+                FilterSpec(["address"], "contains", "value", True),
+            ]
+        )
 
         assert list(backend.excludes) == [
-            FilterSpec(['address'], 'contains', 'value', True),
+            FilterSpec(["address"], "contains", "value", True)
         ]
 
     def test_prepare_spec(self):
         backend = DjangoFilterBackend(Place.objects.all())
-        spec = backend._prepare_spec(FilterSpec(['name'], 'exact', 'value'))
+        spec = backend._prepare_spec(FilterSpec(["name"], "exact", "value"))
 
-        assert spec == 'name__exact'
+        assert spec == "name__exact"
 
     def test_filter(self):
         qs = mock.Mock()
 
         backend = DjangoFilterBackend(qs)
         backend.model = Place
-        backend.bind([
-            FilterSpec(['name'], 'exact', 'value', False),
-            FilterSpec(['address'], 'contains', 'value', True),
-        ])
+        backend.bind(
+            [
+                FilterSpec(["name"], "exact", "value", False),
+                FilterSpec(["address"], "contains", "value", True),
+            ]
+        )
 
         result = backend.filter()
 
         assert result == qs.filter.return_value.exclude.return_value
-        qs.filter.assert_called_once_with(name__exact='value')
-        qs.filter.return_value.exclude.assert_called_once_with(address__contains='value')
+        qs.filter.assert_called_once_with(name__exact="value")
+        qs.filter.return_value.exclude.assert_called_once_with(
+            address__contains="value"
+        )
 
     def test_filter_to_many(self):
         qs = mock.Mock()
 
         backend = DjangoFilterBackend(qs)
         backend.model = Place
-        backend.bind([
-            FilterSpec(['restaurant', 'waiter', 'name'], 'exact', 'value', False),
-        ])
+        backend.bind(
+            [FilterSpec(["restaurant", "waiter", "name"], "exact", "value", False)]
+        )
 
         result = backend.filter()
 
         assert result == qs.filter.return_value.distinct.return_value
-        qs.filter.assert_called_once_with(restaurant__waiter__name__exact='value')
+        qs.filter.assert_called_once_with(restaurant__waiter__name__exact="value")
 
     def test_filter_callable_specs(self):
         qs = mock.Mock()
@@ -102,7 +102,7 @@ class TestDjangoFilterBackend(object):
         def foo(queryset, spec):
             return queryset.filter(spec)
 
-        spec = FilterSpec(['name'], 'exact', 'value', False, foo)
+        spec = FilterSpec(["name"], "exact", "value", False, foo)
         backend = DjangoFilterBackend(qs)
         backend.bind([spec])
 

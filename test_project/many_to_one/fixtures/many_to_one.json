@@ -1,47 +1,47 @@
 [
-{
+  {
+    "fields": {
+      "email": "john@example.com",
+      "first_name": "John",
+      "last_name": "Smith"
+    },
     "model": "many_to_one.reporter",
-    "pk": 1,
+    "pk": 1
+  },
+  {
     "fields": {
-        "email": "john@example.com",
-        "first_name": "John",
-        "last_name": "Smith"
-    }
-},
-{
+      "email": "paul@example.com",
+      "first_name": "Paul",
+      "last_name": "Jones"
+    },
     "model": "many_to_one.reporter",
-    "pk": 2,
+    "pk": 2
+  },
+  {
     "fields": {
-        "email": "paul@example.com",
-        "first_name": "Paul",
-        "last_name": "Jones"
-    }
-},
-{
+      "headline": "This is a test",
+      "pub_date": "2005-07-27",
+      "reporter": 1
+    },
     "model": "many_to_one.article",
-    "pk": 1,
+    "pk": 1
+  },
+  {
     "fields": {
-        "reporter": 1,
-        "headline": "This is a test",
-        "pub_date": "2005-07-27"
-    }
-},
-{
+      "headline": "John's second story",
+      "pub_date": "2005-07-29",
+      "reporter": 1
+    },
     "model": "many_to_one.article",
-    "pk": 2,
+    "pk": 2
+  },
+  {
     "fields": {
-        "reporter": 1,
-        "headline": "John's second story",
-        "pub_date": "2005-07-29"
-    }
-},
-{
+      "headline": "Paul's story",
+      "pub_date": "2006-01-17",
+      "reporter": 2
+    },
     "model": "many_to_one.article",
-    "pk": 3,
-    "fields": {
-        "reporter": 2,
-        "headline": "Paul's story",
-        "pub_date": "2006-01-17"
-    }
-}
+    "pk": 3
+  }
 ]

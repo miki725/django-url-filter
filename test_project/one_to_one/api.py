@@ -50,7 +50,7 @@ class WaiterSerializer(ModelSerializer):
 
 class RestaurantNestedSerializer(ModelSerializer):
     place = PlaceSerializer()
-    waiters = WaiterSerializer(source='waiter_set', many=True)
+    waiters = WaiterSerializer(source="waiter_set", many=True)
 
     class Meta(object):
         model = Restaurant
@@ -58,7 +58,7 @@ class RestaurantNestedSerializer(ModelSerializer):
 
 
 class RestaurantNestedWithoutPlaceSerializer(ModelSerializer):
-    waiters = WaiterSerializer(source='waiter_set', many=True)
+    waiters = WaiterSerializer(source="waiter_set", many=True)
 
     class Meta(object):
         model = Restaurant
@@ -83,8 +83,7 @@ class PlaceWaiterCallableFilter(CallableFilter):
     def filter_exact_for_sqlalchemy(self, queryset, spec):
         op = operator.eq if not spec.is_negated else operator.ne
         return (
-            queryset
-            .join(alchemy.Place.restaurant)
+            queryset.join(alchemy.Place.restaurant)
             .join(alchemy.Restaurant.waiter_set)
             .filter(op(alchemy.Waiter.name, spec.value))
         )
@@ -99,12 +98,12 @@ class PlaceWaiterCallableFilter(CallableFilter):
 
         op = identity if not spec.is_negated else negate
         return filter(
-            lambda i: op(self.root.filter_backend._filter_by_spec_and_value(
-                item=i,
-                components=['restaurant', 'waiters', 'name'],
-                spec=spec,
-            )),
-            queryset
+            lambda i: op(
+                self.root.filter_backend._filter_by_spec_and_value(
+                    item=i, components=["restaurant", "waiters", "name"], spec=spec
+                )
+            ),
+            queryset,
         )
 
 
@@ -127,22 +126,14 @@ class PlainPlaceFilterSet(PlainModelFilterSet):
             "restaurant": {
                 "place": 1,
                 "waiters": [
-                    {
-                        "id": 1,
-                        "name": "Joe",
-                        "restaurant": 1
-                    },
-                    {
-                        "id": 2,
-                        "name": "Jonny",
-                        "restaurant": 1
-                    }
+                    {"id": 1, "name": "Joe", "restaurant": 1},
+                    {"id": 2, "name": "Jonny", "restaurant": 1},
                 ],
                 "serves_hot_dogs": True,
-                "serves_pizza": False
+                "serves_pizza": False,
             },
             "name": "Demon Dogs",
-            "address": "944 W. Fullerton"
+            "address": "944 W. Fullerton",
         }
 
 
@@ -209,9 +200,7 @@ class PlainPlaceViewSet(ReadOnlyModelViewSet):
 
     def retrieve(self, request, pk):
         instance = next(
-            iter(filter(lambda i: i.get('id') == int(pk),
-                        self.get_queryset())),
-            None
+            iter(filter(lambda i: i.get("id") == int(pk), self.get_queryset())), None
         )
         if not instance:
             raise Http404

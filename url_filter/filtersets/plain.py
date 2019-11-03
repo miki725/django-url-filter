@@ -13,16 +13,18 @@ from ..utils import SubClassDict, dictify
 from .base import BaseModelFilterSet
 
 
-DATA_TYPES_MAPPING = SubClassDict({
-    six.string_types: forms.CharField(),
-    six.integer_types: forms.IntegerField(),
-    bool: forms.BooleanField(required=False),
-    float: forms.FloatField(),
-    Decimal: forms.DecimalField(),
-    datetime: forms.DateTimeField(),
-    date: forms.DateField(),
-    time: forms.TimeField(),
-})
+DATA_TYPES_MAPPING = SubClassDict(
+    {
+        six.string_types: forms.CharField(),
+        six.integer_types: forms.IntegerField(),
+        bool: forms.BooleanField(required=False),
+        float: forms.FloatField(),
+        Decimal: forms.DecimalField(),
+        datetime: forms.DateTimeField(),
+        date: forms.DateField(),
+        time: forms.TimeField(),
+    }
+)
 
 
 class PlainModelFilterSet(BaseModelFilterSet):
@@ -32,13 +34,14 @@ class PlainModelFilterSet(BaseModelFilterSet):
     The filterset can be configured via ``Meta`` class attribute,
     very much like Django's ``ModelForm`` is configured.
     """
+
     filter_backend_class = PlainFilterBackend
 
     def _build_state(self):
         return dictify(self.Meta.model)
 
     def _build_filter(self, name, model):
-        value = model.get(self._get_filter_extra_kwargs(name).get('source', name))
+        value = model.get(self._get_filter_extra_kwargs(name).get("source", name))
         primitive = DATA_TYPES_MAPPING.get(type(value))
 
         if primitive:
@@ -72,8 +75,5 @@ class PlainModelFilterSet(BaseModelFilterSet):
         if not field:
             raise SkipFilter
         return self._build_filterset(
-            name.title(),
-            name,
-            {'model': field},
-            PlainModelFilterSet,
+            name.title(), name, {"model": field}, PlainModelFilterSet
         )

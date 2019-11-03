@@ -19,15 +19,10 @@ from ..filters import BaseFilter
 from ..utils import LookupConfig
 
 
-__all__ = [
-    'FilterSet',
-    'FilterSetOptions',
-    'ModelFilterSetOptions',
-]
+__all__ = ["FilterSet", "FilterSetOptions", "ModelFilterSetOptions"]
 
 LOOKUP_RE = re.compile(
-    r'^(?:[^\d\W]\w*)(?:{}?[^\d\W]\w*)*(?:!)?$'
-    r''.format(LOOKUP_SEP), re.IGNORECASE
+    r"^(?:[^\d\W]\w*)(?:{}?[^\d\W]\w*)*(?:!)?$" r"".format(LOOKUP_SEP), re.IGNORECASE
 )
 
 
@@ -38,10 +33,11 @@ class FilterKeyValidator(RegexValidator):
 
         name[__<relation>]*[__<lookup_method>][!]
     """
+
     regex = LOOKUP_RE
     message = (
-        'Filter key is of invalid format. '
-        'It must be `name[__<relation>]*[__<lookup_method>][!]`.'
+        "Filter key is of invalid format. "
+        "It must be `name[__<relation>]*[__<lookup_method>][!]`."
     )
 
 
@@ -88,7 +84,7 @@ class FilterSetMeta(type(BaseFilter)):
 
         new_class._declared_filters = filters
         new_class.Meta = new_class.filter_options_class(
-            getattr(new_class, 'Meta', None)
+            getattr(new_class, "Meta", None)
         )
 
         return new_class
@@ -129,6 +125,7 @@ class FilterSet(six.with_metaclass(FilterSetMeta, BaseFilter)):
         fails. See :class:`url_filter.constants.StrictMode` doc for more information.
         Default is ``empty``.
     """
+
     filter_backend_class = DjangoFilterBackend
     """
     Class to be used as filter backend. By default
@@ -145,16 +142,16 @@ class FilterSet(six.with_metaclass(FilterSetMeta, BaseFilter)):
     provided in initialization.
     """
 
-    def __init__(self, data=None, queryset=None, context=None,
-                 strict_mode=None,
-                 *args, **kwargs):
+    def __init__(
+        self, data=None, queryset=None, context=None, strict_mode=None, *args, **kwargs
+    ):
         super(FilterSet, self).__init__(*args, **kwargs)
         self.data = data
         self.queryset = queryset
         self.context = context or {}
         self.strict_mode = strict_mode or self.default_strict_mode
 
-    def repr(self, prefix=''):
+    def repr(self, prefix=""):
         """
         Custom representation of the filterset
 
@@ -167,19 +164,17 @@ class FilterSet(six.with_metaclass(FilterSetMeta, BaseFilter)):
             representation of all descendants with correct indentation
             (children are indented compared to parent)
         """
-        header = '{name}({source})'.format(
+        header = "{name}({source})".format(
             name=self.__class__.__name__,
-            source='source="{}"'.format(self.source) if self.is_bound else '',
+            source='source="{}"'.format(self.source) if self.is_bound else "",
         )
         lines = [header] + [
-            '{prefix}{key} = {value}'.format(
-                prefix=prefix + '  ',
-                key=k,
-                value=v.repr(prefix=prefix + '  '),
+            "{prefix}{key} = {value}".format(
+                prefix=prefix + "  ", key=k, value=v.repr(prefix=prefix + "  ")
             )
             for k, v in sorted(self.filters.items())
         ]
-        return '\n'.join(lines)
+        return "\n".join(lines)
 
     def get_filters(self):
         """
@@ -221,10 +216,12 @@ class FilterSet(six.with_metaclass(FilterSetMeta, BaseFilter)):
         specifying which field to filter. In that case default filter
         will be used.
         """
-        return next(iter(filter(
-            lambda i: getattr(i, 'is_default', False),
-            self.filters.values()
-        )), None)
+        return next(
+            iter(
+                filter(lambda i: getattr(i, "is_default", False), self.filters.values())
+            ),
+            None,
+        )
 
     def validate_key(self, key):
         """
@@ -254,10 +251,7 @@ class FilterSet(six.with_metaclass(FilterSetMeta, BaseFilter)):
 
         This backend is then used to actually filter queryset.
         """
-        return self.filter_backend_class(
-            queryset=self.queryset,
-            context=self.context,
-        )
+        return self.filter_backend_class(queryset=self.queryset, context=self.context)
 
     @cached_property
     def filter_backend(self):
@@ -270,8 +264,7 @@ class FilterSet(six.with_metaclass(FilterSetMeta, BaseFilter)):
         those examples.
         """
         assert self.data is not None, (
-            'Filter backend can only be used when data is provided '
-            'to filterset.'
+            "Filter backend can only be used when data is provided " "to filterset."
         )
         return self.get_filter_backend()
 
@@ -295,15 +288,11 @@ class FilterSet(six.with_metaclass(FilterSetMeta, BaseFilter)):
         querystring
             Filtered queryset
         """
-        assert self.root is self, (
-            '``filter`` can only be called on root ``FilterSet``.'
-        )
-        assert self.queryset is not None, (
-            '``queryset`` was not passed for filtering.'
-        )
-        assert isinstance(self.data, QueryDict), (
-            '``data`` should be an instance of QueryDict.'
-        )
+        assert self.root is self, "``filter`` can only be called on root ``FilterSet``."
+        assert self.queryset is not None, "``queryset`` was not passed for filtering."
+        assert isinstance(
+            self.data, QueryDict
+        ), "``data`` should be an instance of QueryDict."
 
         try:
             specs = self.get_specs()
@@ -347,7 +336,7 @@ class FilterSet(six.with_metaclass(FilterSetMeta, BaseFilter)):
                 pass
             except ValidationError as e:
                 errors[data.key].extend(
-                    getattr(e, 'error_list', [getattr(e, 'message', '')])
+                    getattr(e, "error_list", [getattr(e, "message", "")])
                 )
 
         if errors:
@@ -406,10 +395,13 @@ class FilterSet(six.with_metaclass(FilterSetMeta, BaseFilter)):
         """
         for key, values in self.data.lists():
             for value in values:
-                yield LookupConfig(key, six.moves.reduce(
-                    lambda a, b: {b: a},
-                    (key.replace('!', '').split(LOOKUP_SEP) + [value])[::-1]
-                ))
+                yield LookupConfig(
+                    key,
+                    six.moves.reduce(
+                        lambda a, b: {b: a},
+                        (key.replace("!", "").split(LOOKUP_SEP) + [value])[::-1],
+                    ),
+                )
 
 
 class ModelFilterSetOptions(FilterSetOptions):
@@ -439,11 +431,11 @@ class ModelFilterSetOptions(FilterSetOptions):
 
     def __init__(self, options=None):
         super(ModelFilterSetOptions, self).__init__(options)
-        self.model = getattr(options, 'model', None)
-        self.fields = getattr(options, 'fields', None)
-        self.exclude = getattr(options, 'exclude', [])
-        self.extra_kwargs = getattr(options, 'extra_kwargs', {})
-        self.allow_related = getattr(options, 'allow_related', True)
+        self.model = getattr(options, "model", None)
+        self.fields = getattr(options, "fields", None)
+        self.exclude = getattr(options, "exclude", [])
+        self.extra_kwargs = getattr(options, "extra_kwargs", {})
+        self.allow_related = getattr(options, "allow_related", True)
 
 
 class BaseModelFilterSet(FilterSet):
@@ -453,6 +445,7 @@ class BaseModelFilterSet(FilterSet):
     The filterset can be configured via ``Meta`` class attribute,
     very much like how Django's ``ModelForm`` is configured.
     """
+
     filter_options_class = ModelFilterSetOptions
 
     def get_filters(self):
@@ -463,12 +456,12 @@ class BaseModelFilterSet(FilterSet):
         filters = super(BaseModelFilterSet, self).get_filters()
 
         assert self.Meta.model, (
-            '{name}.Meta.model is missing. Please specify the model '
-            'in order to use {name}.'
-            ''.format(name=self.__class__.__name__)
+            "{name}.Meta.model is missing. Please specify the model "
+            "in order to use {name}."
+            "".format(name=self.__class__.__name__)
         )
 
-        if self.Meta.fields in [None, '__all__']:
+        if self.Meta.fields in [None, "__all__"]:
             self.Meta.fields = self._get_model_field_names()
 
         state = self._build_state()
@@ -539,16 +532,13 @@ class BaseModelFilterSet(FilterSet):
         base : type
             Class to use as a base class for the filterset.
         """
-        meta_attrs.update({'extra_kwargs': self._get_filter_extra_kwargs(field_name)})
-        meta = type(str('Meta'), (object,), meta_attrs)
+        meta_attrs.update({"extra_kwargs": self._get_filter_extra_kwargs(field_name)})
+        meta = type(str("Meta"), (object,), meta_attrs)
 
         filterset = type(
-            str('{}FilterSet'.format(name)),
+            str("{}FilterSet".format(name)),
             (base,),
-            {
-                'Meta': meta,
-                '__module__': self.__module__,
-            }
+            {"Meta": meta, "__module__": self.__module__},
         )
 
         return filterset()

@@ -13,20 +13,22 @@ from ..utils import SubClassDict
 from .base import BaseModelFilterSet, ModelFilterSetOptions
 
 
-__all__ = ['ModelFilterSet', 'DjangoModelFilterSetOptions']
+__all__ = ["ModelFilterSet", "DjangoModelFilterSetOptions"]
 
 
 GenericForeignKey = None
 
 
-if 'django.contrib.contenttypes' in settings.INSTALLED_APPS:
+if "django.contrib.contenttypes" in settings.INSTALLED_APPS:
     from django.contrib.contenttypes.fields import GenericForeignKey
 
 
-MODEL_FIELD_OVERWRITES = SubClassDict({
-    models.AutoField: forms.IntegerField(min_value=0),
-    models.FileField: lambda m: forms.CharField(max_length=m.max_length),
-})
+MODEL_FIELD_OVERWRITES = SubClassDict(
+    {
+        models.AutoField: forms.IntegerField(min_value=0),
+        models.FileField: lambda m: forms.CharField(max_length=m.max_length),
+    }
+)
 
 
 class DjangoModelFilterSetOptions(ModelFilterSetOptions):
@@ -39,9 +41,10 @@ class DjangoModelFilterSetOptions(ModelFilterSetOptions):
         Flag specifying whether reverse relationships should
         be allowed while creating filter sets for children models.
     """
+
     def __init__(self, options=None):
         super(DjangoModelFilterSetOptions, self).__init__(options)
-        self.allow_related_reverse = getattr(options, 'allow_related_reverse', True)
+        self.allow_related_reverse = getattr(options, "allow_related_reverse", True)
 
 
 class ModelFilterSet(BaseModelFilterSet):
@@ -51,6 +54,7 @@ class ModelFilterSet(BaseModelFilterSet):
     The filterset can be configured via ``Meta`` class attribute,
     very much like Django's ``ModelForm`` is configured.
     """
+
     filter_options_class = DjangoModelFilterSetOptions
 
     def _get_model_field_names(self):
@@ -60,10 +64,9 @@ class ModelFilterSet(BaseModelFilterSet):
         This is used when ``Meta.fields`` is ``None``
         in which case this method returns all model fields.
         """
-        return list(map(
-            operator.attrgetter('name'),
-            self.Meta.model._meta.get_fields()
-        ))
+        return list(
+            map(operator.attrgetter("name"), self.Meta.model._meta.get_fields())
+        )
 
     def _get_form_field_for_field(self, field):
         """
@@ -91,7 +94,7 @@ class ModelFilterSet(BaseModelFilterSet):
 
     def _build_filter(self, name, state):
         field = self.Meta.model._meta.get_field(
-            self._get_filter_extra_kwargs(name).get('source', name)
+            self._get_filter_extra_kwargs(name).get("source", name)
         )
 
         if isinstance(field, RelatedField):
@@ -126,28 +129,23 @@ class ModelFilterSet(BaseModelFilterSet):
         such as ``ForeignKey``.
         """
         # field.rel for Django < 1.9
-        remote_field = getattr(field, 'remote_field', None) or field.rel
+        remote_field = getattr(field, "remote_field", None) or field.rel
 
-        return self._build_django_filterset(name, field, {
-            'exclude': [remote_field.name],
-        })
+        return self._build_django_filterset(
+            name, field, {"exclude": [remote_field.name]}
+        )
 
     def _build_filterset_from_reverse_field(self, name, field):
         """
         Build a :class:`.FilterSet` for a Django reverse relation model field.
         """
-        return self._build_django_filterset(name, field, {
-            'exclude': [field.field.name],
-        })
+        return self._build_django_filterset(
+            name, field, {"exclude": [field.field.name]}
+        )
 
     def _build_django_filterset(self, name, field, meta_attrs):
         m = field.related_model
-        attrs = {'model': m}
+        attrs = {"model": m}
         attrs.update(meta_attrs)
 
-        return self._build_filterset(
-            m.__name__,
-            name,
-            attrs,
-            ModelFilterSet,
-        )
+        return self._build_filterset(m.__name__, name, attrs, ModelFilterSet)

@@ -3,6 +3,15 @@
 History
 -------
 
+0.3.14 (2019-10-30)
+~~~~~~~~~~~~~~~~~~~
+
+* Using ``CharField`` for ``regex`` filters.
+  See `#90 <https://github.com/miki725/django-url-filter/pull/90>`_.
+* ``SQLAlchemyFilterBackend`` does not join models if already join path
+  is partially joined already.
+* ``SQLAlchemyFilterBackend`` joins when ``selectinjoin`` is used.
+
 0.3.13 (2019-07-28)
 ~~~~~~~~~~~~~~~~~~~
 

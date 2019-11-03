@@ -9,9 +9,7 @@ Session = sessionmaker(bind=settings.SQLALCHEMY_ENGINE)
 
 
 def dbs():
-    return {
-        'default': settings.SQLALCHEMY_ENGINE,
-    }
+    return {"default": settings.SQLALCHEMY_ENGINE}
 
 
 class SQLAlchemySessionMiddleware(object):
