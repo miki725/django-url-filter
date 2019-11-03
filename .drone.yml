@@ -2,13 +2,21 @@ kind: pipeline
 name: tests
 
 steps:
+- name: python3.8
+  image: python:3.8
+  commands:
+    - pip install tox
+    - tox -e $(tox -l | grep py38 | paste -sd ",")
+  environment:
+    ADDITIONAL_COVERAGE_FLAGS: --cov-report=xml
+  depends_on:
+    - clone
+
 - name: python3.7
   image: python:3.7
   commands:
     - pip install tox
     - tox -e $(tox -l | grep py37 | paste -sd ",")
-  environment:
-    ADDITIONAL_COVERAGE_FLAGS: --cov-report=xml
   depends_on:
     - clone
 
@@ -57,7 +65,7 @@ steps:
       - '*.xml'
     required: true
   depends_on:
-    - python3.7
+    - python3.8
 
 trigger:
   trigger:
@@ -71,7 +79,7 @@ name: release
 
 steps:
 - name: release
-  image: python:3.7
+  image: python:3.8
   environment:
     TWINE_USERNAME:
       from_secret: pypi_username
