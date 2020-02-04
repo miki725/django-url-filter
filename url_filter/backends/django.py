@@ -21,6 +21,7 @@ class DjangoFilterBackend(BaseFilterBackend):
     name = "django"
     supported_lookups = {
         "contains",
+        "date",
         "day",
         "endswith",
         "exact",
