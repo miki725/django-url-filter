@@ -3,6 +3,12 @@
 History
 -------
 
+0.3.15 (2020-02-10)
+~~~~~~~~~~~~~~~~~~~
+
+* Fixes ``date`` lookup when using Django ORM.
+  See `#92 <https://github.com/miki725/django-url-filter/issues/92>`_.
+
 0.3.14 (2019-10-30)
 ~~~~~~~~~~~~~~~~~~~
 
