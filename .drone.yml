@@ -33,22 +33,6 @@ steps:
   depends_on:
     - clone
 
-- name: python2.7
-  image: python:2.7
-  commands:
-    - pip install tox
-    - tox -e $(tox -l | grep py27 | paste -sd ",")
-  depends_on:
-    - clone
-
-- name: pypy
-  image: pypy:2.7
-  commands:
-    - pip install tox
-    - tox -e $(tox -l | grep pypy- | paste -sd ",")
-  depends_on:
-    - clone
-
 - name: pypy3
   image: pypy:3.6
   commands:
