@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import coreapi
 import coreschema
 from django import forms

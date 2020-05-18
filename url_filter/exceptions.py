@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 class SkipFilter(Exception):
     """
     Exception to be used when any particular filter

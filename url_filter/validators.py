@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from django.core.validators import (
     MaxLengthValidator as _MaxLengthValidator,
     MinLengthValidator as _MinLengthValidator,

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import pytest
 from django import forms
 from django.http import QueryDict

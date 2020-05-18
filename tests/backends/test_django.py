@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import mock
 
 from test_project.one_to_one.models import Place

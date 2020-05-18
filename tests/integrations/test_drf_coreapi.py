@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from rest_framework.viewsets import ModelViewSet
 
 from test_project.one_to_one.models import Restaurant

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import pytest
 import six
 from alchemy_mock.comparison import ExpressionMatcher

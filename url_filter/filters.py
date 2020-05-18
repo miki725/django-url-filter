@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import abc
 import re
 from functools import wraps

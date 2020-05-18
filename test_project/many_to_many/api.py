@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from rest_framework.serializers import ModelSerializer
 from rest_framework.viewsets import ReadOnlyModelViewSet
 

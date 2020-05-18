@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import itertools
 
 from sqlalchemy import false, func

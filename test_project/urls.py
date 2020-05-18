@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import debug_toolbar
 from django.conf import settings
 from django.conf.urls import url

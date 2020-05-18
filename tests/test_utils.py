@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from url_filter.utils import FilterSpec, LookupConfig, SubClassDict, dictify
 
 

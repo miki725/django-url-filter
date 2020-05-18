@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import six
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType

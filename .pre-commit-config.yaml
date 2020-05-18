@@ -19,7 +19,6 @@ repos:
         args: [--allow-multiple-documents]
       - id: debug-statements
       - id: end-of-file-fixer
-      - id: fix-encoding-pragma
       - id: flake8
       - id: mixed-line-ending
       - id: trailing-whitespace

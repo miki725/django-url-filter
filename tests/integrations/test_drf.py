@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import mock
 import pytest
 from django.core.exceptions import ValidationError as DjangoValidationError

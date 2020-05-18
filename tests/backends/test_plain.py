@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from datetime import datetime
 
 from url_filter.backends.plain import PlainFilterBackend
