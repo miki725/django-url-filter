@@ -1,6 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import print_function, unicode_literals
-
 import pytest
 from django.conf import settings
 from django.core.management import call_command

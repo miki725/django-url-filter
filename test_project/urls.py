@@ -1,6 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import print_function, unicode_literals
-
 import debug_toolbar
 from django.conf import settings
 from django.conf.urls import url
