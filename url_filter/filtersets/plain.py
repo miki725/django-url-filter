@@ -1,7 +1,6 @@
 from datetime import date, datetime, time
 from decimal import Decimal
 
-import six
 from django import forms
 
 from ..backends.plain import PlainFilterBackend
@@ -13,8 +12,8 @@ from .base import BaseModelFilterSet
 
 DATA_TYPES_MAPPING = SubClassDict(
     {
-        six.string_types: forms.CharField(),
-        six.integer_types: forms.IntegerField(),
+        str: forms.CharField(),
+        int: forms.IntegerField(),
         bool: forms.BooleanField(required=False),
         float: forms.FloatField(),
         Decimal: forms.DecimalField(),

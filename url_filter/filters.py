@@ -2,7 +2,6 @@ import abc
 import re
 from functools import wraps
 
-import six
 from cached_property import cached_property
 from django import forms
 from django.core.exceptions import ValidationError
@@ -38,7 +37,7 @@ LOOKUP_CALLABLE_FROM_METHOD_REGEX = re.compile(
 )
 
 
-class BaseFilter(six.with_metaclass(abc.ABCMeta, object)):
+class BaseFilter(metaclass=abc.ABCMeta):
     """
     Base class to be used for defining both filters and filtersets.
 
@@ -73,9 +72,7 @@ class BaseFilter(six.with_metaclass(abc.ABCMeta, object)):
         self.is_bound = False
 
     def __repr__(self):
-        data = self.repr()
-        data = data if six.PY3 else data.encode("utf-8")
-        return data
+        return self.repr()
 
     @abc.abstractmethod
     def repr(self, prefix=""):

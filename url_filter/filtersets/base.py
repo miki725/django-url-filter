@@ -1,9 +1,9 @@
 import abc
+import functools
 import re
 from collections import defaultdict
 from copy import deepcopy
 
-import six
 from cached_property import cached_property
 from django.core.exceptions import ValidationError
 from django.core.validators import RegexValidator
@@ -88,7 +88,7 @@ class FilterSetMeta(type(BaseFilter)):
         return new_class
 
 
-class FilterSet(six.with_metaclass(FilterSetMeta, BaseFilter)):
+class FilterSet(BaseFilter, metaclass=FilterSetMeta):
     """
     Main user-facing classes to use filtersets.
 
@@ -395,7 +395,7 @@ class FilterSet(six.with_metaclass(FilterSetMeta, BaseFilter)):
             for value in values:
                 yield LookupConfig(
                     key,
-                    six.moves.reduce(
+                    functools.reduce(
                         lambda a, b: {b: a},
                         (key.replace("!", "").split(LOOKUP_SEP) + [value])[::-1],
                     ),

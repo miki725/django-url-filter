@@ -1,10 +1,9 @@
 import abc
 
-import six
 from cached_property import cached_property
 
 
-class BaseFilterBackend(six.with_metaclass(abc.ABCMeta, object)):
+class BaseFilterBackend(metaclass=abc.ABCMeta):
     """
     Base filter backend from which all other backends must subclass.
 
