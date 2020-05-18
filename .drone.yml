@@ -17,6 +17,17 @@ steps:
   depends_on:
     - clone
 
+- name: coverage
+  image: plugins/codecov
+  settings:
+    token:
+      from_secret: codecov_token
+    files:
+      - '*.xml'
+    required: true
+  depends_on:
+    - python3.8
+
 - name: python3.7
   image: python:3.7
   commands:
@@ -44,17 +55,6 @@ steps:
     - tox -e $(tox -l | grep pypy3- | grep -v latest | paste -sd ",")
   depends_on:
     - clone
-
-- name: coverage
-  image: plugins/codecov
-  settings:
-    token:
-      from_secret: codecov_token
-    files:
-      - '*.xml'
-    required: true
-  depends_on:
-    - python3.8
 
 trigger:
   trigger:
