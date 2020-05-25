@@ -1,6 +1,3 @@
-# -*- coding: utf-8 -*-
-from __future__ import absolute_import, print_function, unicode_literals
-
 from rest_framework.viewsets import ModelViewSet
 
 from test_project.one_to_one.models import Restaurant

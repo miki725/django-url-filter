@@ -1,13 +1,8 @@
-# -*- coding: utf-8 -*-
-from __future__ import absolute_import, print_function, unicode_literals
-
-import six
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
 
 
-@six.python_2_unicode_compatible
 class ModelA(models.Model):
     name = models.CharField(max_length=64)
 
@@ -15,7 +10,6 @@ class ModelA(models.Model):
         return self.name
 
 
-@six.python_2_unicode_compatible
 class ModelB(models.Model):
     name = models.CharField(max_length=64)
     a = models.ForeignKey(

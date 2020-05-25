@@ -1,8 +1,4 @@
-# -*- coding: utf-8 -*-
-from __future__ import absolute_import, print_function, unicode_literals
-
 import pytest
-import six
 from alchemy_mock.comparison import ExpressionMatcher
 from sqlalchemy import func
 from sqlalchemy.orm import joinedload
@@ -34,7 +30,7 @@ class TestSQLAlchemyFilterBackend(object):
             alchemy_db.query(Place), context={"context": "here"}
         )
 
-        assert "WHERE 0 = 1" in six.text_type(backend.empty())
+        assert "WHERE 0 = 1" in str(backend.empty())
 
     def test_get_model(self, alchemy_db):
         backend = SQLAlchemyFilterBackend(alchemy_db.query(Place))
@@ -57,7 +53,7 @@ class TestSQLAlchemyFilterBackend(object):
 
         filtered = backend.filter()
 
-        sql = six.text_type(filtered)
+        sql = str(filtered)
         # eagerloads via outerjoin
         assert "LEFT OUTER JOIN one_to_one_restaurant" not in sql
         assert "LEFT OUTER JOIN one_to_one_waiter" not in sql
@@ -77,7 +73,7 @@ class TestSQLAlchemyFilterBackend(object):
 
         filtered = backend.filter()
 
-        sql = six.text_type(filtered)
+        sql = str(filtered)
         # eagerloads via outerjoin
         assert "LEFT OUTER JOIN one_to_one_restaurant" in sql
         assert "LEFT OUTER JOIN one_to_one_waiter" not in sql
@@ -97,7 +93,7 @@ class TestSQLAlchemyFilterBackend(object):
 
         filtered = backend.filter()
 
-        sql = six.text_type(filtered)
+        sql = str(filtered)
         # eagerloads via outerjoin
         assert "LEFT OUTER JOIN one_to_one_restaurant" in sql
         assert "LEFT OUTER JOIN one_to_one_waiter" in sql
