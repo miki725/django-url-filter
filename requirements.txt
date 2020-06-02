@@ -1,4 +1,3 @@
 cached-property
-Django>=1.8
-enum-compat
+Django>=2.2
 six
