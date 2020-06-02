@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # Bare ``settings.py`` for running tests for url_filter
 import os
 

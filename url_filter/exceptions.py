@@ -1,7 +1,3 @@
-# -*- coding: utf-8 -*-
-from __future__ import absolute_import, print_function, unicode_literals
-
-
 class SkipFilter(Exception):
     """
     Exception to be used when any particular filter
