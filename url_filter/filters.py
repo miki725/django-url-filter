@@ -33,6 +33,7 @@ LOOKUP_FIELD_OVERWRITES = {
     "year": forms.IntegerField(min_value=0, max_value=9999),
     "regex": forms.CharField(),
     "iregex": forms.CharField(),
+    "len": forms.IntegerField(min_value=0)
 }
 
 LOOKUP_CALLABLE_FROM_METHOD_REGEX = re.compile(
