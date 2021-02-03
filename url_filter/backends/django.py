@@ -35,6 +35,7 @@ class DjangoFilterBackend(BaseFilterBackend):
         "iregex",
         "isnull",
         "istartswith",
+        "len",
         "lt",
         "lte",
         "minute",
