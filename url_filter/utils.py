@@ -43,7 +43,10 @@ class FilterSpec(object):
         filter spec. This is primaliry meant to be used
         by :class:`.CallableFilter`.
     """
-    def __init__(self, components, lookup, value, is_negated=False, filter_callable=None):
+
+    def __init__(
+        self, components, lookup, value, is_negated=False, filter_callable=None
+    ):
         self.components = components
         self.lookup = lookup
         self.value = value
@@ -60,15 +63,17 @@ class FilterSpec(object):
 
     def __repr__(self):
         if self.is_callable:
-            callable_repr = ' via {}.{}'.format(self.filter_callable.__self__.__class__.__name__,
-                                                self.filter_callable.__name__)
+            callable_repr = " via {}.{}".format(
+                self.filter_callable.__self__.__class__.__name__,
+                self.filter_callable.__name__,
+            )
         else:
-            callable_repr = ''
+            callable_repr = ""
 
-        return '<{name} {components} {negated}{lookup} {value!r}{callable}>'.format(
+        return "<{name} {components} {negated}{lookup} {value!r}{callable}>".format(
             name=self.__class__.__name__,
-            components='.'.join(self.components),
-            negated='NOT ' if self.is_negated else '',
+            components=".".join(self.components),
+            negated="NOT " if self.is_negated else "",
             lookup=self.lookup,
             value=self.value,
             callable=callable_repr,
@@ -130,6 +135,7 @@ class LookupConfig(object):
         Alternatively a filtering value as provided
         in the querystring.
     """
+
     def __init__(self, key, data):
         if isinstance(data, dict):
             data = {k: self.__class__(key, v) for k, v in data.items()}
@@ -170,10 +176,8 @@ class LookupConfig(object):
         return self.data
 
     def __repr__(self):
-        return '<{} {}=>{}>'.format(
-            self.__class__.__name__,
-            self.key,
-            repr(self.as_dict()),
+        return "<{} {}=>{}>".format(
+            self.__class__.__name__, self.key, repr(self.as_dict())
         )
 
 
@@ -230,11 +234,7 @@ def dictify(obj):
     if isinstance(obj, dict):
         return obj
     else:
-        return {
-            k: getattr(obj, k)
-            for k in dir(obj)
-            if not k.startswith('_')
-        }
+        return {k: getattr(obj, k) for k in dir(obj) if not k.startswith("_")}
 
 
 def dict_pop(key, d):

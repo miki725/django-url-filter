@@ -18,12 +18,14 @@ class ModelA(models.Model):
 @six.python_2_unicode_compatible
 class ModelB(models.Model):
     name = models.CharField(max_length=64)
-    a = models.ForeignKey(ModelA, blank=True, null=True, related_name='rel_b',
-                          on_delete=models.CASCADE)
-    content_type = models.ForeignKey(ContentType, related_name='+',
-                                     on_delete=models.CASCADE)
+    a = models.ForeignKey(
+        ModelA, blank=True, null=True, related_name="rel_b", on_delete=models.CASCADE
+    )
+    content_type = models.ForeignKey(
+        ContentType, related_name="+", on_delete=models.CASCADE
+    )
     object_id = models.PositiveIntegerField()
-    content_object = GenericForeignKey('content_type', 'object_id')
+    content_object = GenericForeignKey("content_type", "object_id")
 
     def __str__(self):
         return self.name

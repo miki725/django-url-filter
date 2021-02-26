@@ -9,7 +9,7 @@ from sqlalchemy.sql.expression import not_
 from .base import BaseFilterBackend
 
 
-__all__ = ['SQLAlchemyFilterBackend']
+__all__ = ["SQLAlchemyFilterBackend"]
 
 
 def lower(value):
@@ -34,33 +34,34 @@ class SQLAlchemyFilterBackend(BaseFilterBackend):
         If query object queries multiple entities, ``AssertionError``
         will be raised.
     """
-    name = 'sqlalchemy'
+
+    name = "sqlalchemy"
     supported_lookups = {
-        'contains',
-        'endswith',
-        'exact',
-        'gt',
-        'gte',
-        'icontains',
-        'iendswith',
-        'iexact',
-        'iin',
-        'in',
-        'isnull',
-        'istartswith',
-        'lt',
-        'lte',
-        'range',
-        'startswith',
+        "contains",
+        "endswith",
+        "exact",
+        "gt",
+        "gte",
+        "icontains",
+        "iendswith",
+        "iexact",
+        "iin",
+        "in",
+        "isnull",
+        "istartswith",
+        "lt",
+        "lte",
+        "range",
+        "startswith",
     }
 
     def __init__(self, *args, **kwargs):
         super(SQLAlchemyFilterBackend, self).__init__(*args, **kwargs)
 
         assert len(self.queryset._entities) == 1, (
-            '{} does not support filtering when multiple entities '
-            'are being queried (e.g. session.query(Foo, Bar)).'
-            ''.format(self.__class__.__name__)
+            "{} does not support filtering when multiple entities "
+            "are being queried (e.g. session.query(Foo, Bar))."
+            "".format(self.__class__.__name__)
         )
 
     def empty(self):
@@ -127,11 +128,26 @@ class SQLAlchemyFilterBackend(BaseFilterBackend):
             else:
                 to_join.append(_field)
 
-        existing_eagerloads = [list(i.path) for i in self.queryset._with_options]
-        if to_join in existing_eagerloads:
-            to_join = []
+        # cant directly compare instrumented attributes
+        # so need to collect object ids which are unique
+        # since they are model singletons
+        existing_eagerloads_ids = []
+        for option in self.queryset._with_options:
+            for suboption in itertools.takewhile(
+                lambda i: i.strategy[0] == ("lazy", "joined"), option._to_bind
+            ):
+                existing_eagerloads_ids.append([id(i) for i in suboption.path])
 
-        builder = getattr(self, '_build_clause_{}'.format(spec.lookup))
+        already_joined_ids = set()
+        for i in range(1, len(to_join) + 1):
+            sub_to_join_ids = [id(i) for i in to_join[:i]]
+            if sub_to_join_ids in existing_eagerloads_ids:
+                already_joined_ids |= set(sub_to_join_ids)
+
+        n_already_joined = len(already_joined_ids)
+        to_join = to_join[n_already_joined:]
+
+        builder = getattr(self, "_build_clause_{}".format(spec.lookup))
         column = self._get_attribute_for_field(field)
         clause = builder(spec, column)
 
@@ -199,10 +215,7 @@ class SQLAlchemyFilterBackend(BaseFilterBackend):
         (e.g. ``ColumnProperty``) or related classes.
         """
         mapper = class_mapper(model)
-        return {
-            i.key: i
-            for i in mapper.iterate_properties
-        }
+        return {i.key: i for i in mapper.iterate_properties}
 
     @classmethod
     def _get_column_for_field(cls, field):

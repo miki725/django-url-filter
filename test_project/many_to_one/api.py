@@ -22,7 +22,7 @@ class ReporterSerializer(ModelSerializer):
 class ArticleSerializer(ModelSerializer):
     class Meta(object):
         model = Article
-        exclude = ['reporter']
+        exclude = ["reporter"]
 
 
 class ReporterNestedSerializer(ModelSerializer):

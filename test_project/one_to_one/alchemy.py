@@ -8,7 +8,7 @@ from ..alchemy import Base
 
 
 class Place(Base):
-    __tablename__ = 'one_to_one_place'
+    __tablename__ = "one_to_one_place"
     id = Column(Integer, primary_key=True)
     name = Column(String(50))
     address = Column(String(80))
@@ -19,16 +19,16 @@ class Place(Base):
 
 
 class Restaurant(Base):
-    __tablename__ = 'one_to_one_restaurant'
+    __tablename__ = "one_to_one_restaurant"
     place_id = Column(Integer, primary_key=True)
     serves_hot_dogs = Column(Boolean)
     serves_pizza = Column(Boolean)
 
     place = relationship(
         Place,
-        backref=backref('restaurant', uselist=False),
+        backref=backref("restaurant", uselist=False),
         uselist=False,
-        primaryjoin='Restaurant.place_id == Place.id',
+        primaryjoin="Restaurant.place_id == Place.id",
         foreign_keys=place_id,
     )
 
@@ -38,16 +38,16 @@ class Restaurant(Base):
 
 
 class Waiter(Base):
-    __tablename__ = 'one_to_one_waiter'
+    __tablename__ = "one_to_one_waiter"
     id = Column(Integer, primary_key=True)
     restaurant_id = Column(Integer)
     name = Column(String(50))
 
     restaurant = relationship(
         Restaurant,
-        backref=backref('waiter_set', uselist=True),
+        backref=backref("waiter_set", uselist=True),
         uselist=False,
-        primaryjoin='Waiter.restaurant_id == Restaurant.place_id',
+        primaryjoin="Waiter.restaurant_id == Restaurant.place_id",
         foreign_keys=restaurant_id,
     )
 

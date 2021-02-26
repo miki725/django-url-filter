@@ -8,7 +8,7 @@ from ..alchemy import Base
 
 
 class Reporter(Base):
-    __tablename__ = 'many_to_one_reporter'
+    __tablename__ = "many_to_one_reporter"
     id = Column(Integer, primary_key=True)
     first_name = Column(String(30))
     last_name = Column(String(30))
@@ -20,7 +20,7 @@ class Reporter(Base):
 
 
 class Article(Base):
-    __tablename__ = 'many_to_one_article'
+    __tablename__ = "many_to_one_article"
     id = Column(Integer, primary_key=True)
     reporter_id = Column(Integer)
     headline = Column(String(100))
@@ -28,9 +28,9 @@ class Article(Base):
 
     reporter = relationship(
         Reporter,
-        backref=backref('articles', uselist=True),
+        backref=backref("articles", uselist=True),
         uselist=False,
-        primaryjoin='test_project.many_to_one.alchemy.Article.reporter_id == Reporter.id',
+        primaryjoin="test_project.many_to_one.alchemy.Article.reporter_id == Reporter.id",
         foreign_keys=reporter_id,
     )
 

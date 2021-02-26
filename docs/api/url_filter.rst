@@ -26,4 +26,3 @@ Submodules
    url_filter.filters
    url_filter.utils
    url_filter.validators
-

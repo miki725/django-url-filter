@@ -1,5 +1,17 @@
 include *.rst *.txt
-recursive-include tests *
 recursive-include docs *.rst conf.py Makefile make.bat
+
+exclude .drone.yml
+exclude .editorconfig
+exclude .importanizerc
+exclude .pre-commit-config.yaml
+exclude Makefile
+exclude manage.py
+exclude pytest.ini
+exclude tox.ini
+exclude tests
+exclude test_project
 recursive-exclude * __pycache__
 recursive-exclude * *.py[co]
+recursive-exclude test_project *
+recursive-exclude tests *

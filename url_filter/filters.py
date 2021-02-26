@@ -15,24 +15,28 @@ from .utils import FilterSpec, dict_pop
 
 
 MANY_LOOKUP_FIELD_OVERWRITES = {
-    'in': lambda **kwargs: MultipleValuesField(min_values=1, **kwargs),
-    'iin': lambda **kwargs: MultipleValuesField(min_values=1, **kwargs),
-    'range': lambda **kwargs: MultipleValuesField(min_values=2, max_values=2, **dict_pop('all_valid', kwargs)),
+    "in": lambda **kwargs: MultipleValuesField(min_values=1, **kwargs),
+    "iin": lambda **kwargs: MultipleValuesField(min_values=1, **kwargs),
+    "range": lambda **kwargs: MultipleValuesField(
+        min_values=2, max_values=2, **dict_pop("all_valid", kwargs)
+    ),
 }
 
 LOOKUP_FIELD_OVERWRITES = {
-    'isnull': forms.BooleanField(required=False),
-    'second': forms.IntegerField(min_value=0, max_value=59),
-    'minute': forms.IntegerField(min_value=0, max_value=59),
-    'hour': forms.IntegerField(min_value=0, max_value=23),
-    'week_day': forms.IntegerField(min_value=1, max_value=7),
-    'day': forms.IntegerField(min_value=1, max_value=31),
-    'month': forms.IntegerField(),
-    'year': forms.IntegerField(min_value=0, max_value=9999),
+    "isnull": forms.BooleanField(required=False),
+    "second": forms.IntegerField(min_value=0, max_value=59),
+    "minute": forms.IntegerField(min_value=0, max_value=59),
+    "hour": forms.IntegerField(min_value=0, max_value=23),
+    "week_day": forms.IntegerField(min_value=1, max_value=7),
+    "day": forms.IntegerField(min_value=1, max_value=31),
+    "month": forms.IntegerField(),
+    "year": forms.IntegerField(min_value=0, max_value=9999),
+    "regex": forms.CharField(),
+    "iregex": forms.CharField(),
 }
 
 LOOKUP_CALLABLE_FROM_METHOD_REGEX = re.compile(
-    r'^filter_(?P<filter>[\w\d]+)_for_(?P<backend>[\w\d]+)$'
+    r"^filter_(?P<filter>[\w\d]+)_for_(?P<backend>[\w\d]+)$"
 )
 
 
@@ -72,11 +76,11 @@ class BaseFilter(six.with_metaclass(abc.ABCMeta, object)):
 
     def __repr__(self):
         data = self.repr()
-        data = data if six.PY3 else data.encode('utf-8')
+        data = data if six.PY3 else data.encode("utf-8")
         return data
 
     @abc.abstractmethod
-    def repr(self, prefix=''):
+    def repr(self, prefix=""):
         """
         Get the representation of the filter or its subclasses.
 
@@ -216,10 +220,16 @@ class Filter(BaseFilter):
         If this filter should not support explicit lookups as provided in initialization
     """
 
-    def __init__(self, form_field,
-                 lookups=None, default_lookup='exact',
-                 is_default=False, no_lookup=False,
-                 *args, **kwargs):
+    def __init__(
+        self,
+        form_field,
+        lookups=None,
+        default_lookup="exact",
+        is_default=False,
+        no_lookup=False,
+        *args,
+        **kwargs
+    ):
         super(Filter, self).__init__(*args, **kwargs)
         self.form_field = form_field
         self._given_lookups = lookups
@@ -227,7 +237,7 @@ class Filter(BaseFilter):
         self.is_default = is_default
         self.no_lookup = no_lookup
 
-    def repr(self, prefix=''):
+    def repr(self, prefix=""):
         """
         Get custom representation of the filter
 
@@ -243,21 +253,25 @@ class Filter(BaseFilter):
         * if this filter does not support explicit lookups (same as :attr:`.no_lookup`)
         """
         return (
-            '{name}('
-            '{source}'
-            'form_field={form_field}, '
-            'lookups={lookups}, '
+            "{name}("
+            "{source}"
+            "form_field={form_field}, "
+            "lookups={lookups}, "
             'default_lookup="{default_lookup}", '
-            '{is_default}'
-            'no_lookup={no_lookup}'
-            ')'
-            ''.format(name=self.__class__.__name__,
-                      source='source="{}", '.format(self.source) if self.is_bound else '',
-                      form_field=self.form_field.__class__.__name__,
-                      lookups=self._given_lookups or 'ALL',
-                      default_lookup=self.default_lookup,
-                      is_default='is_default={}, '.format(self.is_default) if self.is_bound else '',
-                      no_lookup=self.no_lookup)
+            "{is_default}"
+            "no_lookup={no_lookup}"
+            ")"
+            "".format(
+                name=self.__class__.__name__,
+                source='source="{}", '.format(self.source) if self.is_bound else "",
+                form_field=self.form_field.__class__.__name__,
+                lookups=self._given_lookups or "ALL",
+                default_lookup=self.default_lookup,
+                is_default="is_default={}, ".format(self.is_default)
+                if self.is_bound
+                else "",
+                no_lookup=self.no_lookup,
+            )
         )
 
     @cached_property
@@ -283,7 +297,7 @@ class Filter(BaseFilter):
         """
         if self._given_lookups:
             return set(self._given_lookups)
-        if hasattr(self.root, 'filter_backend'):
+        if hasattr(self.root, "filter_backend"):
             return self.root.filter_backend.supported_lookups
         return set()
 
@@ -310,7 +324,8 @@ class Filter(BaseFilter):
         if lookup in MANY_LOOKUP_FIELD_OVERWRITES:
             return MANY_LOOKUP_FIELD_OVERWRITES[lookup](
                 child=self.form_field,
-                all_valid=getattr(self.root, 'strict_mode', StrictMode.fail) == StrictMode.fail,
+                all_valid=getattr(self.root, "strict_mode", StrictMode.fail)
+                == StrictMode.fail,
             )
         elif lookup in LOOKUP_FIELD_OVERWRITES:
             return LOOKUP_FIELD_OVERWRITES[lookup]
@@ -356,16 +371,16 @@ class Filter(BaseFilter):
         if isinstance(config.data, dict):
             if not config.is_key_value():
                 raise ValidationError(
-                    'Invalid filtering data provided. '
-                    'Data is more complex then expected. '
-                    'Most likely additional lookup was specified '
-                    'after the final lookup (e.g. field__in__equal=value).'
+                    "Invalid filtering data provided. "
+                    "Data is more complex then expected. "
+                    "Most likely additional lookup was specified "
+                    "after the final lookup (e.g. field__in__equal=value)."
                 )
 
             if self.no_lookup:
                 raise ValidationError(
-                    'Lookup was explicit used in filter specification. '
-                    'This filter does not allow to specify lookup.'
+                    "Lookup was explicit used in filter specification. "
+                    "This filter does not allow to specify lookup."
                 )
 
             lookup = config.name
@@ -379,7 +394,7 @@ class Filter(BaseFilter):
         if lookup not in self.lookups:
             raise ValidationError('"{}" lookup is not supported'.format(lookup))
 
-        is_negated = '!' in config.key
+        is_negated = "!" in config.key
         value = self.clean_value(value, lookup)
 
         return FilterSpec(self.components, lookup, value, is_negated)
@@ -410,6 +425,7 @@ def form_field_for_filter(form_field):
     func
         Function which can be used to decorate a class method
     """
+
     def wrapper(f):
         @wraps(f)
         def inner(self, *args, **kwargs):
@@ -489,14 +505,15 @@ class CallableFilter(Filter):
 
         r = LOOKUP_CALLABLE_FROM_METHOD_REGEX
         custom_lookups = {
-            m.groupdict()['filter'] for m in (r.match(i) for i in dir(self))
-            if m and m.groupdict()['backend'] == self.root.filter_backend.name
+            m.groupdict()["filter"]
+            for m in (r.match(i) for i in dir(self))
+            if m and m.groupdict()["backend"] == self.root.filter_backend.name
         }
 
         return lookups | custom_lookups
 
     def _get_filter_method_for_lookup(self, lookup):
-        name = 'filter_{}_for_{}'.format(lookup, self.root.filter_backend.name)
+        name = "filter_{}_for_{}".format(lookup, self.root.filter_backend.name)
         return getattr(self, name)
 
     def get_form_field(self, lookup):
@@ -518,13 +535,13 @@ class CallableFilter(Filter):
         form_field = super(CallableFilter, self).get_form_field(lookup)
 
         assert form_field is not None, (
-            '{name} was not provided form_field parameter in initialization '
-            '(e.g. {name}(form_field=CharField)) and form_field was not '
-            'provided for the lookup. If the lookup is a custom filter callable '
-            'you should provide form_field by using @form_field_for_filter '
-            'decorator. If the lookup is a normal lookup, then please either '
-            'provide form_field parameter or overwrite get_form_field().'
-            ''.format(name=self.__class__.__name__)
+            "{name} was not provided form_field parameter in initialization "
+            "(e.g. {name}(form_field=CharField)) and form_field was not "
+            "provided for the lookup. If the lookup is a custom filter callable "
+            "you should provide form_field by using @form_field_for_filter "
+            "decorator. If the lookup is a normal lookup, then please either "
+            "provide form_field parameter or overwrite get_form_field()."
+            "".format(name=self.__class__.__name__)
         )
 
         return form_field

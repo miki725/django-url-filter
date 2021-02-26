@@ -17,32 +17,34 @@ class DjangoFilterBackend(BaseFilterBackend):
         Passing any other datatype for filtering will kill happy bunnies
         under rainbow.
     """
-    name = 'django'
+
+    name = "django"
     supported_lookups = {
-        'contains',
-        'day',
-        'endswith',
-        'exact',
-        'gt',
-        'gte',
-        'hour',
-        'icontains',
-        'iendswith',
-        'iexact',
-        'in',
-        'iregex',
-        'isnull',
-        'istartswith',
-        'lt',
-        'lte',
-        'minute',
-        'month',
-        'range',
-        'regex',
-        'second',
-        'startswith',
-        'week_day',
-        'year',
+        "contains",
+        "date",
+        "day",
+        "endswith",
+        "exact",
+        "gt",
+        "gte",
+        "hour",
+        "icontains",
+        "iendswith",
+        "iexact",
+        "in",
+        "iregex",
+        "isnull",
+        "istartswith",
+        "lt",
+        "lte",
+        "minute",
+        "month",
+        "range",
+        "regex",
+        "second",
+        "startswith",
+        "week_day",
+        "year",
     }
 
     def empty(self):
@@ -66,10 +68,7 @@ class DjangoFilterBackend(BaseFilterBackend):
         calling ``QuerySet.filter`` once rather then calling it for each
         filter specification.
         """
-        return filter(
-            lambda i: not i.is_negated,
-            self.regular_specs
-        )
+        return filter(lambda i: not i.is_negated, self.regular_specs)
 
     @property
     def excludes(self):
@@ -80,16 +79,11 @@ class DjangoFilterBackend(BaseFilterBackend):
         calling ``QuerySet.exclude`` once rather then calling it for each
         filter specification.
         """
-        return filter(
-            lambda i: i.is_negated,
-            self.regular_specs
-        )
+        return filter(lambda i: i.is_negated, self.regular_specs)
 
     def _prepare_spec(self, spec):
-        return '{}{}{}'.format(
-            LOOKUP_SEP.join(spec.components),
-            LOOKUP_SEP,
-            spec.lookup,
+        return "{}{}{}".format(
+            LOOKUP_SEP.join(spec.components), LOOKUP_SEP, spec.lookup
         )
 
     def filter_by_specs(self, queryset):
@@ -117,7 +111,9 @@ class DjangoFilterBackend(BaseFilterBackend):
         return queryset.distinct() if (not is_distinct) and to_many and (include or exclude) else queryset
 
     def _is_any_to_many(self):
-        return any(self._is_to_many(self.model, i.components) for i in self.regular_specs)
+        return any(
+            self._is_to_many(self.model, i.components) for i in self.regular_specs
+        )
 
     def _is_to_many(self, model, components):
         if not components:
@@ -125,4 +121,8 @@ class DjangoFilterBackend(BaseFilterBackend):
 
         with suppress(FieldDoesNotExist):
             f = model._meta.get_field(components[0])
-            return f.one_to_many or f.many_to_many or self._is_to_many(f.related_model, components[1:])
+            return (
+                f.one_to_many
+                or f.many_to_many
+                or self._is_to_many(f.related_model, components[1:])
+            )
