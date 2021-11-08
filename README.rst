@@ -83,7 +83,7 @@ to filter querysets::
   filtered_users = fs.filter()
 
 Above will automatically allow the use of all of the Django URL Filter features.
-Some possibilities::
+Some possibilities:
 
     # get user with id 5
     example.com/users/?id=5
@@ -111,6 +111,34 @@ Some possibilities::
 
     # get user who joined in after 2010 as per user profile
     example.com/users/?profile__joined__gt=2010-01-01
+
+Available lookups:
+
+    contains: Match when string contains given substring.
+    day: Match by day of the month.
+    endswith: Match when string ends with given substring.
+    exact: Match exactly the value as is.
+    gt: Match when value is greater then given value.
+    gte: Match when value is greater or equal then given value.
+    hour: Match by the hour (24 hour) value of the timestamp.
+    icontains: Case insensitive match when string contains given substring.
+    iendswith: Case insensitive match when string ends with given substring.
+    iexact: Case insensitive match exactly the value as is.
+    iin: Case insensitive match when value is any of given comma separated values.
+    in: Match when value is any of given comma separated values.
+    iregex: Case insensitive match string by regex pattern.
+    isnull: Match when value is NULL.
+    istartswith: Case insensitive match when string starts with given substring.
+    lt: Match when value is less then given value.
+    lte: Match when value is less or equal then given value.
+    minute: Match by the minute value of the timestamp.
+    month: Match by the month value of the timestamp.
+    range: Match when value is within comma separated range.
+    regex: Match string by regex pattern.
+    second: Match by the second value of the timestamp.
+    startswith: Match when string starts with given substring.
+    week_day: Match by week day (1-Sunday to 7-Saturday) of the timestamp.
+    year: Match by the year value of the timestamp.
 
 Features
 --------
