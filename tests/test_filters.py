@@ -114,6 +114,16 @@ class TestFilter(object):
         with pytest.raises(forms.ValidationError):
             f.clean_value("1,a,2,b", "in")
 
+    def test_clean_value_with_incomplete_uuid(self):
+        f = Filter(form_field=forms.UUIDField())
+
+        assert f.clean_value("123", "startswith") == "123"
+        assert f.clean_value("123", "istartswith") == "123"
+        assert f.clean_value("123", "endswith") == "123"
+        assert f.clean_value("123", "iendswith") == "123"
+        assert f.clean_value("123", "icontains") == "123"
+        assert f.clean_value("123", "contains") == "123"
+
     def test_get_spec(self):
         p = Filter(source="parent", form_field=forms.CharField())
         f = Filter(source="child", form_field=forms.CharField())
