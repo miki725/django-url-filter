@@ -124,6 +124,7 @@ class TestFilter(object):
         assert f.clean_value("123", "icontains") == "123"
         assert f.clean_value("123", "contains") == "123"
 
+
     def test_get_spec(self):
         p = Filter(source="parent", form_field=forms.CharField())
         f = Filter(source="child", form_field=forms.CharField())

@@ -39,7 +39,6 @@ LOOKUP_FIELD_OVERWRITES = {
     "iendswith": forms.CharField(),
     "icontains": forms.CharField(),
     "contains": forms.CharField(),
-
 }
 
 LOOKUP_CALLABLE_FROM_METHOD_REGEX = re.compile(
