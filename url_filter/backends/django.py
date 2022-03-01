@@ -107,7 +107,8 @@ class DjangoFilterBackend(BaseFilterBackend):
             queryset = queryset.exclude(**{lookup: value})
 
         to_many = self._is_any_to_many()
-        return queryset.distinct() if to_many and (include or exclude) else queryset
+        is_distinct = bool(queryset.query.distinct_fields)
+        return queryset.distinct() if (not is_distinct) and to_many and (include or exclude) else queryset
 
     def _is_any_to_many(self):
         return any(
