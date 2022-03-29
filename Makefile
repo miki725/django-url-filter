@@ -58,7 +58,7 @@ dist: clean  ## build python package ditribution
 	twine check dist/*
 
 release: clean dist  ## package and upload a release
-	twine upload dist/*
+	twine upload dist/* --repository-url https://pypi.psycle.dev/
 
 syncdb:  ## apply all migrations and load fixtures
 	python manage.py migrate
