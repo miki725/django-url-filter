@@ -25,11 +25,18 @@ dev_req = read("requirements-dev.txt").splitlines()[2:]
 requirements = req + ["setuptools"]
 test_requirements = req + dev_req
 
+description = " - ".join(
+    [
+        "Django UFilter provides a safe way to filter data via human-friendly URLs",
+        "A fork from django-url-filter",
+    ]
+)
+
 setup(
-    name="django-url-filter",
+    name="django-ufilter",
     version=__version__,
     author=__author__,
-    description="Django URL Filter provides a safe way to filter data via human-friendly URLs.",
+    description=description,
     long_description="\n\n".join([readme, history, authors, licence]),
     url="https://github.com/miki725/django-url-filter",
     license="MIT",

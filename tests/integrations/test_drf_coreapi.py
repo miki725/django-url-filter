@@ -24,7 +24,7 @@ class TestCoreAPIURLFilterBackend(object):
         view = ViewSet()
         fields = view.filter_backend().get_schema_fields(view)
 
-        assert set(i.name for i in fields) == {
+        assert {i.name for i in fields} == {
             "place__address",
             "place__address__contains",
             "place__address__date",

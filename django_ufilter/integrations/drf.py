@@ -43,7 +43,8 @@ class DjangoFilterBackend(BaseFilterBackend):
                   fields = ['fields1', ...]
     * ``filter_class_meta_kwargs`` - additional kwargs which should be passed
       in ``Meta`` for the generated :class:`.FilterSet`.
-    * ``filter_class_default`` - base class to use while creating new :class:`.FilterSet`.
+    * ``filter_class_default`` - base class to use while creating a
+      new :class:`.FilterSet`.
       This is primarily useful when using non-Django data-sources.
       By default :attr:`.default_filter_set` is used.
 
