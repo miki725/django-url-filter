@@ -4,7 +4,7 @@ from __future__ import absolute_import, print_function, unicode_literals
 from rest_framework import serializers
 from rest_framework.viewsets import ModelViewSet
 
-from url_filter.integrations.drf import DjangoFilterBackend
+from django_ufilter.integrations.drf import DjangoFilterBackend
 
 from .models import ModelA, ModelB
 

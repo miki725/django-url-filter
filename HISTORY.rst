@@ -127,7 +127,7 @@ History
 * Added plain objects filtering support.
   More in `docs <https://django-url-filter.readthedocs.io/en/latest/usage.html#plain-filtering>`_
   and GitHub issue `#8 <https://github.com/miki725/django-url-filter/issues/8>`_.
-* Added `CallableFilter <https://django-url-filter.readthedocs.io/en/latest/api/url_filter.filters.html#url_filter.filters.CallableFilter>`_ which allows to implement custom filters.
+* Added `CallableFilter <https://django-url-filter.readthedocs.io/en/latest/api/django_ufilter.filters.html#django_ufilter.filters.CallableFilter>`_ which allows to implement custom filters.
 * Normalizing to DRF's ``ValidationError`` when using ``StrictMode.Fail``
   since filterset raises Django's ``ValidationError`` which caused 500 status code.
 * Fixes ``ModelFilterSet`` automatic introspection to ignore ``GenericForeignKey``

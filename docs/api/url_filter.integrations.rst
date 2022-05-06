@@ -1,7 +1,7 @@
 url\_filter.integrations package
 ================================
 
-.. automodule:: url_filter.integrations
+.. automodule:: django_ufilter.integrations
     :members:
     :undoc-members:
     :show-inheritance:
@@ -11,5 +11,5 @@ Submodules
 
 .. toctree::
 
-   url_filter.integrations.drf
-   url_filter.integrations.drf_coreapi
+   django_ufilter.integrations.drf
+   django_ufilter.integrations.drf_coreapi

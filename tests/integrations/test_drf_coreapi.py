@@ -3,9 +3,9 @@ from __future__ import absolute_import, print_function, unicode_literals
 
 from rest_framework.viewsets import ModelViewSet
 
+from django_ufilter.filtersets import ModelFilterSet
+from django_ufilter.integrations.drf_coreapi import CoreAPIURLFilterBackend
 from test_project.one_to_one.models import Restaurant
-from url_filter.filtersets import ModelFilterSet
-from url_filter.integrations.drf_coreapi import CoreAPIURLFilterBackend
 
 
 class TestCoreAPIURLFilterBackend(object):

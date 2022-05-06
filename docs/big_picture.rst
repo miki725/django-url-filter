@@ -115,16 +115,16 @@ detailed step-by-step guide what Django URL Filter does behind the scenes:
 #. :class:`.FilterSet` is instantiated with querystring data as well as
    queryset to filter.
 #. :class:`.FilterSet` is asked to filter given data via
-   :meth:`filter <url_filter.filtersets.base.FilterSet.filter>` method
+   :meth:`filter <django_ufilter.filtersets.base.FilterSet.filter>` method
    which kicks in all the steps below.
 #. :class:`.FilterSet` finds all filters it is capable of Filtering
-   via :meth:`get_filters <url_filter.filtersets.base.FilterSet.get_filters>`.
+   via :meth:`get_filters <django_ufilter.filtersets.base.FilterSet.get_filters>`.
    This is where custom filtersets can hook into to do custom stuff like
    extracting filters from a Django model.
 #. :class:`.FilterSet` binds all child filters to itself via
-   :meth:`bind <url_filter.filters.BaseFilter.bind>`.
-   This practically sets :attr:`parent <url_filter.filters.BaseFilter.parent>`
-   and :attr:`name <url_filter.filters.BaseFilter.name>` attributes.
+   :meth:`bind <django_ufilter.filters.BaseFilter.bind>`.
+   This practically sets :attr:`parent <django_ufilter.filters.BaseFilter.parent>`
+   and :attr:`name <django_ufilter.filters.BaseFilter.name>` attributes.
 #. Root :class:`.FilterSet` loops through all querystring pairs and generates
    :class:`.LookupConfig` for all of them.
 #. Root :class:`.FilterSet` loops through all generated configs and attemps to

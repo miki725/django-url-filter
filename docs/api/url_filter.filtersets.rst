@@ -1,7 +1,7 @@
 url\_filter.filtersets package
 ==============================
 
-.. automodule:: url_filter.filtersets
+.. automodule:: django_ufilter.filtersets
     :members:
     :undoc-members:
     :show-inheritance:
@@ -11,6 +11,6 @@ Submodules
 
 .. toctree::
 
-   url_filter.filtersets.base
-   url_filter.filtersets.django
-   url_filter.filtersets.plain
+   django_ufilter.filtersets.base
+   django_ufilter.filtersets.django
+   django_ufilter.filtersets.plain

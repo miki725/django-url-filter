@@ -1,7 +1,7 @@
 url\_filter package
 ===================
 
-.. automodule:: url_filter
+.. automodule:: django_ufilter
     :members:
     :undoc-members:
     :show-inheritance:
@@ -11,18 +11,18 @@ Subpackages
 
 .. toctree::
 
-    url_filter.backends
-    url_filter.filtersets
-    url_filter.integrations
+    django_ufilter.backends
+    django_ufilter.filtersets
+    django_ufilter.integrations
 
 Submodules
 ----------
 
 .. toctree::
 
-   url_filter.constants
-   url_filter.exceptions
-   url_filter.fields
-   url_filter.filters
-   url_filter.utils
-   url_filter.validators
+   django_ufilter.constants
+   django_ufilter.exceptions
+   django_ufilter.fields
+   django_ufilter.filters
+   django_ufilter.utils
+   django_ufilter.validators

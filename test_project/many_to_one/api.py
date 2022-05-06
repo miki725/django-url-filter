@@ -4,8 +4,8 @@ from __future__ import print_function, unicode_literals
 from rest_framework.serializers import ModelSerializer
 from rest_framework.viewsets import ReadOnlyModelViewSet
 
-from url_filter.constants import StrictMode
-from url_filter.filtersets import ModelFilterSet
+from django_ufilter.constants import StrictMode
+from django_ufilter.filtersets import ModelFilterSet
 
 from .models import Article, Reporter
 

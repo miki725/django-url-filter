@@ -3,9 +3,9 @@ from __future__ import absolute_import, print_function, unicode_literals
 
 import mock
 
+from django_ufilter.backends.django import DjangoFilterBackend
+from django_ufilter.utils import FilterSpec
 from test_project.one_to_one.models import Place
-from url_filter.backends.django import DjangoFilterBackend
-from url_filter.utils import FilterSpec
 
 
 class TestDjangoFilterBackend(object):

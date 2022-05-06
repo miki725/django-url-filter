@@ -5,14 +5,14 @@ import pytest
 from django import forms
 from django.db import models
 
+from django_ufilter.exceptions import SkipFilter
+from django_ufilter.filters import Filter
+from django_ufilter.filtersets import ModelFilterSet
 from test_project.generic.models import ModelB
 from test_project.many_to_many.models import Article as M2MArticle
 from test_project.many_to_many.models import Publication
 from test_project.many_to_one.models import Article as M2OArticle
 from test_project.one_to_one.models import Place, Restaurant
-from url_filter.exceptions import SkipFilter
-from url_filter.filters import Filter
-from url_filter.filtersets import ModelFilterSet
 
 
 class TestModelFilterSet(object):

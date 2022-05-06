@@ -1,7 +1,7 @@
 url\_filter.backends.plain module
 =================================
 
-.. automodule:: url_filter.backends.plain
+.. automodule:: django_ufilter.backends.plain
     :members:
     :undoc-members:
     :show-inheritance:

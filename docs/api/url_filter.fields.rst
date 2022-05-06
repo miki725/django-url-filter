@@ -1,7 +1,7 @@
 url\_filter.fields module
 =========================
 
-.. automodule:: url_filter.fields
+.. automodule:: django_ufilter.fields
     :members:
     :undoc-members:
     :show-inheritance:

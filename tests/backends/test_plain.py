@@ -3,8 +3,8 @@ from __future__ import absolute_import, print_function, unicode_literals
 
 from datetime import datetime
 
-from url_filter.backends.plain import PlainFilterBackend
-from url_filter.utils import FilterSpec
+from django_ufilter.backends.plain import PlainFilterBackend
+from django_ufilter.utils import FilterSpec
 
 
 class Bunch(object):

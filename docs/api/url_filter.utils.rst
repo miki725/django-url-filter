@@ -1,7 +1,7 @@
 url\_filter.utils module
 ========================
 
-.. automodule:: url_filter.utils
+.. automodule:: django_ufilter.utils
     :members:
     :undoc-members:
     :show-inheritance:

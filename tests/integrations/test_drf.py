@@ -7,10 +7,10 @@ from django.core.exceptions import ValidationError as DjangoValidationError
 from django.http import QueryDict
 from rest_framework.exceptions import ValidationError
 
+from django_ufilter.filtersets import FilterSet, ModelFilterSet
+from django_ufilter.integrations.drf import DjangoFilterBackend
 from test_project.one_to_one.api import PlaceFilterSet
 from test_project.one_to_one.models import Place, Restaurant
-from url_filter.filtersets import FilterSet, ModelFilterSet
-from url_filter.integrations.drf import DjangoFilterBackend
 
 
 class TestDjangoFilterBackend(object):

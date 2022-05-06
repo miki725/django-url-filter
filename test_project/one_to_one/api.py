@@ -7,11 +7,11 @@ from rest_framework.response import Response
 from rest_framework.serializers import ModelSerializer
 from rest_framework.viewsets import ReadOnlyModelViewSet
 
-from url_filter.backends.plain import PlainFilterBackend
-from url_filter.constants import StrictMode
-from url_filter.filters import CallableFilter, Filter, form_field_for_filter
-from url_filter.filtersets import ModelFilterSet
-from url_filter.filtersets.plain import PlainModelFilterSet
+from django_ufilter.backends.plain import PlainFilterBackend
+from django_ufilter.constants import StrictMode
+from django_ufilter.filters import CallableFilter, Filter, form_field_for_filter
+from django_ufilter.filtersets import ModelFilterSet
+from django_ufilter.filtersets.plain import PlainModelFilterSet
 
 from .models import Place, Restaurant, Waiter
 

@@ -1,7 +1,7 @@
-url_filter
+django_ufilter
 ==========
 
 .. toctree::
    :maxdepth: 4
 
-   url_filter
+   django_ufilter

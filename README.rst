@@ -58,7 +58,7 @@ with Django REST Framework but it can be used without DRF (see below).
 
 ::
 
-  from url_filter.integrations.drf import DjangoFilterBackend
+  from django_ufilter.integrations.drf import DjangoFilterBackend
 
 
   class UserViewSet(ModelViewSet):
@@ -71,7 +71,7 @@ Alternatively filterset can be manually created and used directly
 to filter querysets::
 
   from django.http import QueryDict
-  from url_filter.filtersets import ModelFilterSet
+  from django_ufilter.filtersets import ModelFilterSet
 
 
   class UserFilterSet(ModelFilterSet):

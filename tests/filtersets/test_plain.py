@@ -3,8 +3,8 @@ from __future__ import print_function, unicode_literals
 
 from django import forms
 
-from url_filter.filters import Filter
-from url_filter.filtersets.plain import PlainModelFilterSet
+from django_ufilter.filters import Filter
+from django_ufilter.filtersets.plain import PlainModelFilterSet
 
 
 class TestPlainModelFilterSet(object):

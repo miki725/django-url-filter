@@ -8,8 +8,8 @@ In its simplest form, Django URL Filter usage revolves around :class:`.FilterSet
 They can be used manually::
 
     from django import forms
-    from url_filter.filters import Filter
-    from url_filter.filtersets import FilterSet
+    from django_ufilter.filters import Filter
+    from django_ufilter.filtersets import FilterSet
 
     class ProfileFilterSet(FilterSet):
         lives_in_country = Filter(form_field=forms.CharField())
@@ -46,7 +46,7 @@ Instead of manually creating :class:`.FilterSet`, Django URL Filter comes with
 
 
     from django import forms
-    from url_filter.filtersets import ModelFilterSet
+    from django_ufilter.filtersets import ModelFilterSet
 
     class UserFilterSet(ModelFilterSet):
         class Meta(object):
@@ -76,8 +76,8 @@ is primarily meant to filter data-sources without direct filtering support
 such as lists of data in redis. For example::
 
     from django import forms
-    from url_filter.backend.plain import PlainFilterBackend
-    from url_filter.filtersets.plain import PlainModelFilterSet
+    from django_ufilter.backend.plain import PlainFilterBackend
+    from django_ufilter.filtersets.plain import PlainModelFilterSet
 
     class UserFilterSet(PlainModelFilterSet):
         filter_backend_class = PlainFilterBackend
@@ -123,13 +123,13 @@ Django REST Framework
 +++++++++++++++++++++
 
 Django URL Filter can rather easily be integrated with DRF.
-For that, a DRF-specific filter backend :class:`DjangoFilterBackend <url_filter.integrations.drf.DjangoFilterBackend>`
+For that, a DRF-specific filter backend :class:`DjangoFilterBackend <django_ufilter.integrations.drf.DjangoFilterBackend>`
 is implemented and can be used in settings::
 
     # settings.py
     REST_FRAMEWORK = {
         'DEFAULT_FILTER_BACKENDS': [
-            'url_filter.integrations.drf.DjangoFilterBackend',
+            'django_ufilter.integrations.drf.DjangoFilterBackend',
         ]
     }
 
@@ -155,4 +155,4 @@ control over :class:`.FilterSet` is required, it can be set explicitly::
         filter_class = MyFilterSet
 
 For more available options, please refer to
-:class:`DjangoFilterBackend <url_filter.integrations.drf.DjangoFilterBackend>` documentation.
+:class:`DjangoFilterBackend <django_ufilter.integrations.drf.DjangoFilterBackend>` documentation.

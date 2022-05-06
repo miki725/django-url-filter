@@ -40,11 +40,11 @@ lint:  ## lint whole library
 
 test:  ## run tests quickly with the default Python
 	py.test -sv \
-		--cov=url_filter \
+		--cov=django_ufilter \
 		--cov-report=term-missing \
 		$(ADDITIONAL_COVERAGE_FLAGS) \
 		--doctest-modules \
-		tests/ url_filter/
+		tests/ django_ufilter/
 
 test-all:  ## run tests on every Python version with tox
 	tox

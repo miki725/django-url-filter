@@ -6,7 +6,7 @@ import os
 
 from setuptools import find_packages, setup
 
-from url_filter import __author__, __version__
+from django_ufilter import __author__, __version__
 
 
 def read(fname):

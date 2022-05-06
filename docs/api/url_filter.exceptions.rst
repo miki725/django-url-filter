@@ -1,7 +1,7 @@
 url\_filter.exceptions module
 =============================
 
-.. automodule:: url_filter.exceptions
+.. automodule:: django_ufilter.exceptions
     :members:
     :undoc-members:
     :show-inheritance:

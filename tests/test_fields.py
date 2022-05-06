@@ -4,8 +4,8 @@ from __future__ import print_function, unicode_literals
 import pytest
 from django import forms
 
-from url_filter.fields import MultipleValuesField
-from url_filter.validators import MaxLengthValidator, MinLengthValidator
+from django_ufilter.fields import MultipleValuesField
+from django_ufilter.validators import MaxLengthValidator, MinLengthValidator
 
 
 class TestMultipleValuesField(object):

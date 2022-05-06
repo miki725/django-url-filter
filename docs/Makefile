@@ -195,7 +195,7 @@ pseudoxml:
 
 autodoc:
 	rm -rf api/*.rst
-	sphinx-apidoc --module-first --separate --output-dir=api ../url_filter
+	sphinx-apidoc --module-first --separate --output-dir=api ../django_ufilter
 	@echo
 	@echo "Finished generating API module files."
 

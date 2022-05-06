@@ -1,7 +1,7 @@
 url\_filter.backends package
 ============================
 
-.. automodule:: url_filter.backends
+.. automodule:: django_ufilter.backends
     :members:
     :undoc-members:
     :show-inheritance:
@@ -11,6 +11,6 @@ Submodules
 
 .. toctree::
 
-   url_filter.backends.base
-   url_filter.backends.django
-   url_filter.backends.plain
+   django_ufilter.backends.base
+   django_ufilter.backends.django
+   django_ufilter.backends.plain

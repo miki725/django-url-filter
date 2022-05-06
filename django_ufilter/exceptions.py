@@ -5,7 +5,7 @@ from __future__ import absolute_import, print_function, unicode_literals
 class SkipFilter(Exception):
     """
     Exception to be used when any particular filter
-    within the :class:`url_filter.filtersets.base.FilterSet` should be skipped.
+    within the :class:`django_ufilter.filtersets.base.FilterSet` should be skipped.
 
     Possible reasons for skipping the field:
 

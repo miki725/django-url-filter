@@ -7,12 +7,12 @@ import mock
 import pytest
 from django import forms
 
-from url_filter.backends.django import DjangoFilterBackend
-from url_filter.fields import MultipleValuesField
-from url_filter.filters import CallableFilter
-from url_filter.filters import Filter as _Filter
-from url_filter.filters import form_field_for_filter
-from url_filter.utils import FilterSpec, LookupConfig
+from django_ufilter.backends.django import DjangoFilterBackend
+from django_ufilter.fields import MultipleValuesField
+from django_ufilter.filters import CallableFilter
+from django_ufilter.filters import Filter as _Filter
+from django_ufilter.filters import form_field_for_filter
+from django_ufilter.utils import FilterSpec, LookupConfig
 
 Filter = partial(_Filter, lookups=DjangoFilterBackend.supported_lookups)
 
