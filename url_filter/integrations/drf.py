@@ -152,9 +152,10 @@ class DjangoFilterBackend(BaseFilterBackend):
             filter_model = getattr(_filter.Meta, "model", None)
             if filter_model and _filter.filter_backend.enforce_same_models:
                 model = _filter.filter_backend.model
-                assert issubclass(model, filter_model), (
-                    "FilterSet model {} does not match queryset model {}"
-                    "".format(filter_model, model)
+                assert issubclass(
+                    model, filter_model
+                ), "FilterSet model {} does not match queryset model {}" "".format(
+                    filter_model, model
                 )
 
             try:
