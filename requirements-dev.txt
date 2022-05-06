@@ -9,7 +9,7 @@ djangorestframework
 flake8
 flake8-bugbear; python_version > "3.6"
 flake8-comprehensions
-importanize
+isort
 mock
 pdbpp
 pre-commit

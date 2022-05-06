@@ -17,7 +17,6 @@ import sys
 import django
 import sphinx_rtd_theme
 
-
 os.environ["DJANGO_SETTINGS_MODULE"] = "test_project.settings"
 
 # If extensions (or modules to document with autodoc) are in another directory,

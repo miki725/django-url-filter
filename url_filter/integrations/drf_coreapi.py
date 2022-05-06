@@ -10,7 +10,6 @@ from ..fields import MultipleValuesField
 from ..filtersets import FilterSet
 from .drf import URLFilterBackend
 
-
 DESCRIPTION = {
     "contains": "Match when string contains given substring",
     "day": "Match by day of the month",

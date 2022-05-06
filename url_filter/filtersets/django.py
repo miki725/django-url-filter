@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, print_function, unicode_literals
+
 import operator
 
 from django import forms
@@ -11,7 +12,6 @@ from ..exceptions import SkipFilter
 from ..filters import Filter
 from ..utils import SubClassDict
 from .base import BaseModelFilterSet, ModelFilterSetOptions
-
 
 __all__ = ["ModelFilterSet", "DjangoModelFilterSetOptions"]
 

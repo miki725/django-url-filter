@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, print_function, unicode_literals
+
 import abc
 import re
 from collections import defaultdict
@@ -17,7 +18,6 @@ from ..constants import StrictMode
 from ..exceptions import Empty, SkipFilter
 from ..filters import BaseFilter
 from ..utils import LookupConfig
-
 
 __all__ = ["FilterSet", "FilterSetOptions", "ModelFilterSetOptions"]
 

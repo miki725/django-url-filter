@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import print_function, unicode_literals
+
 from functools import partial
 
 import mock
@@ -8,9 +9,10 @@ from django import forms
 
 from url_filter.backends.django import DjangoFilterBackend
 from url_filter.fields import MultipleValuesField
-from url_filter.filters import CallableFilter, Filter as _Filter, form_field_for_filter
+from url_filter.filters import CallableFilter
+from url_filter.filters import Filter as _Filter
+from url_filter.filters import form_field_for_filter
 from url_filter.utils import FilterSpec, LookupConfig
-
 
 Filter = partial(_Filter, lookups=DjangoFilterBackend.supported_lookups)
 

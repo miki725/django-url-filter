@@ -3,7 +3,7 @@ recursive-include docs *.rst conf.py Makefile make.bat
 
 exclude .drone.yml
 exclude .editorconfig
-exclude .importanizerc
+exclude .isort.cfg
 exclude .pre-commit-config.yaml
 exclude Makefile
 exclude manage.py

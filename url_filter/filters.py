@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, print_function, unicode_literals
+
 import abc
 import re
 from functools import wraps
@@ -12,7 +13,6 @@ from django.core.exceptions import ValidationError
 from .constants import StrictMode
 from .fields import MultipleValuesField
 from .utils import FilterSpec, dict_pop
-
 
 MANY_LOOKUP_FIELD_OVERWRITES = {
     "in": lambda **kwargs: MultipleValuesField(min_values=1, **kwargs),

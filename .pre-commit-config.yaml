@@ -28,17 +28,16 @@ repos:
     hooks:
       - id: flake8
 
-  - repo: https://github.com/miki725/importanize
-    rev: '0.7'
+  - repo: https://github.com/pycqa/isort
+    rev: 5.10.1
     hooks:
-      - id: importanize
-        language_version: python3
+      - id: isort
 
   - repo: https://github.com/python/black
     rev: '22.3.0'
     hooks:
       - id: black
-        args: [--line-length=88, --safe]
+        args: [--safe]
         language_version: python3
         exclude: test_data/.*$
 

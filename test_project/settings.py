@@ -2,7 +2,6 @@
 # Bare ``settings.py`` for running tests for url_filter
 import os
 
-
 DEBUG = True
 INTERNAL_IPS = ["127.0.0.1"]
 

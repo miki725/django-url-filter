@@ -12,7 +12,6 @@ from test_project.many_to_many import api as m2m_api
 from test_project.many_to_one import api as m2o_api
 from test_project.one_to_one import api as o2o_api
 
-
 router = DefaultRouter()
 
 router.register(
