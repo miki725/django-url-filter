@@ -471,9 +471,6 @@ class CallableFilter(Filter):
         ...     def filter_foo_for_django(self, queryset, spec):
         ...         f = queryset.filter if not spec.is_negated else queryset.exclude
         ...         return f(foo=spec.value)
-        ...     def filter_foo_for_sqlalchemy(self, queryset, spec):
-        ...         op = operator.eq if not spec.is_negated else operator.ne
-        ...         return queryset.filter(op(Foo.foo, spec.value))
 
         >>> class MyFilterSet(FilterSet):
         ...     field = MyCallableFilter()

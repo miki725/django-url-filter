@@ -67,36 +67,6 @@ Notable things:
             model = User
             fields = ['username', 'email', 'joined', 'profile']
 
-SQLAlchemy
-----------
-
-`SQLAlchemy <http://www.sqlalchemy.org/>`_ works very similar to how Django
-backend works. Additionally :class:`.SQLAlchemyModelFilterSet` is available to be able
-to easily create filter sets from SQLAlchemy models. For example::
-
-    from django import forms
-    from url_filter.backend.sqlalchemy import SQLAlchemyFilterBackend
-    from url_filter.filtersets.sqlalchemy import SQLAlchemyModelFilterSet
-
-    class UserFilterSet(SQLAlchemyModelFilterSet):
-        filter_backend_class = SQLAlchemyFilterBackend
-
-        class Meta(object):
-            model = User  # this model should be SQLAlchemy model
-            fields = ['username', 'email', 'joined', 'profile']
-
-    fs = UserFilterSet(data=QueryDict(), queryset=session.query(User))
-    fs.filter()
-
-Notable things:
-
-* this works exactly same as :class:`.ModelFilterSet` so refer above for some of
-  general options.
-* ``filter_backend_class`` **must** be provided since otherwise
-  :class:`.DjangoFilterBackend` will be used which will obviously not work
-  with SQLAlchemy models.
-* ``queryset`` given to the queryset should be SQLAlchemy query object.
-
 Plain Filtering
 ---------------
 

@@ -1,11 +1,9 @@
 -r requirements.txt
 -r requirements-release.txt
-alchemy-mock
 black; python_version > "3.6"
 coreapi
 coverage
 django-debug-toolbar
-django-debug-toolbar-alchemy
 django-extensions
 djangorestframework
 flake8
@@ -23,7 +21,6 @@ pytest-django
 sphinx
 sphinx-autobuild
 sphinx-rtd-theme
-sqlalchemy
 tox
 watchdog
 werkzeug
