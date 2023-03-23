@@ -6,7 +6,10 @@ from django.core.validators import (
     MinLengthValidator as _MinLengthValidator,
 )
 from django.utils.deconstruct import deconstructible
-from django.utils.translation import ungettext_lazy
+try:
+    from django.utils.translation import ungettext_lazy
+except ImportError:
+    from django.utils.translation import gettext_lazy as ungettext_lazy  # for Django>=3.0
 
 
 @deconstructible
