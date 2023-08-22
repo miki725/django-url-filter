@@ -6,7 +6,10 @@ from django.core.validators import (
     MinLengthValidator as _MinLengthValidator,
 )
 from django.utils.deconstruct import deconstructible
-from django.utils.translation import ungettext_lazy
+try:
+    from django.utils.translation import gettext_lazy
+except ImportError:
+    from django.utils.translation import ungettext_lazy as gettext_lazy
 
 
 @deconstructible
@@ -16,7 +19,7 @@ class MinLengthValidator(_MinLengthValidator):
     """
 
     code = "min_length"
-    message = ungettext_lazy(
+    message = gettext_lazy(
         "Ensure this value has at least %(limit_value)d items (it has %(show_value)d).",
         "Ensure this value has at least %(limit_value)d items (it has %(show_value)d).",
         "limit_value",
@@ -36,7 +39,7 @@ class MaxLengthValidator(_MaxLengthValidator):
     """
 
     code = "max_length"
-    message = ungettext_lazy(
+    message = gettext_lazy(
         "Ensure this value has at most %(limit_value)d items (it has %(show_value)d).",
         "Ensure this value has at most %(limit_value)d items (it has %(show_value)d).",
         "limit_value",
