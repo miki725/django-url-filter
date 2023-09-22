@@ -3,6 +3,11 @@
 History
 -------
 
+1.0.1 (2023-09-22)
+~~~~~~~~~~~~~~~~~~~
+
+* Removed outdated badges till coverage is set up again.
+
 1.0.0 (2023-09-22)
 ~~~~~~~~~~~~~~~~~~~
 
