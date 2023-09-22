@@ -2,6 +2,5 @@
 from __future__ import absolute_import, print_function, unicode_literals
 
 
-__author__ = "Miroslav Shubernetskiy"
-__email__ = "miroslav@miki725.com"
-__version__ = "0.3.15"
+__author__ = "MoncefB"
+__version__ = "1.0.0"

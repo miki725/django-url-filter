@@ -3,6 +3,12 @@
 History
 -------
 
+1.0.0 (2023-09-22)
+~~~~~~~~~~~~~~~~~~~
+
+* Added support for Django 4.
+  See `#119 <https://github.com/miki725/django-url-filter/issues/119>`_.
+
 0.3.15 (2020-02-10)
 ~~~~~~~~~~~~~~~~~~~
 

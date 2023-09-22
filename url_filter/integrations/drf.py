@@ -10,7 +10,7 @@ from ..filtersets import ModelFilterSet
 
 class DjangoFilterBackend(BaseFilterBackend):
     """
-    DRF filter backend which integrates with ``django-url-filter``
+    DRF filter backend which integrates with ``django-rest-url-filter``
 
     This integration backend can be specified in global DRF settings::
 

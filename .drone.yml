@@ -61,22 +61,23 @@ steps:
   depends_on:
     - clone
 
-- name: coverage
-  image: plugins/codecov
-  settings:
-    token:
-      from_secret: codecov_token
-    files:
-      - '*.xml'
-    required: true
-  depends_on:
-    - python3.8
+# TODO: re-enable coverage once codecov has been set up.
+# - name: coverage
+#   image: plugins/codecov
+#   settings:
+#     token:
+#       from_secret: codecov_token
+#     files:
+#       - '*.xml'
+#     required: true
+#   depends_on:
+#     - python3.8
 
-trigger:
-  trigger:
-    ref:
-    - refs/heads/master
-    - refs/pull/*/head
+# trigger:
+#   trigger:
+#     ref:
+#     - refs/heads/master
+#     - refs/pull/*/head
 
 ---
 kind: pipeline

@@ -25,12 +25,12 @@ requirements = req + ["setuptools"]
 test_requirements = req + dev_req
 
 setup(
-    name="django-url-filter",
+    name="django-rest-url-filter",
     version=__version__,
     author=__author__,
-    description="Django URL Filter provides a safe way to filter data via human-friendly URLs.",
+    description="Django URL Filter provides a safe way to filter data via human-friendly URLs (compatible with Django 4).",
     long_description="\n\n".join([readme, history, authors, licence]),
-    url="https://github.com/miki725/django-url-filter",
+    url="https://github.com/MoncefB/django-rest-url-filter/",
     license="MIT",
     packages=find_packages(exclude=["test_project*", "tests*"]),
     install_requires=requirements,

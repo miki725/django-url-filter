@@ -100,7 +100,7 @@ Notable things:
 Plain Filtering
 ---------------
 
-In addition to supporting regular ORMs ``django-url-filter`` also allows to
+In addition to supporting regular ORMs ``django-rest-url-filter`` also allows to
 filter plain Python lists of either objects or dictionaries. This feature
 is primarily meant to filter data-sources without direct filtering support
 such as lists of data in redis. For example::
