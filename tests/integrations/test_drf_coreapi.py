@@ -1,14 +1,27 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, print_function, unicode_literals
 
+import pytest
 from rest_framework.viewsets import ModelViewSet
 
 from test_project.one_to_one.models import Restaurant
 from url_filter.filtersets import ModelFilterSet
-from url_filter.integrations.drf_coreapi import CoreAPIURLFilterBackend
+
+# coreapi is deprecated and cannot be imported on Python 3.13+
+# (it depends on the removed ``cgi`` module and on ``pkg_resources``)
+pytest.importorskip("coreapi")
+pytest.importorskip("coreschema")
+
+from url_filter.integrations.drf_coreapi import CoreAPIURLFilterBackend  # noqa: E402
 
 
 class TestCoreAPIURLFilterBackend(object):
+    def test_get_schema_fields_no_filter_class(self):
+        class ViewSet(ModelViewSet):
+            queryset = Restaurant.objects
+
+        assert CoreAPIURLFilterBackend().get_schema_fields(ViewSet()) == []
+
     def test_get_schema_fields(self):
         class FilterSet(ModelFilterSet):
             class Meta(object):
@@ -23,6 +36,15 @@ class TestCoreAPIURLFilterBackend(object):
 
         view = ViewSet()
         fields = view.filter_backend().get_schema_fields(view)
+
+        by_name = {i.name: i for i in fields}
+        assert by_name["place__name__in"].schema.__class__.__name__ == "Array"
+        assert by_name["serves_pizza"].schema.__class__.__name__ == "Boolean"
+        assert by_name["waiter__id"].schema.__class__.__name__ == "Integer"
+        assert by_name["place__name"].schema.description == (
+            "Match exactly the value as is"
+        )
+        assert all(i.location == "query" and not i.required for i in fields)
 
         assert set(i.name for i in fields) == {
             "place__address",

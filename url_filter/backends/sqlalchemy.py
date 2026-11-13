@@ -58,7 +58,7 @@ class SQLAlchemyFilterBackend(BaseFilterBackend):
     def __init__(self, *args, **kwargs):
         super(SQLAlchemyFilterBackend, self).__init__(*args, **kwargs)
 
-        assert len(self.queryset._entities) == 1, (
+        assert self.queryset.is_single_entity, (
             "{} does not support filtering when multiple entities "
             "are being queried (e.g. session.query(Foo, Bar))."
             "".format(self.__class__.__name__)
@@ -74,7 +74,7 @@ class SQLAlchemyFilterBackend(BaseFilterBackend):
         """
         Get the model from the given queryset
         """
-        return self.queryset._only_entity_zero().mapper.class_
+        return self.queryset._entity_from_pre_ent_zero().class_
 
     def filter_by_specs(self, queryset):
         """

@@ -186,3 +186,15 @@ control over :class:`.FilterSet` is required, it can be set explicitly::
 
 For more available options, please refer to
 :class:`DjangoFilterBackend <url_filter.integrations.drf.DjangoFilterBackend>` documentation.
+
+OpenAPI schema
+~~~~~~~~~~~~~~
+
+:class:`DjangoFilterBackend <url_filter.integrations.drf.DjangoFilterBackend>`
+implements ``get_schema_operation_parameters`` hence when using DRF's OpenAPI
+schema generation (``rest_framework.schemas.openapi``), all supported filters
+including their lookups are automatically documented as query parameters.
+
+The legacy :class:`CoreAPIURLFilterBackend <url_filter.integrations.drf_coreapi.CoreAPIURLFilterBackend>`
+is still available for projects which use ``coreapi`` however CoreAPI has been
+removed from DRF and the ``coreapi`` package does not work on Python 3.13+.

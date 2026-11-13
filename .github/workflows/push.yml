@@ -1,0 +1,62 @@
+name: Python package
+
+on:
+  - push
+  - pull_request
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ['3.13', '3.14', '3.15']
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        python -m pip install tox tox-gh-actions
+    - name: Test with tox
+      run: tox
+
+  e2e:
+    # Runs tests/test_api.py over real HTTP against the test project's
+    # DRF API served by `manage.py runserver`.
+    runs-on: ubuntu-latest
+    env:
+      E2E_BASE_URL: http://127.0.0.1:8000
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.15'
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        python -m pip install -r requirements.txt djangorestframework "sqlalchemy<2" django-extensions pytest pytest-django requests
+    - name: Set up test project database
+      run: |
+        python manage.py migrate --run-syncdb
+        python manage.py loaddata one_to_one many_to_one many_to_many
+    - name: Start test project server
+      run: |
+        nohup python manage.py runserver 127.0.0.1:8000 --noreload > server.log 2>&1 &
+        for i in $(seq 1 30); do
+          curl -sf "$E2E_BASE_URL/many-to-one/articles/" > /dev/null && exit 0
+          sleep 1
+        done
+        echo "::error::test project server did not start"
+        cat server.log
+        exit 1
+    - name: Run e2e tests
+      run: python -m pytest -v -p no:cacheprovider tests/test_api.py
+    - name: Server log
+      if: always()
+      run: cat server.log

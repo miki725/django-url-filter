@@ -1,0 +1,61 @@
+[tool.poetry]
+name = "dj-url-filter"
+version = "0.5.0"
+description = "Django URL Filter provides a safe way to filter data via human-friendly URLs."
+authors = ["Hat Dao <enjoy3013@gmail.com>"]
+license = "MIT"
+readme = "README.rst"
+keywords = ["django", "url-filter", "drf"]
+classifiers = [
+    "Framework :: Django",
+    "Framework :: Django :: 5.2",
+    "Framework :: Django :: 6.0",
+    "Framework :: Django :: 6.1",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Programming Language :: Python :: 3.15",
+    "Development Status :: 2 - Pre-Alpha",
+]
+packages = [{include = "url_filter"}]
+
+[tool.poetry.dependencies]
+python = "^3.13"
+django = ">=5.2"
+cached-property = "^1.5.2"
+six = "^1.16.0"
+
+[tool.poetry.dev-dependencies]
+tox-poetry-installer = {extras = ["poetry"], version = "^0.10.0"}
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^7.2.0"
+sqlalchemy = "^1.4.46"
+mock = "^5.0.1"
+alchemy-mock = "^0.4.3"
+black = "^22.12.0"
+coreapi = "^2.3.3"
+coverage = "^7.0.4"
+django-extensions = "^3.2.1"
+djangorestframework = ">=3.18"
+uritemplate = ">=4.1"
+inflection = ">=0.5.1"
+flake8 = "^6.0.0"
+flake8-bugbear = "^22.12.6"
+flake8-comprehensions = "^3.10.1"
+importanize = "^0.7.0"
+pdbpp = "^0.10.3"
+pre-commit = "^2.21.0"
+pre-commit-hooks = "^4.4.0"
+ptpython = "^3.0.22"
+pytest-cov = "^4.0.0"
+requests = ">=2.32"
+pytest-django = "^4.5.2"
+sphinx-autobuild = "^2021.3.14"
+sphinx-rtd-theme = "^1.1.1"
+watchdog = "^2.2.1"
+werkzeug = "^2.2.2"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

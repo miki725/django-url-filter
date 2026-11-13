@@ -3,6 +3,21 @@
 History
 -------
 
+0.5.0 (2026-11-13)
+~~~~~~~~~~~~~~~~~~
+
+* Support Django REST Framework 3.18 (latest).
+* Support Django 5.2, 6.0 and 6.1.
+* Supported Python versions are now the three latest: 3.13, 3.14 and 3.15
+  (Python 3.15 requires Django 6.1). Dropped Python 3.9 to 3.12.
+* ``DjangoFilterBackend`` implements ``get_schema_operation_parameters``
+  so filters (including all lookups) are documented in DRF's OpenAPI schemas.
+* ``url_filter.integrations.drf_coreapi`` is now legacy: CoreAPI was removed
+  from DRF and the ``coreapi`` package cannot be imported on Python 3.13+.
+* Dropped Django 3.2 and 4.2 (both EOL) support. Minimum is now Django 5.2.
+* Removed obsolete Travis CI and Drone CI configs; GitHub Actions is the CI.
+* Releases are published to PyPI by the ``Release`` GitHub Actions workflow.
+
 0.3.15 (2020-02-10)
 ~~~~~~~~~~~~~~~~~~~
 

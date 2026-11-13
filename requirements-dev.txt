@@ -1,17 +1,14 @@
--r requirements.txt
--r requirements-release.txt
 alchemy-mock
-black; python_version > "3.6"
+black
 coreapi
 coverage
-django-debug-toolbar
-django-debug-toolbar-alchemy
 django-extensions
 djangorestframework
 flake8
-flake8-bugbear; python_version > "3.6"
+flake8-bugbear
 flake8-comprehensions
 importanize
+inflection
 mock
 pdbpp
 pre-commit
@@ -20,10 +17,10 @@ ptpython
 pytest
 pytest-cov
 pytest-django
-sphinx
+requests
 sphinx-autobuild
 sphinx-rtd-theme
-sqlalchemy
-tox
+sqlalchemy<2
+uritemplate
 watchdog
 werkzeug

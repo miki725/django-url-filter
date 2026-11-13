@@ -2,20 +2,25 @@
 Django URL Filter
 =================
 
-.. image:: https://badge.fury.io/py/django-url-filter.svg
-   :target: http://badge.fury.io/py/django-url-filter
+.. image:: https://badge.fury.io/py/dj-url-filter.svg
+   :target: http://badge.fury.io/py/dj-url-filter
 .. image:: https://readthedocs.org/projects/django-url-filter/badge/?version=latest
    :target: http://django-url-filter.readthedocs.io/en/latest/?badge=latest
-.. image:: https://drone.miki725.com/api/badges/miki725/django-url-filter/status.svg
-   :target: https://drone.miki725.com/miki725/django-url-filter
-.. image:: https://codecov.io/gh/miki725/django-url-filter/branch/master/graph/badge.svg
-   :target: https://codecov.io/gh/miki725/django-url-filter
+.. image:: https://codecov.io/gh/enjoy2000/django-url-filter/branch/master/graph/badge.svg
+   :target: https://codecov.io/gh/enjoy2000/django-url-filter
+.. image:: https://github.com/enjoy2000/dj-url-filter/actions/workflows/push.yml/badge.svg
+   :target: https://github.com/enjoy2000/dj-url-filter/actions/workflows/push.yml
+   :alt: Tests
 
 Django URL Filter provides a safe way to filter data via human-friendly URLs.
 
 * Free software: MIT license
-* GitHub: https://github.com/miki725/django-url-filter
+* GitHub: https://github.com/enjoy2000/django-url-filter
 * Documentation: http://django-url-filter.readthedocs.io/
+
+Notes
+-----
+This is a forked version of https://github.com//miki725/django-url-filter to add Django 4 support and my other projects.
 
 Overview
 --------
@@ -39,16 +44,17 @@ For example::
 Requirements
 ------------
 
-* Python 2.7, 3.x, pypy or pypy3
-* Django 1.8+ (there are plans to support older Django versions)
-* Django REST Framework 2 or 3 (only if you want to use DRF integration)
+* Python 3.13, 3.14, 3.15
+* Django 5.2, 6.0, 6.1 (Python 3.15 requires Django 6.1)
+* Django REST Framework 3.18+ (only if you want to use DRF integration)
+* SQLAlchemy ~1.4 (only if you want to use SQLAlchemy integration)
 
 Installing
 ----------
 
 Easiest way to install this library is by using ``pip``::
 
-    $ pip install django-url-filter
+    $ pip install dj-url-filter
 
 Usage Example
 -------------

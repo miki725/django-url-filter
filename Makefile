@@ -39,7 +39,7 @@ lint:  ## lint whole library
 	fi
 
 test:  ## run tests quickly with the default Python
-	py.test -sv \
+	pytest -sv \
 		--cov=url_filter \
 		--cov-report=term-missing \
 		$(ADDITIONAL_COVERAGE_FLAGS) \
